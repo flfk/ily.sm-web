@@ -7,7 +7,7 @@ import actions from '../data/actions';
 import Coins from '../components/dashboard/Coins';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
-import { getTimestamp, getParams, getFormattedNumber } from '../utils/Helpers';
+import { getParams, getFormattedNumber } from '../utils/Helpers';
 import { InfluencerProfile, Trophies, MerchRow, Profile, Stats } from '../components/dashboard';
 import PopupComingSoon from '../components/dashboard/PopupComingSoon';
 import PopupGetPrize from '../components/dashboard/PopupGetPrize';
@@ -307,6 +307,7 @@ class Dashboard extends React.Component {
           <br />
 
           <Content.Seperator />
+          {merchDiv}
 
           {popupComingSoon}
           {popupGetPrize}
