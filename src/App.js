@@ -39,12 +39,13 @@ class App extends Component {
         <div>
           <NavBar />
           <Switch>
-            <Route exact path="/" component={LandingPage} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />
             <Route path="/cookiesPolicy" component={PolicyCookies} />
+            <Route path="/home" component={LandingPage} />
+            <Route path="/" component={Leaderboard} />
           </Switch>
         </div>
       </BrowserRouter>

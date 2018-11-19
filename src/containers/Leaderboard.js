@@ -19,17 +19,22 @@ class Leaderboard extends React.Component {
     influencerDisplayName: '',
     influencerID: '',
     toDashboard: false,
+    toHome: false,
   };
 
   componentDidMount() {
+    const pathname = this.props.location.pathname.replace('/', '');
+    console.log('pathname', pathname);
+
     this.setLeaderboardData();
     const influencerID = this.getInfluencerID();
     mixpanel.track('Visited Leaderboard', { influencerID });
   }
 
   getInfluencerID = () => {
-    const { i } = getParams(this.props);
-    return i;
+    const { pathname } = this.props.location;
+    const influencerID = pathname.replace('/', '');
+    return influencerID;
   };
 
   getFanData = influencerID => {
@@ -116,13 +121,21 @@ class Leaderboard extends React.Component {
     />
   );
 
+  goToHome = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/home',
+      }}
+    />
+  );
+
   render() {
     // XX TODO replace with dynamic retrieval
-    const { fans, influencerDisplayName, influencerID, toDashboard } = this.state;
+    const { fans, influencerDisplayName, influencerID, toDashboard, toHome } = this.state;
 
-    if (toDashboard) {
-      return this.goToDashboard(influencerID);
-    }
+    if (toDashboard) return this.goToDashboard(influencerID);
+    if (toHome) return this.goToHome();
 
     let leaderboard = null;
     if (fans) {
