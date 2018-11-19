@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
-import Content from './Content';
-import Coins from './dashboard/Coins';
-import Colors from '../utils/Colors';
-import Fonts from '../utils/Fonts';
-import { getFormattedNumber } from '../utils/Helpers';
-import Wrapper from './Wrapper';
+import Content from '../Content';
+import Coins from '../Coins';
+import Colors from '../../utils/Colors';
+import Fonts from '../../utils/Fonts';
+import { getShortenedNumber } from '../../utils/Helpers';
+import Wrapper from '../Wrapper';
 
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
@@ -33,7 +33,7 @@ const LeaderboardRow = ({ points, profilePicURL, rank, trophy, username }) => {
         <Username>{username}</Username>
       </ContentLHS>
       <Username>
-        <Coins.Icon small /> {getFormattedNumber(points)}
+        <Coins.Icon small /> {getShortenedNumber(points)}
       </Username>
     </Content.Row>
   );

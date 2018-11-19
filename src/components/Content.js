@@ -23,6 +23,11 @@ const NoPadding = styled(Content)`
   padding: 0;
 `;
 
+const Centered = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const CenteredBothAxis = styled(Content)`
   justify-content: center;
 `;
@@ -51,10 +56,17 @@ const Spacing = styled.div`
   height: 32px;
 `;
 
+const Spacing8px = styled.div`
+  width: 100%;
+  height: 8px;
+`;
+
+Content.Centered = Centered;
+Content.CenteredBothAxis = CenteredBothAxis;
 Content.NoPadding = NoPadding;
 Content.Row = Row;
 Content.Seperator = Seperator;
 Content.Spacing = Spacing;
-Content.CenteredBothAxis = CenteredBothAxis;
+Content.Spacing8px = Spacing8px;
 
 export default Content;

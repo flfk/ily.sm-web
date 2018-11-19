@@ -3,8 +3,8 @@ import React from 'react';
 import { FaSearch } from 'react-icons/fa';
 import styled from 'styled-components';
 
-import Colors from '../utils/Colors';
-import Media from '../utils/Media';
+import Colors from '../../utils/Colors';
+import Media from '../../utils/Media';
 
 const propTypes = {
   onChange: PropTypes.func.isRequired,
@@ -23,7 +23,7 @@ const Container = styled.div`
   margin-right: 8px;
 
   align-items: center;
-  padding: 1em 1em;
+  padding: 0.5em 0.5em;
   border-radius: 3px;
   border: 1px solid ${Colors.greys.light};
   font-size: 16px;

@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import actions from '../data/actions';
-import Coins from '../components/dashboard/Coins';
+import Coins from '../components/Coins';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import { getParams, getFormattedNumber } from '../utils/Helpers';

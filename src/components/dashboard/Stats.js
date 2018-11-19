@@ -3,7 +3,7 @@ import React from 'react';
 import { FaComment, FaTrophy, FaUserTag } from 'react-icons/fa';
 import styled from 'styled-components';
 
-import Coins from './Coins';
+import Coins from '../Coins';
 import Content from '../Content';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';

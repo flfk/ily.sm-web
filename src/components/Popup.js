@@ -10,8 +10,8 @@ const Background = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: 100vw;
+  width: 100%;
+  height: 100%;
   background-color: black;
   opacity: 0.2;
 `;

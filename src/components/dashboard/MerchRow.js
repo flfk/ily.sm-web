@@ -6,7 +6,6 @@ import Btn from '../Btn';
 // import Coins from './Coins';
 import Content from '../Content';
 import Fonts from '../../utils/Fonts';
-// import { getFormattedNumber } from '../../utils/Helpers';
 
 const propTypes = {
   handleClick: PropTypes.func.isRequired,
