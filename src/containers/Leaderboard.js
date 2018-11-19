@@ -3,10 +3,12 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import Content from '../components/Content';
+import Coins from '../components/dashboard/Coins';
 import Fonts from '../utils/Fonts';
 import LeaderboardRow from '../components/LeaderboardRow';
 import LeaderboardFooter from '../components/LeaderboardFooter';
 import Searchbar from '../components/Searchbar';
+import SortBtn from '../components/SortBtn';
 
 // import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
 import SCORECARDS from '../data/dashboards/jon_klaasen';
@@ -67,7 +69,7 @@ class Leaderboard extends React.Component {
   getInfluencerDisplayName = influencerID => {
     switch (influencerID) {
       case 'jon_klaasen':
-        return 'Jon Klaasen';
+        return 'KlaasenNation';
       case 'mackenziesol':
         return 'Mackenzie Sol';
       case 'raeganbeast':
@@ -105,12 +107,15 @@ class Leaderboard extends React.Component {
   };
 
   handleSearch = inputSearch => {
-    console.log('handling search');
     const data = this.getFanData();
     const filteredData = data
       .filter(fan => fan.username.includes(inputSearch))
       .slice(0, ROWS_PER_LOAD);
     this.setState({ fans: filteredData });
+  };
+
+  handleSort = () => {
+    console.log('handling sort');
   };
 
   handleChangeInputSearch = event => {
@@ -187,18 +192,18 @@ class Leaderboard extends React.Component {
         <Content>
           <Fonts.H1 centered noMarginBottom>
             {influencerDisplayName}
-            's Weekly Top{' '}
-            <span role="img" aria-label="100">
-              💯
-            </span>
+            's Weekly Top Supporters
           </Fonts.H1>
           <br />
-          <Searchbar
-            type="text"
-            onChange={this.handleChangeInputSearch}
-            placeholder={'Search for a username'}
-            value={inputSearch}
-          />
+          <Content.Row>
+            <Searchbar
+              type="text"
+              onChange={this.handleChangeInputSearch}
+              placeholder={'Search usernames'}
+              value={inputSearch}
+            />
+            <SortBtn handleSort={this.handleSort} sortSelected={<Coins.Icon small />} />
+          </Content.Row>
           {leaderboard}
           <Content.Spacing />
           <Content.Spacing />

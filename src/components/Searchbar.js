@@ -18,22 +18,24 @@ const defaultProps = {
 
 const Container = styled.div`
   display: flex;
-  width: 100%;
-  padding: 0.5em 0.5em;
+  flex-basis: 1;
+  flex-grow: 1;
+  margin-right: 8px;
+
+  align-items: center;
+  padding: 1em 1em;
   border-radius: 3px;
-  margin-bottom: ${props => (props.noMargin ? '0' : '16px')};
   border: 1px solid ${Colors.greys.light};
   font-size: 16px;
   color: ${Colors.greys.supporting};
 
-  ${Media.tablet} {
-    width: auto;
-    margin: 0;
-  }
-
   :focus-within {
     color: ${Colors.greys.primary};
     border-color: ${Colors.greys.secondary};
+  }
+
+  > svg {
+    margin-right: 4px;
   }
 `;
 
@@ -42,6 +44,7 @@ const Input = styled.input`
   flex-basis: 1;
   color: ${Colors.greys.primary};
   font-size: 16px;
+  border: none;
 
   ::placeholder {
     color: ${Colors.greys.supporting};
