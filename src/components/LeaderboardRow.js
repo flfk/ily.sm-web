@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import Content from './Content';
+import Coins from './dashboard/Coins';
 import Colors from '../utils/Colors';
 import Fonts from '../utils/Fonts';
 import { getFormattedNumber } from '../utils/Helpers';
@@ -15,7 +16,7 @@ const propTypes = {
   points: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
-  trophy: PropTypes.element.isRequired,
+  // trophy: PropTypes.element.isRequired,
   username: PropTypes.string.isRequired,
 };
 
@@ -29,11 +30,11 @@ const LeaderboardRow = ({ points, profilePicURL, rank, trophy, username }) => {
         <Wrapper.ProfileImage>
           <img src={profilePicURL} alt={''} />
         </Wrapper.ProfileImage>{' '}
-        <Username>
-          {username} {trophy}
-        </Username>
+        <Username>{username}</Username>
       </ContentLHS>
-      <Username>{getFormattedNumber(points)}</Username>
+      <Username>
+        <Coins.Icon small /> {getFormattedNumber(points)}
+      </Username>
     </Content.Row>
   );
 };

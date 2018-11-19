@@ -6,17 +6,20 @@ import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import LeaderboardRow from '../components/LeaderboardRow';
 import LeaderboardFooter from '../components/LeaderboardFooter';
+import Searchbar from '../components/Searchbar';
 
 // import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
 import SCORECARDS from '../data/dashboards/jon_klaasen';
 
 const WEEK_INDEX = 1;
+const ROWS_PER_LOAD = 20;
 
 class Leaderboard extends React.Component {
   state = {
     fans: [],
     influencerDisplayName: '',
     influencerID: '',
+    inputSearch: '',
     toDashboard: false,
     toHome: false,
   };
@@ -37,19 +40,21 @@ class Leaderboard extends React.Component {
     return influencerID;
   };
 
-  getFanData = influencerID => {
+  getFanData = () => {
+    const influencerID = this.getInfluencerID();
     const scorecardsWeekly = SCORECARDS.filter(scorecard => scorecard.weekIndex === WEEK_INDEX);
-    const dataJonKlaasen = scorecardsWeekly.slice(0, 100).map(data => {
-      const scorecards = SCORECARDS.filter(scorecard => scorecard.username === data.username);
-      const scorecardWithImg = scorecards.find(scorecard => scorecard.profilePicURL !== '');
-      let profilePicURL = '';
-      if (scorecardWithImg) {
-        if (scorecardWithImg.profilePicURL) {
-          profilePicURL = scorecardWithImg.profilePicURL;
-        }
-      }
-      return { ...data, profilePicURL };
-    });
+    const dataJonKlaasen = scorecardsWeekly;
+    // .map(data => {
+    //   const scorecards = SCORECARDS.filter(scorecard => scorecard.username === data.username);
+    //   const scorecardWithImg = scorecards.find(scorecard => scorecard.profilePicURL !== '');
+    //   let profilePicURL = '';
+    //   if (scorecardWithImg) {
+    //     if (scorecardWithImg.profilePicURL) {
+    //       profilePicURL = scorecardWithImg.profilePicURL;
+    //     }
+    //   }
+    //   return { ...data, profilePicURL };
+    // });
 
     switch (influencerID) {
       case 'jon_klaasen':
@@ -99,6 +104,21 @@ class Leaderboard extends React.Component {
     }
   };
 
+  handleSearch = inputSearch => {
+    console.log('handling search');
+    const data = this.getFanData();
+    const filteredData = data
+      .filter(fan => fan.username.includes(inputSearch))
+      .slice(0, ROWS_PER_LOAD);
+    this.setState({ fans: filteredData });
+  };
+
+  handleChangeInputSearch = event => {
+    const inputSearch = event.target.value;
+    this.handleSearch(inputSearch);
+    this.setState({ inputSearch: event.target.value });
+  };
+
   handleClaimPoints = () => {
     console.log('handleClaimPoints');
     this.setState({ toDashboard: true });
@@ -107,7 +127,7 @@ class Leaderboard extends React.Component {
   setLeaderboardData = () => {
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    const data = this.getFanData(influencerID);
+    const data = this.getFanData().slice(0, ROWS_PER_LOAD);
     if (data.length > 0) {
       this.setState({ fans: data, influencerDisplayName, influencerID });
     } else {
@@ -136,7 +156,14 @@ class Leaderboard extends React.Component {
 
   render() {
     // XX TODO replace with dynamic retrieval
-    const { fans, influencerDisplayName, influencerID, toDashboard, toHome } = this.state;
+    const {
+      fans,
+      influencerDisplayName,
+      influencerID,
+      inputSearch,
+      toDashboard,
+      toHome,
+    } = this.state;
 
     if (toDashboard) return this.goToDashboard(influencerID);
     if (toHome) return this.goToHome();
@@ -148,8 +175,8 @@ class Leaderboard extends React.Component {
           key={fan.username}
           points={fan.pointsTotal}
           profilePicURL={fan.profilePicURL}
-          rank={index + 1}
-          trophy={this.getTrophy(index)}
+          rank={fan.rank}
+          // trophy={this.getTrophy(index)}
           username={fan.username}
         />
       ));
@@ -166,11 +193,12 @@ class Leaderboard extends React.Component {
             </span>
           </Fonts.H1>
           <br />
-          <Fonts.P centered>
-            Earn points on @{influencerID}
-            ’s Instagram posts from the last week by commenting and tagging friends.
-          </Fonts.P>
-          <br />
+          <Searchbar
+            type="text"
+            onChange={this.handleChangeInputSearch}
+            placeholder={'Search for a username'}
+            value={inputSearch}
+          />
           {leaderboard}
           <Content.Spacing />
           <Content.Spacing />
