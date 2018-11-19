@@ -23,12 +23,13 @@ class Leaderboard extends React.Component {
   };
 
   componentDidMount() {
-    const pathname = this.props.location.pathname.replace('/', '');
-    console.log('pathname', pathname);
-
-    this.setLeaderboardData();
     const influencerID = this.getInfluencerID();
-    mixpanel.track('Visited Leaderboard', { influencerID });
+    if (influencerID) {
+      this.setLeaderboardData();
+      mixpanel.track('Visited Leaderboard', { influencerID });
+    } else {
+      this.setState({ toHome: true });
+    }
   }
 
   getInfluencerID = () => {
@@ -55,7 +56,7 @@ class Leaderboard extends React.Component {
       case 'jon_klaasen':
         return dataJonKlaasen;
       default:
-        return dataJonKlaasen;
+        return [];
     }
   };
 
@@ -106,9 +107,13 @@ class Leaderboard extends React.Component {
 
   setLeaderboardData = () => {
     const influencerID = this.getInfluencerID();
-    const fans = this.getFanData(influencerID);
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    this.setState({ fans, influencerDisplayName, influencerID });
+    const data = this.getFanData(influencerID);
+    if (data.length > 0) {
+      this.setState({ fans: data, influencerDisplayName, influencerID });
+    } else {
+      this.setState({ toHome: true });
+    }
   };
 
   goToDashboard = influencerID => (
