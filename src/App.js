@@ -3,10 +3,12 @@ import ReactGA from 'react-ga';
 import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
+import Checkout from './containers/Checkout';
 import Dashboard from './containers/Dashboard';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
+import OrderConfirmation from './containers/OrderConfirmation';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
@@ -39,6 +41,8 @@ class App extends Component {
         <div>
           <NavBar />
           <Switch>
+            <Route path="/checkout" component={Checkout} />
+            <Route path="/confirmation" component={OrderConfirmation} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />

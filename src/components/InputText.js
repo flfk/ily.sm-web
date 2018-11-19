@@ -26,6 +26,7 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   margin: 0;
+  font-size: 14px;
 
   ${Media.tablet} {
     width: auto;
@@ -40,11 +41,11 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  padding: 1em 1em;
+  padding: 0.5em 0.5em;
   border-radius: 3px;
   margin-bottom: ${props => (props.noMargin ? '0' : '16px')};
   border: 1px solid ${Colors.greys.light};
-  font-size: 16px;
+  font-size: 14px;
   color: ${Colors.greys.primary};
 
   ::placeholder {

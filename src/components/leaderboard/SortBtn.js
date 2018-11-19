@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { FaSortDown } from 'react-icons/fa';
 
 import Colors from '../../utils/Colors';
-import Darken from '../../utils/Darken';
 
 const propTypes = {
   handleSort: PropTypes.func.isRequired,
