@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FaSortDown } from 'react-icons/fa';
 
-import Colors from '../utils/Colors';
-import Darken from '../utils/Darken';
-import Media from '../utils/Media';
+import Colors from '../../utils/Colors';
+import Darken from '../../utils/Darken';
 
 const propTypes = {
   handleSort: PropTypes.func.isRequired,
@@ -18,7 +17,7 @@ const BtnSort = styled.button`
   display: flex;
   align-items: center;
   // padding: 0.5em 0.5em;
-  height: 54px;
+  height: 38px;
   border-radius: 3px;
   min-width: 124px;
 
@@ -27,10 +26,6 @@ const BtnSort = styled.button`
   color: ${Colors.greys.supporting};
   background-color: transparent;
   cursor: pointer;
-
-  > div {
-    margin-left: 4px;
-  }
 
   :hover {
     border-color: ${Darken('#ffffff')};
@@ -42,13 +37,19 @@ const BtnSort = styled.button`
   }
 `;
 
+const Selector = styled.div`
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+`;
+
 const SortBtn = ({ handleSort, sortSelected }) => {
   return (
     <BtnSort onClick={handleSort}>
       Sort by{' '}
-      <div>
+      <Selector>
         {sortSelected} <FaSortDown />
-      </div>
+      </Selector>
     </BtnSort>
   );
 };

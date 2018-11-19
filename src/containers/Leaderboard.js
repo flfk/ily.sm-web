@@ -3,12 +3,9 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import Content from '../components/Content';
-import Coins from '../components/dashboard/Coins';
+import Coins from '../components/Coins';
 import Fonts from '../utils/Fonts';
-import LeaderboardRow from '../components/LeaderboardRow';
-import LeaderboardFooter from '../components/LeaderboardFooter';
-import Searchbar from '../components/Searchbar';
-import SortBtn from '../components/SortBtn';
+import { Row, Footer, PopupCoinsExplainer, Searchbar, SortBtn } from '../components/leaderboard';
 
 // import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
 import SCORECARDS from '../data/dashboards/jon_klaasen';
@@ -22,8 +19,10 @@ class Leaderboard extends React.Component {
     influencerDisplayName: '',
     influencerID: '',
     inputSearch: '',
+    // XX REMOVE TO DASHBOARD
     toDashboard: false,
     toHome: false,
+    showPopupCoinsExplainer: true,
   };
 
   componentDidMount() {
@@ -124,9 +123,17 @@ class Leaderboard extends React.Component {
     this.setState({ inputSearch: event.target.value });
   };
 
-  handleClaimPoints = () => {
-    console.log('handleClaimPoints');
-    this.setState({ toDashboard: true });
+  handleEarnCoins = () => {
+    this.setState({ showPopupCoinsExplainer: true });
+  };
+
+  handleEarnGems = () => {
+    console.log('handling earn gems');
+  };
+
+  handlePopupClose = popupName => {
+    const key = `showPopup${popupName}`;
+    return () => this.setState({ [key]: false });
   };
 
   setLeaderboardData = () => {
@@ -139,16 +146,6 @@ class Leaderboard extends React.Component {
       this.setState({ toHome: true });
     }
   };
-
-  goToDashboard = influencerID => (
-    <Redirect
-      push
-      to={{
-        pathname: '/dashboard',
-        search: `?i=${influencerID}`,
-      }}
-    />
-  );
 
   goToHome = () => (
     <Redirect
@@ -168,6 +165,7 @@ class Leaderboard extends React.Component {
       inputSearch,
       toDashboard,
       toHome,
+      showPopupCoinsExplainer,
     } = this.state;
 
     if (toDashboard) return this.goToDashboard(influencerID);
@@ -176,7 +174,7 @@ class Leaderboard extends React.Component {
     let leaderboard = null;
     if (fans) {
       leaderboard = fans.map((fan, index) => (
-        <LeaderboardRow
+        <Row
           key={fan.username}
           points={fan.pointsTotal}
           profilePicURL={fan.profilePicURL}
@@ -186,6 +184,13 @@ class Leaderboard extends React.Component {
         />
       ));
     }
+
+    const popupCoinsExplainer = showPopupCoinsExplainer ? (
+      <PopupCoinsExplainer
+        handleClose={this.handlePopupClose('CoinsExplainer')}
+        influencer={influencerID}
+      />
+    ) : null;
 
     return (
       <div>
@@ -210,7 +215,9 @@ class Leaderboard extends React.Component {
           <Content.Spacing />
           <Content.Spacing />
         </Content>
-        <LeaderboardFooter handleClaimPoints={this.handleClaimPoints} />
+        <Footer handleEarnCoins={this.handleEarnCoins} handleEarnGems={this.handleEarnGems} />
+
+        {popupCoinsExplainer}
       </div>
     );
   }

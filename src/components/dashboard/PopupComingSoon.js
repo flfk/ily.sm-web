@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import Coins from './Coins';
+import Coins from '../Coins';
 import Fonts from '../../utils/Fonts';
 import InfluencerProfile from './InfluencerProfile';
 import Popup from '../Popup';

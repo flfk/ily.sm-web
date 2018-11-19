@@ -2,17 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-import Coin0 from '../../assets/Coin0.png';
-import Coin1 from '../../assets/Coin1.png';
-import Coin2 from '../../assets/Coin2.png';
-import Coin3 from '../../assets/Coin3.png';
+import Coin0 from '../assets/Coin0.png';
+import Coin1 from '../assets/Coin1.png';
+import Coin2 from '../assets/Coin2.png';
+import Coin3 from '../assets/Coin3.png';
 
 const propTypes = {
   small: PropTypes.bool,
+  large: PropTypes.bool,
 };
 
 const defaultProps = {
   small: false,
+  large: false,
 };
 
 const ImgDiv = styled.div`
@@ -21,6 +23,8 @@ const ImgDiv = styled.div`
   width: 48px;
   background-image: url(${props => props.img});
   background-size: cover;
+  height: ${props => (props.large ? '80px' : '')}
+  width: ${props => (props.large ? '80px' : '')}
 `;
 
 const IconDiv = styled(ImgDiv)`
@@ -36,11 +40,11 @@ const Icon = ({ small }) => <IconDiv img={Coin0} small={small} />;
 Icon.propTypes = propTypes;
 Icon.defaultProps = defaultProps;
 
-const Few = () => <ImgDiv img={Coin1} />;
+const Few = ({ large }) => <ImgDiv img={Coin1} large={large} />;
 
-const Some = () => <ImgDiv img={Coin2} />;
+const Some = ({ large }) => <ImgDiv img={Coin2} large={large} />;
 
-const Many = () => <ImgDiv img={Coin3} />;
+const Many = ({ large }) => <ImgDiv img={Coin3} large={large} />;
 
 const Coin = {};
 Coin.Icon = Icon;
