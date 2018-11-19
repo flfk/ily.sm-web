@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 
+const DEFAULT_INFLUENCER_USERNAME = 'jon_klaasen';
+
 class LandingPage extends Component {
   render() {
     return (
       <Redirect
         push
         to={{
-          pathname: '/dashboard',
-          search: `?i=jon_klaasen`,
+          pathname: '/',
+          search: `?i=${DEFAULT_INFLUENCER_USERNAME}`,
         }}
       />
     );
