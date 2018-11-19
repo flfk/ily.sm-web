@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
@@ -6,16 +7,26 @@ import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import InputText from '../components/InputText';
 
-class checkout extends React.Component {
+class OrderConfirmation extends React.Component {
   state = {
-    email: '',
-    emailErrMsg: '',
-    username: '',
-    usernameErrMsg: '',
+    toLeaderboard: false,
   };
 
+  goToLeaderboard = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/jon_klaasen',
+      }}
+    />
+  );
+
+  handleToLeaderboard = () => this.setState({ toLeaderboard: true });
+
   render() {
-    const { email, emailErrMsg, username, usernameErrMsg } = this.state;
+    const { toLeaderboard } = this.state;
+
+    if (toLeaderboard) return this.goToLeaderboard();
 
     return (
       <Content>
@@ -28,14 +39,12 @@ class checkout extends React.Component {
             🎉
           </span>
         </Fonts.H3>
-        <Btn primary short>
+        <Btn primary short onClick={this.handleToLeaderboard}>
           Back to leaderboard
         </Btn>
-        <Content.Spacing8px />
-        <Btn.Tertiary>Give Jon another gift</Btn.Tertiary>
       </Content>
     );
   }
 }
 
-export default checkout;
+export default OrderConfirmation;

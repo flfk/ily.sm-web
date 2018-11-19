@@ -8,7 +8,7 @@ import Currency from '../Currency';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import { getShortenedNumber } from '../../utils/Helpers';
-import Wrapper from '../Wrapper';
+// import Wrapper from '../Wrapper';
 
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 

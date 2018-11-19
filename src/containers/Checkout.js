@@ -16,7 +16,7 @@ const CURRENCY = 'USD';
 
 const PRICE_PLACE_HOLDER = 9.99;
 
-class checkout extends React.Component {
+class Checkout extends React.Component {
   state = {
     email: '',
     emailErrMsg: '',
@@ -121,4 +121,4 @@ class checkout extends React.Component {
   }
 }
 
-export default checkout;
+export default Checkout;
