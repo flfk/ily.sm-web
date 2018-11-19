@@ -15,34 +15,13 @@ import NavBarList from '../components/NavBarList';
 //           </Link>
 //         </li>
 //         <li>
-//           <Link to="/events">FAQ</Link>
-//         </li>
-//         <li>
-//           <Link to="/">Host an event</Link>
-//         </li>
-//         <li>
-//           <Link to="/events">Contact</Link>
+//           <Link to="/contactUs">Contact Us</Link>
 //         </li>
 //       </NavBarList>
 //     </NavBarWrapper>
 //   </div>
 // );
 
-const NavBar = () => (
-  <div>
-    <NavBarWrapper>
-      <NavBarList>
-        <li>
-          <Link to="/">
-            <FONTS.LOGO>Meetsta</FONTS.LOGO>
-          </Link>
-        </li>
-        <li>
-          <Link to="/contactUs">Contact Us</Link>
-        </li>
-      </NavBarList>
-    </NavBarWrapper>
-  </div>
-);
+const NavBar = () => <div />;
 
 export default NavBar;
