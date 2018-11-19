@@ -3,7 +3,7 @@ import React from 'react';
 import { FaComment, FaTrophy, FaUserTag } from 'react-icons/fa';
 import styled from 'styled-components';
 
-import Coins from '../Coins';
+import Currency from '../Currency';
 import Content from '../Content';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
@@ -25,7 +25,7 @@ const DashboardStats = ({ pointsComments, pointsTags, pointsTrophies }) => {
           <FaComment />
         </IconText>{' '}
         <StatText>
-          <Coins.Icon small /> {getShortenedNumber(pointsComments) || 0}
+          <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments) || 0}
         </StatText>
         <Fonts.P centered>From your comments</Fonts.P>
       </Stat>
@@ -35,7 +35,7 @@ const DashboardStats = ({ pointsComments, pointsTags, pointsTrophies }) => {
           <FaUserTag />
         </IconText>{' '}
         <StatText>
-          <Coins.Icon small /> {getShortenedNumber(pointsTags) || 0}
+          <Currency.CoinsSingle small /> {getShortenedNumber(pointsTags) || 0}
         </StatText>
         <Fonts.P centered>From tagging your friends</Fonts.P>
       </Stat>
@@ -45,7 +45,7 @@ const DashboardStats = ({ pointsComments, pointsTags, pointsTrophies }) => {
           <FaTrophy />
         </IconText>{' '}
         <StatText>
-          <Coins.Icon small /> {getShortenedNumber(pointsTrophies) || 0}
+          <Currency.CoinsSingle small /> {getShortenedNumber(pointsTrophies) || 0}
         </StatText>
         <Fonts.P centered>From your unlocked trophies</Fonts.P>
       </Stat>

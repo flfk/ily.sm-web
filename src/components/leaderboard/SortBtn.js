@@ -28,8 +28,8 @@ const BtnSort = styled.button`
   cursor: pointer;
 
   :hover {
-    border-color: ${Darken('#ffffff')};
-    background-color: ${Darken('#ffffff')};
+    background-color: ${Colors.greys.light};
+    border-color: ${Colors.greys.supporting};
   }
 
   :focus {

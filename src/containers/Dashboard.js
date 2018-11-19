@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import actions from '../data/actions';
-import Coins from '../components/Coins';
+import Currency from '../components/Currency';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import { getParams, getFormattedNumber } from '../utils/Helpers';
@@ -283,7 +283,7 @@ class Dashboard extends React.Component {
             </Fonts.Link>
           </Link>
           <Fonts.H1 centered marginBottom8px extraLarge>
-            <Coins.Icon /> {getFormattedNumber(user.pointsTotal)}
+            <Currency.CoinsSingle /> {getFormattedNumber(user.pointsTotal)}
           </Fonts.H1>
           <Fonts.H3 centered noMarginTop marginBottom4px>
             Earned on

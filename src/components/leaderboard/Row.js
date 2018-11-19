@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import Content from '../Content';
-import Coins from '../Coins';
+import Currency from '../Currency';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import { getShortenedNumber } from '../../utils/Helpers';
@@ -23,17 +23,18 @@ const propTypes = {
 const defaultProps = {};
 
 const LeaderboardRow = ({ points, profilePicURL, rank, trophy, username }) => {
+  // <Wrapper.ProfileImage>
+  // <img src={profilePicURL} alt={''} />
+  // </Wrapper.ProfileImage>{' '}
+
   return (
     <Content.Row key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
         <Rank>{rank}</Rank>
-        <Wrapper.ProfileImage>
-          <img src={profilePicURL} alt={''} />
-        </Wrapper.ProfileImage>{' '}
-        <Username>{username}</Username>
+        <Username>@{username}</Username>
       </ContentLHS>
       <Username>
-        <Coins.Icon small /> {getShortenedNumber(points)}
+        <Currency.CoinsSingle small /> {getShortenedNumber(points)}
       </Username>
     </Content.Row>
   );
