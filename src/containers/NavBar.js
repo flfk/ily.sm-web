@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
-import FONTS from '../utils/Fonts';
-import NavBarWrapper from '../components/NavBarWrapper';
-import NavBarList from '../components/NavBarList';
+// import FONTS from '../utils/Fonts';
+// import NavBarWrapper from '../components/NavBarWrapper';
+// import NavBarList from '../components/NavBarList';
 
 // const NavBar = () => (
 //   <div>
