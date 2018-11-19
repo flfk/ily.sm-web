@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { FaComment, FaTachometerAlt, FaUserTag } from 'react-icons/fa';
+import { Redirect } from 'react-router-dom';
 
 import Currency from '../Currency';
 import Content from '../Content';
-import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import GiftRow from './GiftRow';
 import Popup from '../Popup';
@@ -17,16 +15,32 @@ const propTypes = {
 const defaultProps = {};
 
 class PopupCoins extends React.Component {
-  state = {};
+  state = {
+    toCheckout: false,
+  };
+
+  handleGiftCheckout = () => this.setState({ toCheckout: true });
+
+  goToCheckout = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/checkout',
+      }}
+    />
+  );
 
   render() {
+    const { toCheckout } = this.state;
     const { handleClose, influencer } = this.props;
+
+    if (toCheckout) return this.goToCheckout();
 
     const giftsDiv = GIFTS.sort((a, b) => a.price - b.price).map(item => (
       <GiftRow
         key={item.name}
         // TODO
-        handleClick={() => true}
+        handleClick={this.handleGiftCheckout}
         price={item.price}
         giftID={item.giftID}
         name={item.name}
