@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FaComment, FaTachometerAlt, FaUserTag } from 'react-icons/fa';
 
-import Coins from '../Coins';
+import Currency from '../Currency';
 import Content from '../Content';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
@@ -15,7 +15,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-class PopupCoinsExplainer extends React.Component {
+class PopupCoins extends React.Component {
   state = {};
 
   render() {
@@ -27,7 +27,7 @@ class PopupCoinsExplainer extends React.Component {
         <Popup.CardTransparent>
           <Popup.BtnClose handleClose={handleClose} />
           <Content.Centered>
-            <Coins.Many large />
+            <Currency.CoinsMany large />
           </Content.Centered>
 
           <Fonts.H1 centered>Get Comment Coins</Fonts.H1>
@@ -68,7 +68,7 @@ const Row = styled.div`
   color: ${Colors.primary.red};
 `;
 
-PopupCoinsExplainer.propTypes = propTypes;
-PopupCoinsExplainer.defaultProps = defaultProps;
+PopupCoins.propTypes = propTypes;
+PopupCoins.defaultProps = defaultProps;
 
-export default PopupCoinsExplainer;
+export default PopupCoins;

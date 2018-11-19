@@ -31,7 +31,7 @@ const Container = styled.div`
 
   :focus-within {
     color: ${Colors.greys.primary};
-    border-color: ${Colors.greys.secondary};
+    border-color: ${Colors.greys.supporting};
   }
 
   > svg {

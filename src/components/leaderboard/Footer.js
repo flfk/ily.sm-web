@@ -18,10 +18,10 @@ const LeaderboardFooter = ({ handleEarnCoins, handleEarnGems }) => {
       <Content>
         <Content.Spacing8px />
         <Btn primary short onClick={handleEarnGems}>
-          Earn more Gift Gems
+          Earn Gift Gems
         </Btn>
         <Content.Spacing8px />
-        <Btn.Tertiary onClick={handleEarnCoins}>Earn more Comment Coins</Btn.Tertiary>
+        <Btn.Tertiary onClick={handleEarnCoins}>Earn Comment Coins</Btn.Tertiary>
       </Content>
     </Footer>
   );

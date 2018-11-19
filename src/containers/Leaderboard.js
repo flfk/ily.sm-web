@@ -3,15 +3,16 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import Content from '../components/Content';
-import Coins from '../components/Coins';
+import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
-import { Row, Footer, PopupCoinsExplainer, Searchbar, SortBtn } from '../components/leaderboard';
+import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../components/leaderboard';
 
 // import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
 import SCORECARDS from '../data/dashboards/jon_klaasen';
 
 const WEEK_INDEX = 1;
 const ROWS_PER_LOAD = 20;
+const DEFAULT_SORT_BY = 'gems';
 
 class Leaderboard extends React.Component {
   state = {
@@ -22,7 +23,9 @@ class Leaderboard extends React.Component {
     // XX REMOVE TO DASHBOARD
     toDashboard: false,
     toHome: false,
-    showPopupCoinsExplainer: true,
+    showPopupCoins: false,
+    showPopupGems: false,
+    sortBy: DEFAULT_SORT_BY,
   };
 
   componentDidMount() {
@@ -45,18 +48,6 @@ class Leaderboard extends React.Component {
     const influencerID = this.getInfluencerID();
     const scorecardsWeekly = SCORECARDS.filter(scorecard => scorecard.weekIndex === WEEK_INDEX);
     const dataJonKlaasen = scorecardsWeekly;
-    // .map(data => {
-    //   const scorecards = SCORECARDS.filter(scorecard => scorecard.username === data.username);
-    //   const scorecardWithImg = scorecards.find(scorecard => scorecard.profilePicURL !== '');
-    //   let profilePicURL = '';
-    //   if (scorecardWithImg) {
-    //     if (scorecardWithImg.profilePicURL) {
-    //       profilePicURL = scorecardWithImg.profilePicURL;
-    //     }
-    //   }
-    //   return { ...data, profilePicURL };
-    // });
-
     switch (influencerID) {
       case 'jon_klaasen':
         return dataJonKlaasen;
@@ -108,13 +99,18 @@ class Leaderboard extends React.Component {
   handleSearch = inputSearch => {
     const data = this.getFanData();
     const filteredData = data
-      .filter(fan => fan.username.includes(inputSearch))
+      .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
       .slice(0, ROWS_PER_LOAD);
     this.setState({ fans: filteredData });
   };
 
   handleSort = () => {
-    console.log('handling sort');
+    const { sortBy } = this.state;
+    if (sortBy === 'coins') {
+      this.setState({ sortBy: 'gems' });
+    } else {
+      this.setState({ sortBy: 'coins' });
+    }
   };
 
   handleChangeInputSearch = event => {
@@ -124,11 +120,11 @@ class Leaderboard extends React.Component {
   };
 
   handleEarnCoins = () => {
-    this.setState({ showPopupCoinsExplainer: true });
+    this.setState({ showPopupCoins: true });
   };
 
   handleEarnGems = () => {
-    console.log('handling earn gems');
+    this.setState({ showPopupGems: true });
   };
 
   handlePopupClose = popupName => {
@@ -165,7 +161,9 @@ class Leaderboard extends React.Component {
       inputSearch,
       toDashboard,
       toHome,
-      showPopupCoinsExplainer,
+      showPopupCoins,
+      showPopupGems,
+      sortBy,
     } = this.state;
 
     if (toDashboard) return this.goToDashboard(influencerID);
@@ -185,12 +183,16 @@ class Leaderboard extends React.Component {
       ));
     }
 
-    const popupCoinsExplainer = showPopupCoinsExplainer ? (
-      <PopupCoinsExplainer
-        handleClose={this.handlePopupClose('CoinsExplainer')}
-        influencer={influencerID}
-      />
+    const popupCoins = showPopupCoins ? (
+      <PopupCoins handleClose={this.handlePopupClose('Coins')} influencer={influencerID} />
     ) : null;
+
+    const popupGems = showPopupGems ? (
+      <PopupGems handleClose={this.handlePopupClose('Gems')} />
+    ) : null;
+
+    const sortIcon =
+      sortBy === 'coins' ? <Currency.CoinsSingle small /> : <Currency.GemsSingle small />;
 
     return (
       <div>
@@ -207,7 +209,7 @@ class Leaderboard extends React.Component {
               placeholder={'Search usernames'}
               value={inputSearch}
             />
-            <SortBtn handleSort={this.handleSort} sortSelected={<Coins.Icon small />} />
+            <SortBtn handleSort={this.handleSort} sortSelected={sortIcon} />
           </Content.Row>
           {leaderboard}
           <Content.Spacing />
@@ -217,7 +219,8 @@ class Leaderboard extends React.Component {
         </Content>
         <Footer handleEarnCoins={this.handleEarnCoins} handleEarnGems={this.handleEarnGems} />
 
-        {popupCoinsExplainer}
+        {popupCoins}
+        {popupGems}
       </div>
     );
   }
