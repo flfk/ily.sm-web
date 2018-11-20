@@ -6,6 +6,7 @@ import Btn from '../Btn';
 import Currency from '../Currency';
 import Content from '../Content';
 import Fonts from '../../utils/Fonts';
+import GiftImg from '../GiftImg';
 
 const propTypes = {
   handleClick: PropTypes.func.isRequired,
@@ -17,17 +18,19 @@ const propTypes = {
 
 const defaultProps = {};
 
-const DashboardMerchRow = ({ handleClick, imgURL, price, giftID, name }) => {
+const GiftRow = ({ handleClick, imgURL, price, giftID, name }) => {
   return (
     <div>
       <Content.Row alignCenter>
-        <GiftImg src={imgURL} />
-        <Description>
-          <Fonts.H3 noMargin>
-            <strong>{name}</strong>
-          </Fonts.H3>
-          <Fonts.P>${price.toFixed(2)}</Fonts.P>
-        </Description>
+        <Title>
+          <GiftImg src={imgURL} small />
+          <Description>
+            <Fonts.H3 noMargin>
+              <strong>{name}</strong>
+            </Fonts.H3>
+            <Fonts.P>${price.toFixed(2)}</Fonts.P>
+          </Description>
+        </Title>
         <BtnDiv>
           <Btn primary narrow short onClick={handleClick} value={giftID}>
             Send Gift
@@ -45,16 +48,16 @@ const DashboardMerchRow = ({ handleClick, imgURL, price, giftID, name }) => {
   );
 };
 
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const Description = styled.div`
   flex-grow: 1;
   max-width: 156px;
 
-  // remove below if including price
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
+  margin-left: 8px;
 `;
 
 const BtnDiv = styled.div`
@@ -67,14 +70,7 @@ const BtnDiv = styled.div`
   }
 `;
 
-const GiftImg = styled.div`
-  height: 32px;
-  width: 32px;
-  background-image: url(${props => props.src});
-  background-size: cover;
-`;
+GiftRow.propTypes = propTypes;
+GiftRow.defaultProps = defaultProps;
 
-DashboardMerchRow.propTypes = propTypes;
-DashboardMerchRow.defaultProps = defaultProps;
-
-export default DashboardMerchRow;
+export default GiftRow;

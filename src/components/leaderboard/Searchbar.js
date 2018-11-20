@@ -21,6 +21,7 @@ const Container = styled.div`
   flex-basis: 1;
   flex-grow: 1;
   margin-right: 8px;
+  font-size: 14px;
 
   align-items: center;
   padding: 0.5em 0.5em;

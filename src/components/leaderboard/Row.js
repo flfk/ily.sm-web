@@ -24,28 +24,34 @@ const defaultProps = {};
 
 const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, username }) => {
   return (
-    <Content.Row key={username} alignCenter>
+    <Container key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
         <Wrapper.ProfileImage>
           <img src={profilePicURL} alt="" />
         </Wrapper.ProfileImage>{' '}
         <Rank>{rank}</Rank>
-        <Username>{username}</Username>
+        <Text>{username}</Text>
       </ContentLHS>
       <Score>
-        <Fonts.H3 noMargin>
+        <Text>
           <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
-        </Fonts.H3>
-        <Fonts.H3 noMargin>
+        </Text>
+        <Text>
           <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments)}
-        </Fonts.H3>
+        </Text>
       </Score>
-    </Content.Row>
+    </Container>
   );
 };
 
-const Username = styled(Fonts.H3)`
-  font-size: 16px;
+const Container = styled(Content.Row)`
+  margin-top: 8px;
+  margin-bottom: 8px;
+`;
+
+const Text = styled(Fonts.H3)`
+  font-size: 14px;
+  margin: 0;
 `;
 
 const Rank = styled(Fonts.P)`
@@ -63,7 +69,8 @@ const ContentLHS = styled.a`
 const Score = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-basis: 142px;
+  flex-basis: 106px;
+  font-size: 14px;
 `;
 
 LeaderboardRow.propTypes = propTypes;

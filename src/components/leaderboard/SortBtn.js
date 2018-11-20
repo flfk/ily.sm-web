@@ -18,10 +18,10 @@ const BtnSort = styled.button`
   // padding: 0.5em 0.5em;
   height: 38px;
   border-radius: 3px;
-  min-width: 124px;
+  min-width: 106px;
 
   border: 1px solid ${Colors.greys.light};
-  font-size: 16px;
+  font-size: 14px;
   color: ${Colors.greys.supporting};
   background-color: transparent;
   cursor: pointer;
