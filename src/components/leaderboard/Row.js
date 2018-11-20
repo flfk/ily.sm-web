@@ -8,7 +8,7 @@ import Currency from '../Currency';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import { getShortenedNumber } from '../../utils/Helpers';
-// import Wrapper from '../Wrapper';
+import Wrapper from '../Wrapper';
 
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
@@ -17,20 +17,18 @@ const propTypes = {
   pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
-  // trophy: PropTypes.element.isRequired,
   username: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, trophy, username }) => {
-  // <Wrapper.ProfileImage>
-  // <img src={profilePicURL} alt={''} />
-  // </Wrapper.ProfileImage>{' '}
-
+const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, username }) => {
   return (
     <Content.Row key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
+        <Wrapper.ProfileImage>
+          <img src={profilePicURL} alt="" />
+        </Wrapper.ProfileImage>{' '}
         <Rank>{rank}</Rank>
         <Username>{username}</Username>
       </ContentLHS>
