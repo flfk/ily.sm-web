@@ -9,8 +9,7 @@ import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../compo
 
 import TXNS from '../data/txns_jon_klaasen';
 
-const WEEK_INDEX = 1;
-const ROWS_PER_LOAD = 100;
+const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems';
 const TIMESTAMP_CUTOFF = 1541559600000;
 
@@ -164,9 +163,7 @@ class Leaderboard extends React.Component {
 
   handleSearch = inputSearch => {
     const data = this.getFans();
-    const filteredData = data
-      .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
-      .slice(0, ROWS_PER_LOAD);
+    const filteredData = data.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
     this.setState({ fans: filteredData });
   };
 
@@ -199,7 +196,7 @@ class Leaderboard extends React.Component {
   setLeaderboardData = () => {
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    const data = this.getFans().slice(0, ROWS_PER_LOAD);
+    const data = this.getFans();
     if (data.length > 0) {
       this.setState({ fans: data, influencerDisplayName, influencerID });
     } else {
@@ -228,7 +225,7 @@ class Leaderboard extends React.Component {
     if (fans) {
       leaderboard = fans
         .sort(selectedSort)
-        .slice(0, ROWS_PER_LOAD)
+        .slice(0, MAX_ROWS)
         .map((fan, index) => (
           <Row
             key={fan.username}
