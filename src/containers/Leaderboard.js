@@ -125,17 +125,16 @@ class Leaderboard extends React.Component {
   );
 
   handleSearch = inputSearch => {
-    // const data = this.getFans();
     const { fans } = this.state;
     const fansFiltered = fans.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
     this.setState({ fansFiltered });
   };
 
   handleSort = () => {
-    const { fans, sortType } = this.state;
+    const { fansFiltered, sortType } = this.state;
     const sortTypeUpdated = sortType === 'coins' ? 'gems' : 'coins';
-    const fansUpdated = this.getSortedFans(fans, sortTypeUpdated);
-    this.setState({ fans: fansUpdated, sortType: sortTypeUpdated });
+    const fansUpdated = this.getSortedFans(fansFiltered, sortTypeUpdated);
+    this.setState({ fansFiltered: fansUpdated, sortType: sortTypeUpdated });
   };
 
   handleChangeInputSearch = event => {
