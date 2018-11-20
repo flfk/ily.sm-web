@@ -187,9 +187,10 @@ class Leaderboard extends React.Component {
   setLeaderboardData = async () => {
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
+    this.setState({ influencerDisplayName, influencerID });
     const fans = await this.getFans();
     if (fans.length > 0) {
-      this.setState({ fans, fansFiltered: fans, influencerDisplayName, influencerID });
+      this.setState({ fans, fansFiltered: fans });
     } else {
       this.setState({ toHome: true });
     }
@@ -248,7 +249,7 @@ class Leaderboard extends React.Component {
     ) : null;
 
     const popupGems = showPopupGems ? (
-      <PopupGems handleClose={this.handlePopupClose('Gems')} />
+      <PopupGems handleClose={this.handlePopupClose('Gems')} influencerID={influencerID} />
     ) : null;
 
     const sortIcon =

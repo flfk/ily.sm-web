@@ -8,6 +8,7 @@ import Coin2 from '../assets/Coin2.png';
 import Coin3 from '../assets/Coin3.png';
 
 import Gem0 from '../assets/Gem0.png';
+import Gem3 from '../assets/Gem3.png';
 
 const propTypes = {
   small: PropTypes.bool,
@@ -62,11 +63,17 @@ const GemsSingle = ({ small }) => <IconDiv img={Gem0} small={small} />;
 GemsSingle.propTypes = propTypes;
 GemsSingle.defaultProps = defaultProps;
 
+const GemsMany = ({ large }) => <ImgDiv img={Gem3} large={large} />;
+
+GemsMany.propTypes = propTypes;
+GemsMany.defaultProps = defaultProps;
+
 const Currency = {};
 Currency.CoinsSingle = CoinsSingle;
 Currency.CoinsFew = CoinsFew;
 Currency.CoinsSome = CoinsSome;
 Currency.CoinsMany = CoinsMany;
 Currency.GemsSingle = GemsSingle;
+Currency.GemsMany = GemsMany;
 
 export default Currency;

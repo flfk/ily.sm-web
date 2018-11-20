@@ -3,6 +3,7 @@ import { db } from './firebase';
 
 // Collection and document Names
 const COLL_TXNS = 'txns';
+const COLL_GIFT_OPTIONS = 'giftOptions';
 
 const fetchDocsTxns = async influencerID => {
   const txns = [];
@@ -21,10 +22,28 @@ const fetchDocsTxns = async influencerID => {
   return txns;
 };
 
+const fetchDocsGiftOptions = async influencerID => {
+  const giftOptions = [];
+  try {
+    const giftOptionsRef = db.collection(COLL_GIFT_OPTIONS);
+    const snapshot = await giftOptionsRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const option = doc.data();
+      const { id } = doc;
+      option.id = id;
+      giftOptions.push(option);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsTxns', error);
+  }
+  return giftOptions;
+};
+
 // EXPORTS
 
 const actions = {};
 
 actions.fetchDocsTxns = fetchDocsTxns;
+actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 
 export default actions;

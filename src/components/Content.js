@@ -35,6 +35,7 @@ const CenteredBothAxis = styled(Content)`
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
+  justify-content: ${props => (props.justifyCenter ? 'center' : '')};
   align-items: flex-end;
   align-items: ${props => (props.alignCenter ? 'center' : '')};
   align-items: ${props => (props.alignTop ? 'flex-start' : '')};
