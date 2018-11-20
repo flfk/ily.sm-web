@@ -9,31 +9,16 @@ import Fonts from '../utils/Fonts';
 import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../components/leaderboard';
 
 import TXNS from '../data/txns_jon_klaasen';
+import USERS from '../data/users';
 
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems';
 const TIMESTAMP_CUTOFF = 1541559600000;
 
-const TEST_TXNS = [
-  {
-    changePointsComments: 420000,
-    changePointsPaid: 1000,
-    timestamp: 1542078000000,
-    username: 'TEST_USER',
-    influencerID: 'jon_klaasen',
-  },
-  {
-    changePointsComments: 1,
-    changePointsPaid: 1,
-    timestamp: 1542078000000,
-    username: 'TEST_USER',
-    influencerID: 'jon_klaasen',
-  },
-];
-
 class Leaderboard extends React.Component {
   state = {
     fans: [],
+    fansFiltered: [],
     influencerDisplayName: '',
     influencerID: '',
     inputSearch: '',
@@ -75,19 +60,21 @@ class Leaderboard extends React.Component {
   };
 
   getFans = async () => {
-    console.log('getFans called');
     const { sortType } = this.state;
     const influencerID = this.getInfluencerID();
 
     const txnsFirebase = await actions.fetchDocsTxns(influencerID);
-    console.log('txnsFirebase', txnsFirebase);
-    console.log('TEST_TXNS', TEST_TXNS);
 
-    // XX TODO NEED TO GET RID OF TEST TRANSACTION CONCATNATION
     const txnsReduced = TXNS.filter(txn => txn.timestamp > TIMESTAMP_CUTOFF)
-      // .concat(TEST_TXNS)
       .concat(txnsFirebase)
-      .reduce(this.reduceTxns, []);
+      .reduce(this.reduceTxns, [])
+      .map(fan => {
+        const user = USERS.find(user => user.username === fan.username);
+        if (user) {
+          return { ...fan, profilePicURL: user.profilePicURL };
+        }
+        return fan;
+      });
 
     const fanData = this.getSortedFans(txnsReduced, sortType);
 
@@ -97,6 +84,14 @@ class Leaderboard extends React.Component {
       default:
         return [];
     }
+  };
+
+  getFanWithProfilePicURL = fan => {
+    const profile = USERS.find(user => user.username === fan.username);
+    if (profile) {
+      return { ...fan, profilePicURL: profile.profilePicURL };
+    }
+    return fan;
   };
 
   getSortedFans = (fans, sortType) => {
@@ -132,8 +127,8 @@ class Leaderboard extends React.Component {
   handleSearch = inputSearch => {
     // const data = this.getFans();
     const { fans } = this.state;
-    const filteredFans = fans.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
-    this.setState({ fans: filteredFans });
+    const fansFiltered = fans.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
+    this.setState({ fansFiltered });
   };
 
   handleSort = () => {
@@ -190,12 +185,11 @@ class Leaderboard extends React.Component {
   };
 
   setLeaderboardData = async () => {
-    console.log('setLeaderboardData');
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
     const fans = await this.getFans();
     if (fans.length > 0) {
-      this.setState({ fans, influencerDisplayName, influencerID });
+      this.setState({ fans, fansFiltered: fans, influencerDisplayName, influencerID });
     } else {
       this.setState({ toHome: true });
     }
@@ -218,7 +212,7 @@ class Leaderboard extends React.Component {
   render() {
     // XX TODO replace with dynamic retrieval
     const {
-      fans,
+      fansFiltered,
       influencerDisplayName,
       influencerID,
       inputSearch,
@@ -233,11 +227,11 @@ class Leaderboard extends React.Component {
     const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
 
     let leaderboard = null;
-    if (fans) {
-      leaderboard = fans
+    if (fansFiltered) {
+      leaderboard = fansFiltered
         .sort(selectedSort)
         .slice(0, MAX_ROWS)
-        .map((fan, index) => (
+        .map(fan => (
           <Row
             key={fan.username}
             pointsComments={fan.pointsComments}
