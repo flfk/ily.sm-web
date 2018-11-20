@@ -23,6 +23,14 @@ const propTypes = {
 const defaultProps = {};
 
 const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, username }) => {
+  const gemScore = pointsPaid ? (
+    <GemScore>
+      <Text>
+        <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
+      </Text>
+    </GemScore>
+  ) : null;
+
   return (
     <Container key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
@@ -33,12 +41,12 @@ const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, usern
         <Text>{username}</Text>
       </ContentLHS>
       <Score>
-        <Text>
-          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
-        </Text>
-        <Text>
-          <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments)}
-        </Text>
+        {gemScore}
+        <CoinScore>
+          <Text>
+            <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments)}
+          </Text>
+        </CoinScore>
       </Score>
     </Container>
   );
@@ -68,9 +76,18 @@ const ContentLHS = styled.a`
 
 const Score = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-basis: 106px;
   font-size: 14px;
+`;
+
+const CoinScore = styled.div`
+  width: 60px;
+`;
+
+const GemScore = styled.div`
+  width: 56px;
+  margin-right: 8px;
 `;
 
 LeaderboardRow.propTypes = propTypes;
