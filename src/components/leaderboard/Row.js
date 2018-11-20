@@ -13,7 +13,8 @@ import { getShortenedNumber } from '../../utils/Helpers';
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
 const propTypes = {
-  points: PropTypes.number.isRequired,
+  pointsComments: PropTypes.number.isRequired,
+  pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
   // trophy: PropTypes.element.isRequired,
@@ -22,7 +23,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-const LeaderboardRow = ({ points, profilePicURL, rank, trophy, username }) => {
+const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, trophy, username }) => {
   // <Wrapper.ProfileImage>
   // <img src={profilePicURL} alt={''} />
   // </Wrapper.ProfileImage>{' '}
@@ -31,11 +32,16 @@ const LeaderboardRow = ({ points, profilePicURL, rank, trophy, username }) => {
     <Content.Row key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
         <Rank>{rank}</Rank>
-        <Username>@{username}</Username>
+        <Username>{username}</Username>
       </ContentLHS>
-      <Username>
-        <Currency.CoinsSingle small /> {getShortenedNumber(points)}
-      </Username>
+      <Score>
+        <Fonts.H3 noMargin>
+          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
+        </Fonts.H3>
+        <Fonts.H3 noMargin>
+          <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments)}
+        </Fonts.H3>
+      </Score>
     </Content.Row>
   );
 };
@@ -54,6 +60,12 @@ const ContentLHS = styled.a`
   display: flex;
   align-items: center;
   text-decoration: none;
+`;
+
+const Score = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-basis: 142px;
 `;
 
 LeaderboardRow.propTypes = propTypes;
