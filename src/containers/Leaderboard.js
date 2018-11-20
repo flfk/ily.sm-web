@@ -9,10 +9,27 @@ import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../compo
 
 // import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
 import SCORECARDS from '../data/dashboards/jon_klaasen';
+import TXNS from '../data/txns_jon_klaasen';
 
 const WEEK_INDEX = 1;
-const ROWS_PER_LOAD = 20;
+const ROWS_PER_LOAD = 100;
 const DEFAULT_SORT_BY = 'gems';
+const TIMESTAMP_CUTOFF = 1541559600000;
+
+const TEST_TXNS = [
+  {
+    changePointsComments: 420000,
+    changePointsPaid: 1000,
+    timestamp: 1542078000000,
+    username: 'TEST_USER',
+  },
+  {
+    changePointsComments: 1,
+    changePointsPaid: 1,
+    timestamp: 1542078000000,
+    username: 'TEST_USER',
+  },
+];
 
 class Leaderboard extends React.Component {
   state = {
@@ -23,7 +40,7 @@ class Leaderboard extends React.Component {
     toHome: false,
     showPopupCoins: false,
     showPopupGems: false,
-    sortBy: DEFAULT_SORT_BY,
+    sortType: DEFAULT_SORT_BY,
   };
 
   componentDidMount() {
@@ -42,16 +59,77 @@ class Leaderboard extends React.Component {
     return influencerID;
   };
 
-  getFanData = () => {
+  updateFanPoints = (fan, changePointsComments, changePointsPaid) => {
+    let { pointsComments, pointsPaid } = fan;
+    if (changePointsComments > 0) {
+      pointsComments += changePointsComments;
+    }
+    if (changePointsPaid > 0) {
+      pointsPaid += changePointsPaid;
+    }
+    return {
+      ...fan,
+      pointsComments,
+      pointsPaid,
+    };
+  };
+
+  reduceTxns = (aggr, txn) => {
+    const userPrevIndex = aggr.map(fans => fans.username).indexOf(txn.username);
+
+    const { changePointsComments, changePointsPaid } = txn;
+
+    if (changePointsComments + changePointsPaid <= 0) {
+      return aggr;
+    }
+
+    if (userPrevIndex > -1) {
+      const userPrev = aggr[userPrevIndex];
+      const userUpdated = this.updateFanPoints(userPrev, changePointsComments, changePointsPaid);
+      const fansUpdated = aggr.slice();
+      fansUpdated[userPrevIndex] = userUpdated;
+      return fansUpdated;
+    }
+
+    const userNew = {
+      username: txn.username,
+      profilePicURL: '',
+      pointsComments: changePointsComments,
+      pointsPaid: changePointsPaid,
+    };
+
+    return [...aggr, userNew];
+  };
+
+  sortByCoins = (fanA, fanB) => fanB.pointsComments - fanA.pointsComments;
+
+  sortByGems = (fanA, fanB) => fanB.pointsPaid - fanA.pointsPaid;
+
+  getFans = () => {
+    const { sortType } = this.state;
     const influencerID = this.getInfluencerID();
+
+    // XX TODO NEED TO GET RID OF TEST TRANSACTION CONCATNATION
+    const txnsReduced = TXNS.filter(txn => txn.timestamp > TIMESTAMP_CUTOFF)
+      .concat(TEST_TXNS)
+      .reduce(this.reduceTxns, []);
+
+    const fanData = this.getSortedFans(txnsReduced, sortType);
+
     const scorecardsWeekly = SCORECARDS.filter(scorecard => scorecard.weekIndex === WEEK_INDEX);
     const dataJonKlaasen = scorecardsWeekly;
     switch (influencerID) {
       case 'jon_klaasen':
-        return dataJonKlaasen;
+        return fanData;
       default:
         return [];
     }
+  };
+
+  getSortedFans = (fans, sortType) => {
+    const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
+    const fansUpdated = fans.sort(selectedSort).map((fan, index) => ({ ...fan, rank: index + 1 }));
+    return fansUpdated;
   };
 
   getInfluencerDisplayName = influencerID => {
@@ -69,31 +147,6 @@ class Leaderboard extends React.Component {
     }
   };
 
-  getTrophy = index => {
-    switch (true) {
-      case index === 0:
-        return (
-          <span role="img" aria-label="1">
-            👑
-          </span>
-        );
-      case index < 10:
-        return (
-          <span role="img" aria-label="1">
-            ⭐
-          </span>
-        );
-      case index < 30:
-        return (
-          <span role="img" aria-label="1">
-            🏅
-          </span>
-        );
-      default:
-        return <span />;
-    }
-  };
-
   goToHome = () => (
     <Redirect
       push
@@ -104,7 +157,7 @@ class Leaderboard extends React.Component {
   );
 
   handleSearch = inputSearch => {
-    const data = this.getFanData();
+    const data = this.getFans();
     const filteredData = data
       .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
       .slice(0, ROWS_PER_LOAD);
@@ -112,12 +165,10 @@ class Leaderboard extends React.Component {
   };
 
   handleSort = () => {
-    const { sortBy } = this.state;
-    if (sortBy === 'coins') {
-      this.setState({ sortBy: 'gems' });
-    } else {
-      this.setState({ sortBy: 'coins' });
-    }
+    const { fans, sortType } = this.state;
+    const sortTypeUpdated = sortType === 'coins' ? 'gems' : 'coins';
+    const fansUpdated = this.getSortedFans(fans, sortTypeUpdated);
+    this.setState({ fans: fansUpdated, sortType: sortTypeUpdated });
   };
 
   handleChangeInputSearch = event => {
@@ -142,7 +193,7 @@ class Leaderboard extends React.Component {
   setLeaderboardData = () => {
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    const data = this.getFanData().slice(0, ROWS_PER_LOAD);
+    const data = this.getFans().slice(0, ROWS_PER_LOAD);
     if (data.length > 0) {
       this.setState({ fans: data, influencerDisplayName, influencerID });
     } else {
@@ -160,23 +211,28 @@ class Leaderboard extends React.Component {
       toHome,
       showPopupCoins,
       showPopupGems,
-      sortBy,
+      sortType,
     } = this.state;
 
     if (toHome) return this.goToHome();
 
+    const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
+
     let leaderboard = null;
     if (fans) {
-      leaderboard = fans.map((fan, index) => (
-        <Row
-          key={fan.username}
-          points={fan.pointsTotal}
-          profilePicURL={fan.profilePicURL}
-          rank={fan.rank}
-          // trophy={this.getTrophy(index)}
-          username={fan.username}
-        />
-      ));
+      leaderboard = fans
+        .sort(selectedSort)
+        .slice(0, ROWS_PER_LOAD)
+        .map((fan, index) => (
+          <Row
+            key={fan.username}
+            pointsComments={fan.pointsComments}
+            pointsPaid={fan.pointsPaid}
+            profilePicURL={fan.profilePicURL}
+            rank={fan.rank}
+            username={fan.username}
+          />
+        ));
     }
 
     const popupCoins = showPopupCoins ? (
@@ -188,7 +244,7 @@ class Leaderboard extends React.Component {
     ) : null;
 
     const sortIcon =
-      sortBy === 'coins' ? <Currency.CoinsSingle small /> : <Currency.GemsSingle small />;
+      sortType === 'coins' ? <Currency.CoinsSingle small /> : <Currency.GemsSingle small />;
 
     return (
       <div>

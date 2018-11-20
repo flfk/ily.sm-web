@@ -20,6 +20,10 @@ export const getTimeRange = (dateStart, dateEnd) => {
 export const getTimestamp = () => moment().valueOf();
 
 export const getShortenedNumber = num => {
+  if (num === 0) {
+    return '-';
+  }
+
   if (num < 999) {
     return num;
   }
