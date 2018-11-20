@@ -22,6 +22,19 @@ const fetchDocsTxns = async influencerID => {
   return txns;
 };
 
+const fetchDocGift = async giftID => {
+  let gift = {};
+  try {
+    const giftRef = db.collection(COLL_GIFT_OPTIONS).doc(giftID);
+    const snapshot = await giftRef.get();
+    gift = snapshot.data();
+    gift.id = snapshot.id;
+  } catch (error) {
+    console.error('Error actions, fetchDocGift', error);
+  }
+  return gift;
+};
+
 const fetchDocsGiftOptions = async influencerID => {
   const giftOptions = [];
   try {
@@ -34,7 +47,7 @@ const fetchDocsGiftOptions = async influencerID => {
       giftOptions.push(option);
     });
   } catch (error) {
-    console.error('Error actions, fetchDocsTxns', error);
+    console.error('Error actions, fetchDocsGiftOptions', error);
   }
   return giftOptions;
 };
@@ -44,6 +57,7 @@ const fetchDocsGiftOptions = async influencerID => {
 const actions = {};
 
 actions.fetchDocsTxns = fetchDocsTxns;
+actions.fetchDocGift = fetchDocGift;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 
 export default actions;

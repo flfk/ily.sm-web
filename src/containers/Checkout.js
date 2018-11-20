@@ -1,9 +1,12 @@
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
 
+import actions from '../data/actions';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
+import GiftImg from '../components/GiftImg';
+import { getParams } from '../utils/Helpers';
 import InputText from '../components/InputText';
 import PayPalCheckout from '../components/PayPalCheckout';
 
@@ -20,10 +23,30 @@ class Checkout extends React.Component {
   state = {
     email: '',
     emailErrMsg: '',
+    gift: {
+      gemsEarned: '-',
+      imgURL: '',
+      influencerID: '',
+      name: '',
+      price: '-',
+    },
     paypalErrorMsg: '',
     username: '',
     usernameErrMsg: '',
   };
+
+  componentDidMount() {
+    this.setGift();
+  }
+
+  getGiftID = () => {
+    const { gift } = getParams(this.props);
+    return gift;
+  };
+
+  handleChangeEmail = event => this.setState({ email: event.target.value });
+
+  handleChangeUsername = event => this.setState({ username: event.target.value });
 
   onSuccess = payment => {
     // TODO
@@ -43,12 +66,20 @@ class Checkout extends React.Component {
     console.error('Cancelled payment', data);
   };
 
+  setGift = async () => {
+    const giftID = this.getGiftID();
+    const gift = await actions.fetchDocGift(giftID);
+    this.setState({ gift });
+  };
+
   validateForm = () => {
     // TODO
   };
 
   render() {
-    const { email, emailErrMsg, paypalErrorMsg, username, usernameErrMsg } = this.state;
+    const { email, emailErrMsg, gift, paypalErrorMsg, username, usernameErrMsg } = this.state;
+
+    console.log('gift', gift);
 
     const btnPayPal = (
       <PayPalCheckout
@@ -69,13 +100,16 @@ class Checkout extends React.Component {
 
     return (
       <Content>
-        <Fonts.H1 centered>Send Jon XYZ</Fonts.H1>
+        <Fonts.H1 centered>Send Jon {gift.name}</Fonts.H1>
+        <Content.Row justifyCenter>
+          <GiftImg src={gift.imgURL} />
+        </Content.Row>
         <Fonts.H3 centered>Jon will be so happy!</Fonts.H3>
         <Content.Seperator />
         <InputText
           label="Instagram username to recieve gems"
           placeholder="@myInstaAccount"
-          onChange={this.handleChangeFirstName}
+          onChange={this.handleChangeUsername}
           value={username}
           errMsg={usernameErrMsg}
         />
@@ -90,14 +124,14 @@ class Checkout extends React.Component {
         <Content.Row>
           <Fonts.P centered>You'll receive</Fonts.P>
           <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> 999
+            <Currency.GemsSingle small /> {gift.gemsEarned}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing8px />
         <Content.Row>
           <Fonts.P centered>Total price</Fonts.P>
           <Fonts.H3 centered noMargin>
-            $ 9.99
+            $ {gift.price}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing />
