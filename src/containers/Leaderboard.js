@@ -7,8 +7,6 @@ import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../components/leaderboard';
 
-// import DATA_LEADERBOARD_JON from '../data/dashboards/fanData-jon_klaasen';
-import SCORECARDS from '../data/dashboards/jon_klaasen';
 import TXNS from '../data/txns_jon_klaasen';
 
 const WEEK_INDEX = 1;
@@ -101,9 +99,19 @@ class Leaderboard extends React.Component {
     return [...aggr, userNew];
   };
 
-  sortByCoins = (fanA, fanB) => fanB.pointsComments - fanA.pointsComments;
+  sortByCoins = (fanA, fanB) => {
+    if (fanB.pointsComments === fanA.pointsComments) {
+      return fanB.pointsPaid - fanA.pointsPaid;
+    }
+    return fanB.pointsComments - fanA.pointsComments;
+  };
 
-  sortByGems = (fanA, fanB) => fanB.pointsPaid - fanA.pointsPaid;
+  sortByGems = (fanA, fanB) => {
+    if (fanB.pointsPaid === fanA.pointsPaid) {
+      return fanB.pointsComments - fanA.pointsComments;
+    }
+    return fanB.pointsPaid - fanA.pointsPaid;
+  };
 
   getFans = () => {
     const { sortType } = this.state;
@@ -116,8 +124,6 @@ class Leaderboard extends React.Component {
 
     const fanData = this.getSortedFans(txnsReduced, sortType);
 
-    const scorecardsWeekly = SCORECARDS.filter(scorecard => scorecard.weekIndex === WEEK_INDEX);
-    const dataJonKlaasen = scorecardsWeekly;
     switch (influencerID) {
       case 'jon_klaasen':
         return fanData;
