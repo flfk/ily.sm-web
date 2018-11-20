@@ -2,6 +2,7 @@ import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import actions from '../data/actions';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
@@ -19,12 +20,14 @@ const TEST_TXNS = [
     changePointsPaid: 1000,
     timestamp: 1542078000000,
     username: 'TEST_USER',
+    influencerID: 'jon_klaasen',
   },
   {
     changePointsComments: 1,
     changePointsPaid: 1,
     timestamp: 1542078000000,
     username: 'TEST_USER',
+    influencerID: 'jon_klaasen',
   },
 ];
 
@@ -71,54 +74,19 @@ class Leaderboard extends React.Component {
     };
   };
 
-  reduceTxns = (aggr, txn) => {
-    const userPrevIndex = aggr.map(fans => fans.username).indexOf(txn.username);
-
-    const { changePointsComments, changePointsPaid } = txn;
-
-    if (changePointsComments + changePointsPaid <= 0) {
-      return aggr;
-    }
-
-    if (userPrevIndex > -1) {
-      const userPrev = aggr[userPrevIndex];
-      const userUpdated = this.updateFanPoints(userPrev, changePointsComments, changePointsPaid);
-      const fansUpdated = aggr.slice();
-      fansUpdated[userPrevIndex] = userUpdated;
-      return fansUpdated;
-    }
-
-    const userNew = {
-      username: txn.username,
-      profilePicURL: '',
-      pointsComments: changePointsComments,
-      pointsPaid: changePointsPaid,
-    };
-
-    return [...aggr, userNew];
-  };
-
-  sortByCoins = (fanA, fanB) => {
-    if (fanB.pointsComments === fanA.pointsComments) {
-      return fanB.pointsPaid - fanA.pointsPaid;
-    }
-    return fanB.pointsComments - fanA.pointsComments;
-  };
-
-  sortByGems = (fanA, fanB) => {
-    if (fanB.pointsPaid === fanA.pointsPaid) {
-      return fanB.pointsComments - fanA.pointsComments;
-    }
-    return fanB.pointsPaid - fanA.pointsPaid;
-  };
-
-  getFans = () => {
+  getFans = async () => {
+    console.log('getFans called');
     const { sortType } = this.state;
     const influencerID = this.getInfluencerID();
 
+    const txnsFirebase = await actions.fetchDocsTxns(influencerID);
+    console.log('txnsFirebase', txnsFirebase);
+    console.log('TEST_TXNS', TEST_TXNS);
+
     // XX TODO NEED TO GET RID OF TEST TRANSACTION CONCATNATION
     const txnsReduced = TXNS.filter(txn => txn.timestamp > TIMESTAMP_CUTOFF)
-      .concat(TEST_TXNS)
+      // .concat(TEST_TXNS)
+      .concat(txnsFirebase)
       .reduce(this.reduceTxns, []);
 
     const fanData = this.getSortedFans(txnsReduced, sortType);
@@ -162,9 +130,10 @@ class Leaderboard extends React.Component {
   );
 
   handleSearch = inputSearch => {
-    const data = this.getFans();
-    const filteredData = data.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
-    this.setState({ fans: filteredData });
+    // const data = this.getFans();
+    const { fans } = this.state;
+    const filteredFans = fans.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
+    this.setState({ fans: filteredFans });
   };
 
   handleSort = () => {
@@ -193,15 +162,57 @@ class Leaderboard extends React.Component {
     return () => this.setState({ [key]: false });
   };
 
-  setLeaderboardData = () => {
+  reduceTxns = (aggr, txn) => {
+    const userPrevIndex = aggr.map(fans => fans.username).indexOf(txn.username);
+
+    const { changePointsComments, changePointsPaid } = txn;
+
+    if (changePointsComments + changePointsPaid <= 0) {
+      return aggr;
+    }
+
+    if (userPrevIndex > -1) {
+      const userPrev = aggr[userPrevIndex];
+      const userUpdated = this.updateFanPoints(userPrev, changePointsComments, changePointsPaid);
+      const fansUpdated = aggr.slice();
+      fansUpdated[userPrevIndex] = userUpdated;
+      return fansUpdated;
+    }
+
+    const userNew = {
+      username: txn.username,
+      profilePicURL: '',
+      pointsComments: changePointsComments,
+      pointsPaid: changePointsPaid,
+    };
+
+    return [...aggr, userNew];
+  };
+
+  setLeaderboardData = async () => {
+    console.log('setLeaderboardData');
     const influencerID = this.getInfluencerID();
     const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    const data = this.getFans();
-    if (data.length > 0) {
-      this.setState({ fans: data, influencerDisplayName, influencerID });
+    const fans = await this.getFans();
+    if (fans.length > 0) {
+      this.setState({ fans, influencerDisplayName, influencerID });
     } else {
       this.setState({ toHome: true });
     }
+  };
+
+  sortByCoins = (fanA, fanB) => {
+    if (fanB.pointsComments === fanA.pointsComments) {
+      return fanB.pointsPaid - fanA.pointsPaid;
+    }
+    return fanB.pointsComments - fanA.pointsComments;
+  };
+
+  sortByGems = (fanA, fanB) => {
+    if (fanB.pointsPaid === fanA.pointsPaid) {
+      return fanB.pointsComments - fanA.pointsComments;
+    }
+    return fanB.pointsPaid - fanA.pointsPaid;
   };
 
   render() {

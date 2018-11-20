@@ -1,43 +1,30 @@
-// import { db } from './firebase';
-import { storage } from './firebase';
+import { db } from './firebase';
+// import { storage } from './firebase';
 
 // Collection and document Names
+const COLL_TXNS = 'txns';
 
-const STORAGE_MERCH_BASE_PATH = 'gs://online-meet-and-greets.appspot.com/merch/';
-const STORAGE_MERCH_EXTENSION = '.png/';
-
-const STORAGE_DASHBOARD_TEASER_PATH = 'gs://online-meet-and-greets.appspot.com/dashboardTeasers/';
-const STORAGE_DASHBOARD_TEASER_EXTENSION = '.png/';
-
-// LEADERBOARD RELATED
-
-const fetchDashboardTeaserImgURL = async username => {
-  let downloadURL = null;
+const fetchDocsTxns = async influencerID => {
+  const txns = [];
   try {
-    const refPath = STORAGE_DASHBOARD_TEASER_PATH + username + STORAGE_DASHBOARD_TEASER_EXTENSION;
-    downloadURL = await storage.refFromURL(refPath).getDownloadURL();
+    const txnsRef = db.collection(COLL_TXNS);
+    const snapshot = await txnsRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const txn = doc.data();
+      const { id } = doc;
+      txn.id = id;
+      txns.push(txn);
+    });
   } catch (error) {
-    console.error('Actions, fetchMerchImgUrl', error);
+    console.error('Error actions, fetchDocsTxns', error);
   }
-  return downloadURL;
-};
-
-const fetchMerchImgUrl = async merchID => {
-  let downloadURL = null;
-  try {
-    const refPath = STORAGE_MERCH_BASE_PATH + merchID + STORAGE_MERCH_EXTENSION;
-    downloadURL = await storage.refFromURL(refPath).getDownloadURL();
-  } catch (error) {
-    console.error('Actions, fetchMerchImgUrl', error);
-  }
-  return downloadURL;
+  return txns;
 };
 
 // EXPORTS
 
 const actions = {};
 
-actions.fetchDashboardTeaserImgURL = fetchDashboardTeaserImgURL;
-actions.fetchMerchImgUrl = fetchMerchImgUrl;
+actions.fetchDocsTxns = fetchDocsTxns;
 
 export default actions;
