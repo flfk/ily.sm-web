@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
+import validator from 'validator';
 
 import actions from '../data/actions';
 import Content from '../components/Content';
@@ -73,13 +74,25 @@ class Checkout extends React.Component {
   };
 
   validateForm = () => {
-    // TODO
+    const { username, email } = this.state;
+    let isFormValid = true;
+    if (username === '') {
+      this.setState({ usernameErrMsg: 'Instagram username required.' });
+      isFormValid = false;
+    } else {
+      this.setState({ usernameErrMsg: '' });
+    }
+    if (!validator.isEmail(email)) {
+      this.setState({ emailErrMsg: 'Valid email address required.' });
+      isFormValid = false;
+    } else {
+      this.setState({ emailErrMsg: '' });
+    }
+    return isFormValid;
   };
 
   render() {
     const { email, emailErrMsg, gift, paypalErrorMsg, username, usernameErrMsg } = this.state;
-
-    console.log('gift', gift);
 
     const btnPayPal = (
       <PayPalCheckout
