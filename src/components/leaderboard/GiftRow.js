@@ -9,6 +9,7 @@ import Fonts from '../../utils/Fonts';
 
 const propTypes = {
   handleClick: PropTypes.func.isRequired,
+  imgURL: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   giftID: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
@@ -16,10 +17,11 @@ const propTypes = {
 
 const defaultProps = {};
 
-const DashboardMerchRow = ({ handleClick, price, giftID, name }) => {
+const DashboardMerchRow = ({ handleClick, imgURL, price, giftID, name }) => {
   return (
     <div>
       <Content.Row alignCenter>
+        <GiftImg src={imgURL} />
         <Description>
           <Fonts.H3 noMargin>
             <strong>{name}</strong>
@@ -30,9 +32,12 @@ const DashboardMerchRow = ({ handleClick, price, giftID, name }) => {
           <Btn primary narrow short onClick={handleClick} value={giftID}>
             Send Gift
           </Btn>
-          <Fonts.P>
-            earn <strong>15</strong> <Currency.GemsSingle small />
-          </Fonts.P>
+          <Content.Row justifyCenter>
+            <Fonts.P>
+              earn <strong>15</strong>{' '}
+            </Fonts.P>
+            <Currency.GemsSingle small />
+          </Content.Row>
         </BtnDiv>
       </Content.Row>
       <Content.Spacing />
@@ -62,12 +67,12 @@ const BtnDiv = styled.div`
   }
 `;
 
-// const MerchImg = styled.div`
-//   height: 32px;
-//   width: 32px;
-//   background-image: url(${props => props.src});
-//   background-size: cover;
-// `;
+const GiftImg = styled.div`
+  height: 32px;
+  width: 32px;
+  background-image: url(${props => props.src});
+  background-size: cover;
+`;
 
 DashboardMerchRow.propTypes = propTypes;
 DashboardMerchRow.defaultProps = defaultProps;
