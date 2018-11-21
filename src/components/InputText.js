@@ -83,7 +83,7 @@ const Input = styled.input`
   }
 
   :focus {
-    border: 1px solid ${Colors.greys.primary};
+    border: 1px solid ${Colors.primary.green};
     outline: none;
   }
 `;

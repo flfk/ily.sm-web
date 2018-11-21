@@ -1,15 +1,44 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import mixpanel from 'mixpanel-browser';
 
+import actions from '../data/actions';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
-import InputText from '../components/InputText';
+import { getParams } from '../utils/Helpers';
+import GiftImg from '../components/GiftImg';
 
 class OrderConfirmation extends React.Component {
   state = {
+    influencer: {
+      displayName: '',
+      fandom: '',
+    },
+    gift: {
+      gemsEarned: '-',
+      imgURL: '',
+      influencerID: '',
+      id: '',
+      name: '',
+      price: '-',
+    },
+    order: {
+      orderNum: '-',
+      giftID: '',
+    },
     toLeaderboard: false,
+  };
+
+  componentDidMount() {
+    this.setData();
+    mixpanel.track('Visited Order Confirmation');
+  }
+
+  getOrderID = () => {
+    const { id } = getParams(this.props);
+    return id;
   };
 
   goToLeaderboard = () => (
@@ -23,22 +52,33 @@ class OrderConfirmation extends React.Component {
 
   handleToLeaderboard = () => this.setState({ toLeaderboard: true });
 
+  setData = async () => {
+    const orderID = this.getOrderID();
+    const order = await actions.fetchDocOrder(orderID);
+    const gift = await actions.fetchDocGift(order.giftID);
+    const influencer = await actions.fetchDocInfluencerByID(gift.influencerID);
+    this.setState({ gift, influencer, order });
+  };
+
   render() {
-    const { toLeaderboard } = this.state;
+    const { gift, influencer, order, toLeaderboard } = this.state;
 
     if (toLeaderboard) return this.goToLeaderboard();
 
     return (
       <Content>
         <Fonts.H1 centered>Thanks for your gift!</Fonts.H1>
-        <Fonts.H3 centered>You sent Jon XYZ</Fonts.H3>
-        <Fonts.H3 centered>@username will recieve XXX gems</Fonts.H3>
         <Fonts.H3 centered>
-          @username's new KlaasenNation top supporter rank is XXX{' '}
-          <span role="img" aria-label="Party Popper">
-            🎉
-          </span>
+          You sent {influencer.displayName} {gift.name}
         </Fonts.H3>
+        <Content.Row justifyCenter>
+          <GiftImg src={gift.imgURL} />
+        </Content.Row>
+        <Fonts.H3 centered>
+          @{order.username} will receive <Currency.GemsSingle small /> {gift.gemsEarned}
+        </Fonts.H3>
+        <Fonts.P centered>Your order confirmation number is #{order.orderNum}</Fonts.P>
+        <Content.Spacing />
         <Btn primary short onClick={this.handleToLeaderboard}>
           Back to leaderboard
         </Btn>
