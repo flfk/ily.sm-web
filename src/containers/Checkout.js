@@ -24,6 +24,7 @@ class Checkout extends React.Component {
   state = {
     email: '',
     emailErrMsg: '',
+    emailIsValid: false,
     gift: {
       gemsEarned: '-',
       imgURL: '',
@@ -31,9 +32,12 @@ class Checkout extends React.Component {
       name: '',
       price: '-',
     },
+    hasTouchedEmail: false,
+    hasTouchedUsername: false,
     paypalErrorMsg: '',
     username: '',
     usernameErrMsg: '',
+    usernameIsValid: false,
   };
 
   componentDidMount() {
@@ -45,9 +49,37 @@ class Checkout extends React.Component {
     return gift;
   };
 
-  handleChangeEmail = event => this.setState({ email: event.target.value });
+  handleBlurEmail = () => {
+    const isValid = this.isEmailValid();
+    this.setState({ emailIsValid: isValid });
+  };
 
-  handleChangeUsername = event => this.setState({ username: event.target.value });
+  handleBlurUsername = () => {
+    const isValid = this.isUsernameValid();
+    this.setState({ usernameIsValid: isValid });
+  };
+
+  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  isEmailValid = () => {
+    const { email } = this.state;
+    if (!validator.isEmail(email)) {
+      this.setState({ emailErrMsg: 'Valid email address required.' });
+      return false;
+    }
+    this.setState({ emailErrMsg: '' });
+    return true;
+  };
+
+  isUsernameValid = () => {
+    const { username } = this.state;
+    if (username === '') {
+      this.setState({ usernameErrMsg: 'Instagram username required.' });
+      return false;
+    }
+    this.setState({ usernameErrMsg: '' });
+    return true;
+  };
 
   onSuccess = payment => {
     // TODO
@@ -92,7 +124,16 @@ class Checkout extends React.Component {
   };
 
   render() {
-    const { email, emailErrMsg, gift, paypalErrorMsg, username, usernameErrMsg } = this.state;
+    const {
+      email,
+      emailErrMsg,
+      emailIsValid,
+      gift,
+      paypalErrorMsg,
+      username,
+      usernameErrMsg,
+      usernameIsValid,
+    } = this.state;
 
     const btnPayPal = (
       <PayPalCheckout
@@ -111,6 +152,42 @@ class Checkout extends React.Component {
 
     const paypalError = paypalErrorMsg ? <Fonts.ERROR>{paypalErrorMsg}</Fonts.ERROR> : null;
 
+    const paymentForm =
+      emailIsValid && usernameIsValid ? (
+        <div>
+          <Content.Seperator />
+          <Content.Row>
+            <Fonts.P centered>You'll receive</Fonts.P>
+            <Fonts.H3 centered noMargin>
+              <Currency.GemsSingle small /> {gift.gemsEarned}
+            </Fonts.H3>
+          </Content.Row>
+          <Content.Spacing8px />
+          <Content.Row>
+            <Fonts.P centered>Total price</Fonts.P>
+            <Fonts.H3 centered noMargin>
+              $ {gift.price}
+            </Fonts.H3>
+          </Content.Row>
+          <Content.Spacing />
+          {paypalError}
+          {btnPayPal}
+          <Content>
+            <Fonts.FinePrint>
+              By clicking on Checkout, you agree with Meetsta's{' '}
+              <Link to="/termsConditions" target="_blank">
+                Terms and Conditions of Use
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacyPolicy" target="_blank">
+                Privacy Policy
+              </Link>
+              .
+            </Fonts.FinePrint>
+          </Content>
+        </div>
+      ) : null;
+
     return (
       <Content>
         <Fonts.H1 centered>Send Jon {gift.name}</Fonts.H1>
@@ -120,49 +197,24 @@ class Checkout extends React.Component {
         <Fonts.H3 centered>Jon will be so happy!</Fonts.H3>
         <Content.Seperator />
         <InputText
+          errMsg={usernameErrMsg}
           label="Instagram username to recieve gems"
           placeholder="@myInstaAccount"
-          onChange={this.handleChangeUsername}
+          onBlur={this.handleBlurUsername}
+          onChange={this.handleChangeInput('username')}
           value={username}
-          errMsg={usernameErrMsg}
+          isValid={usernameIsValid}
         />
         <InputText
+          errMsg={emailErrMsg}
           label="Email to send confirmation to"
           placeholder="MyEmail@example.com"
-          onChange={this.handleChangeEmail}
+          onBlur={this.handleBlurEmail}
+          onChange={this.handleChangeInput('email')}
           value={email}
-          errMsg={emailErrMsg}
+          isValid={emailIsValid}
         />
-        <Content.Seperator />
-        <Content.Row>
-          <Fonts.P centered>You'll receive</Fonts.P>
-          <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> {gift.gemsEarned}
-          </Fonts.H3>
-        </Content.Row>
-        <Content.Spacing8px />
-        <Content.Row>
-          <Fonts.P centered>Total price</Fonts.P>
-          <Fonts.H3 centered noMargin>
-            $ {gift.price}
-          </Fonts.H3>
-        </Content.Row>
-        <Content.Spacing />
-        {paypalError}
-        {btnPayPal}
-        <Content>
-          <Fonts.FinePrint>
-            By clicking on Checkout, you agree with Meetsta's{' '}
-            <Link to="/termsConditions" target="_blank">
-              Terms and Conditions of Use
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacyPolicy" target="_blank">
-              Privacy Policy
-            </Link>
-            .
-          </Fonts.FinePrint>
-        </Content>
+        {paymentForm}
       </Content>
     );
   }
