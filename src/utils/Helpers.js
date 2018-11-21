@@ -1,6 +1,12 @@
 import moment from 'moment-timezone';
 import qs from 'qs';
 
+export const formatUsername = username =>
+  username
+    .toLowerCase()
+    .replace('@', '')
+    .trim();
+
 export const getDate = dateStart =>
   moment.tz(dateStart, 'America/Los_Angeles').format('dddd, MMM Do, YYYY');
 

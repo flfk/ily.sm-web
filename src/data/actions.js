@@ -2,8 +2,23 @@ import { db } from './firebase';
 // import { storage } from './firebase';
 
 // Collection and document Names
-const COLL_TXNS = 'txns';
 const COLL_GIFT_OPTIONS = 'giftOptions';
+const COLL_INFLUENCERS = 'influencers';
+const COLL_ORDERS = 'orders';
+const COLL_TXNS = 'txns';
+const COLL_UTILS = 'utils';
+
+const DOC_LAST_ORDER = 'lastOrder';
+
+const addDocOrder = async order => {
+  const newOrder = await db.collection(COLL_ORDERS).add(order);
+  return newOrder;
+};
+
+const addDocTxn = async txn => {
+  const newTxn = await db.collection(COLL_TXNS).add(txn);
+  return newTxn;
+};
 
 const fetchDocsTxns = async influencerID => {
   const txns = [];
@@ -52,12 +67,59 @@ const fetchDocsGiftOptions = async influencerID => {
   return giftOptions;
 };
 
+const fetchDocInfluencerByID = async influencerID => {
+  let influencer = {};
+  try {
+    const influencerRef = db.collection(COLL_INFLUENCERS).doc(influencerID);
+    const snapshot = await influencerRef.get();
+    influencer = snapshot.data();
+    influencer.id = snapshot.id;
+  } catch (error) {
+    console.error('Error actions, fetchDocInfluencerByID', error);
+  }
+  return influencer;
+};
+
+const fetchDocInfluencerByUsername = async username => {
+  let influencer = {};
+  try {
+    const influencerRef = db.collection(COLL_INFLUENCERS);
+    const snapshot = await influencerRef
+      .where('username', '==', username)
+      .limit(1)
+      .get();
+    snapshot.forEach(doc => {
+      influencer = doc.data();
+      const { id } = doc;
+      influencer.id = id;
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocInfluencerByUsername', error);
+  }
+  return influencer;
+};
+
+const fetchOrderNum = async () => {
+  const lastOrderRef = db.collection(COLL_UTILS).doc(DOC_LAST_ORDER);
+  const snapshot = await lastOrderRef.get();
+  const data = await snapshot.data();
+  const newOrderNum = data.orderNum + 1;
+  await lastOrderRef.set({ orderNum: newOrderNum });
+  return data.orderNum + 1;
+};
+
 // EXPORTS
 
 const actions = {};
 
+actions.addDocOrder = addDocOrder;
+actions.addDocTxn = addDocTxn;
 actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchDocGift = fetchDocGift;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
+actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
+actions.fetchDocInfluencerByUsername = fetchDocInfluencerByUsername;
+
+actions.fetchOrderNum = fetchOrderNum;
 
 export default actions;

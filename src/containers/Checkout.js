@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
+import mixpanel from 'mixpanel-browser';
 import validator from 'validator';
 
 import actions from '../data/actions';
@@ -7,7 +8,7 @@ import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
-import { getParams } from '../utils/Helpers';
+import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
 import InputText from '../components/InputText';
 import PayPalCheckout from '../components/PayPalCheckout';
 
@@ -19,6 +20,8 @@ const ENV = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
 const CURRENCY = 'USD';
 
 const PRICE_PLACE_HOLDER = 9.99;
+const PAYPAL_VARIABLE_FEE = 0.036;
+const PAYPAL_FIXED_FEE = 0.3;
 
 class Checkout extends React.Component {
   state = {
@@ -34,6 +37,12 @@ class Checkout extends React.Component {
     },
     hasTouchedEmail: false,
     hasTouchedUsername: false,
+    influencer: {
+      displayName: '',
+      username: '',
+      id: '',
+    },
+    orderID: '',
     paypalErrorMsg: '',
     username: '',
     usernameErrMsg: '',
@@ -41,13 +50,43 @@ class Checkout extends React.Component {
   };
 
   componentDidMount() {
-    this.setGift();
+    this.setData();
+    mixpanel.track('Visited Checkout');
   }
+
+  addGiftOrder = async paypalPaymentID => {
+    const { email, gift, influencer, username } = this.state;
+    const usernameFormatted = formatUsername(username);
+    const txn = await actions.addDocTxn({
+      changePointsComments: 0,
+      changePointsPaid: gift.gemsEarned,
+      influencerID: influencer.id,
+      timestamp: getTimestamp(),
+      username: usernameFormatted,
+    });
+    const orderNum = await actions.fetchOrderNum();
+    const order = await actions.addDocOrder({
+      email,
+      paypalFee: this.getPaypalFee(gift.price),
+      total: gift.price,
+      txnID: txn.id,
+      orderNum,
+      paypalPaymentID,
+      username: usernameFormatted,
+      purchaseDate: getTimestamp(),
+    });
+    this.setState({ orderID: order.id });
+
+    mixpanel.track('Purchased Gift', { influencer: influencer.username });
+    mixpanel.people.track_charge(gift.price);
+  };
 
   getGiftID = () => {
     const { gift } = getParams(this.props);
     return gift;
   };
+
+  getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
 
   handleBlurEmail = () => {
     const isValid = this.isEmailValid();
@@ -81,8 +120,8 @@ class Checkout extends React.Component {
     return true;
   };
 
-  onSuccess = payment => {
-    // TODO
+  onSuccess = async payment => {
+    await this.addGiftOrder(payment.paymentID);
   };
 
   onError = error => {
@@ -99,11 +138,15 @@ class Checkout extends React.Component {
     console.error('Cancelled payment', data);
   };
 
-  setGift = async () => {
+  setData = async () => {
     const giftID = this.getGiftID();
     const gift = await actions.fetchDocGift(giftID);
-    this.setState({ gift });
+    const { influencerID } = gift;
+    const influencer = await actions.fetchDocInfluencerByID(influencerID);
+    this.setState({ gift, influencer });
   };
+
+  setInfluencer = async () => {};
 
   validateForm = () => {
     const { username, email } = this.state;
@@ -129,6 +172,7 @@ class Checkout extends React.Component {
       emailErrMsg,
       emailIsValid,
       gift,
+      influencer,
       paypalErrorMsg,
       username,
       usernameErrMsg,
@@ -138,15 +182,14 @@ class Checkout extends React.Component {
     const btnPayPal = (
       <PayPalCheckout
         client={CLIENT}
-        env={ENV}
         commit
         currency={CURRENCY}
-        total={PRICE_PLACE_HOLDER}
+        env={ENV}
+        description={`Virtual ${gift.name} gift for ${influencer.displayName}`}
         onSuccess={this.onSuccess}
         onError={this.onError}
         onCancel={this.onCancel}
-        validateForm={this.validateForm}
-        isFormValid
+        total={gift.price}
       />
     );
 
@@ -174,7 +217,7 @@ class Checkout extends React.Component {
           {btnPayPal}
           <Content>
             <Fonts.FinePrint>
-              By clicking on Checkout, you agree with Meetsta's{' '}
+              By clicking on Checkout, you agree with the{' '}
               <Link to="/termsConditions" target="_blank">
                 Terms and Conditions of Use
               </Link>{' '}
@@ -190,11 +233,13 @@ class Checkout extends React.Component {
 
     return (
       <Content>
-        <Fonts.H1 centered>Send Jon {gift.name}</Fonts.H1>
+        <Fonts.H1 centered>
+          Send {influencer.displayName} {gift.name}
+        </Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
         </Content.Row>
-        <Fonts.H3 centered>Jon will be so happy!</Fonts.H3>
+        <Fonts.H3 centered>{influencer.displayName} will be so happy!</Fonts.H3>
         <Content.Seperator />
         <InputText
           errMsg={usernameErrMsg}
