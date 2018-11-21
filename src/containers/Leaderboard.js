@@ -15,7 +15,8 @@ const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
 
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems';
-const TIMESTAMP_CUTOFF = 1541559600000;
+const TIMESTAMP_CUTOFF_START = 1541559600000;
+const TIMESTAMP_CUTOFF_END = 1542811806496;
 
 class Leaderboard extends React.Component {
   state = {
@@ -81,8 +82,8 @@ class Leaderboard extends React.Component {
 
     const txnsFirebase = await actions.fetchDocsTxns(influencerID);
 
-    const txnsReduced = TXNS.filter(txn => txn.timestamp > TIMESTAMP_CUTOFF)
-      .concat(txnsFirebase)
+    const txnsReduced = TXNS.concat(txnsFirebase)
+      .filter(txn => txn.timestamp > TIMESTAMP_CUTOFF_START && txn.timestamp < TIMESTAMP_CUTOFF_END)
       .reduce(this.reduceTxns, [])
       .map(fan => {
         const user = USERS.find(user => user.username === fan.username);

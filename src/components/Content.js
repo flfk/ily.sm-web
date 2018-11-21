@@ -36,6 +36,8 @@ const Row = styled.div`
   display: flex;
   justify-content: space-between;
   justify-content: ${props => (props.justifyCenter ? 'center' : '')};
+  justify-content: ${props => (props.justifyEnd ? 'flex-end' : '')};
+  justify-content: ${props => (props.justifyStart ? 'flex-start' : '')};
   align-items: flex-end;
   align-items: ${props => (props.alignCenter ? 'center' : '')};
   align-items: ${props => (props.alignTop ? 'flex-start' : '')};
