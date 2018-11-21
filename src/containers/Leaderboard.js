@@ -287,8 +287,7 @@ class Leaderboard extends React.Component {
       <div>
         <Content>
           <Fonts.H1 centered noMarginBottom>
-            {influencer.fandom}
-            's Weekly Top Supporters
+            Weekly {influencer.fandom} Leaderboard
           </Fonts.H1>
           <br />
           <Content.Row>

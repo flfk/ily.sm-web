@@ -77,8 +77,10 @@ class OrderConfirmation extends React.Component {
           <GiftImg src={gift.imgURL} />
         </Content.Row>
         <Fonts.H3 centered noMarginBottom>
-          @{order.username} will receive <Currency.GemsSingle small /> {gift.gemsEarned} when the
-          leaderboard updates in
+          <strong>{order.username}</strong> received <Currency.GemsSingle small /> {gift.gemsEarned}
+        </Fonts.H3>
+        <Fonts.H3 centered noMarginBottom>
+          This weeks winners announced in
         </Fonts.H3>
         <Countdown date={influencer.dateNextUpdate} />
         <Content.Spacing />
