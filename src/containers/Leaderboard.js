@@ -11,6 +11,8 @@ import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../compo
 import TXNS from '../data/txns_jon_klaasen';
 import USERS from '../data/users';
 
+const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
+
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems';
 const TIMESTAMP_CUTOFF = 1541559600000;
@@ -19,8 +21,12 @@ class Leaderboard extends React.Component {
   state = {
     fans: [],
     fansFiltered: [],
-    influencerDisplayName: '',
-    influencerID: '',
+    influencer: {
+      displayName: '',
+      fandom: '',
+      id: '',
+      username: '',
+    },
     inputSearch: '',
     toHome: false,
     showPopupCoins: false,
@@ -29,19 +35,29 @@ class Leaderboard extends React.Component {
   };
 
   componentDidMount() {
-    const influencerID = this.getInfluencerID();
-    if (influencerID) {
-      this.setLeaderboardData();
-      mixpanel.track('Visited Leaderboard', { influencerID });
+    const influencerUsername = this.getInfluencerUsername();
+    if (influencerUsername) {
+      this.setInfluencer();
+      this.setLeaderboard();
+      mixpanel.track('Visited Leaderboard', { influencerUsername });
     } else {
       this.setState({ toHome: true });
     }
   }
 
-  getInfluencerID = () => {
+  getInfluencerUsername = () => {
     const { pathname } = this.props.location;
-    const influencerID = pathname.replace('/', '');
-    return influencerID;
+    const username = pathname.replace('/', '');
+    return username;
+  };
+
+  getInfluencerID = username => {
+    switch (username) {
+      case 'jon_klaasen':
+        return JON_KLAASEN_ID;
+      default:
+        return JON_KLAASEN_ID;
+    }
   };
 
   updateFanPoints = (fan, changePointsComments, changePointsPaid) => {
@@ -78,12 +94,7 @@ class Leaderboard extends React.Component {
 
     const fanData = this.getSortedFans(txnsReduced, sortType);
 
-    switch (influencerID) {
-      case 'jon_klaasen':
-        return fanData;
-      default:
-        return [];
-    }
+    return fanData;
   };
 
   getFanWithProfilePicURL = fan => {
@@ -183,16 +194,19 @@ class Leaderboard extends React.Component {
     return [...aggr, userNew];
   };
 
-  setLeaderboardData = async () => {
-    const influencerID = this.getInfluencerID();
-    const influencerDisplayName = this.getInfluencerDisplayName(influencerID);
-    this.setState({ influencerDisplayName, influencerID });
+  setLeaderboard = async () => {
     const fans = await this.getFans();
     if (fans.length > 0) {
       this.setState({ fans, fansFiltered: fans });
     } else {
       this.setState({ toHome: true });
     }
+  };
+
+  setInfluencer = async () => {
+    const influencerID = this.getInfluencerID();
+    const influencer = await actions.fetchDocInfluencerByID(influencerID);
+    this.setState({ influencer });
   };
 
   sortByCoins = (fanA, fanB) => {
@@ -213,8 +227,7 @@ class Leaderboard extends React.Component {
     // XX TODO replace with dynamic retrieval
     const {
       fansFiltered,
-      influencerDisplayName,
-      influencerID,
+      influencer,
       inputSearch,
       toHome,
       showPopupCoins,
@@ -244,11 +257,11 @@ class Leaderboard extends React.Component {
     }
 
     const popupCoins = showPopupCoins ? (
-      <PopupCoins handleClose={this.handlePopupClose('Coins')} influencer={influencerID} />
+      <PopupCoins handleClose={this.handlePopupClose('Coins')} username={influencer.username} />
     ) : null;
 
     const popupGems = showPopupGems ? (
-      <PopupGems handleClose={this.handlePopupClose('Gems')} influencerID={influencerID} />
+      <PopupGems handleClose={this.handlePopupClose('Gems')} influencerID={influencer.id} />
     ) : null;
 
     const sortIcon =
@@ -258,7 +271,7 @@ class Leaderboard extends React.Component {
       <div>
         <Content>
           <Fonts.H1 centered noMarginBottom>
-            {influencerDisplayName}
+            {influencer.fandom}
             's Weekly Top Supporters
           </Fonts.H1>
           <br />
