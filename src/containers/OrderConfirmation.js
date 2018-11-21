@@ -5,6 +5,7 @@ import mixpanel from 'mixpanel-browser';
 import actions from '../data/actions';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
+import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getParams } from '../utils/Helpers';
@@ -13,6 +14,7 @@ import GiftImg from '../components/GiftImg';
 class OrderConfirmation extends React.Component {
   state = {
     influencer: {
+      dateNextUpdate: 0,
       displayName: '',
       fandom: '',
     },
@@ -74,9 +76,12 @@ class OrderConfirmation extends React.Component {
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
         </Content.Row>
-        <Fonts.H3 centered>
-          @{order.username} will receive <Currency.GemsSingle small /> {gift.gemsEarned}
+        <Fonts.H3 centered noMarginBottom>
+          @{order.username} will receive <Currency.GemsSingle small /> {gift.gemsEarned} when the
+          leaderboard updates in
         </Fonts.H3>
+        <Countdown date={influencer.dateNextUpdate} />
+        <Content.Spacing />
         <Fonts.P centered>Your order confirmation number is #{order.orderNum}</Fonts.P>
         <Content.Spacing />
         <Btn primary short onClick={this.handleToLeaderboard}>

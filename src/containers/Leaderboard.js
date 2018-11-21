@@ -23,6 +23,7 @@ class Leaderboard extends React.Component {
     fans: [],
     fansFiltered: [],
     influencer: {
+      dateNextUpdate: 0,
       displayName: '',
       fandom: '',
       id: '',
@@ -246,7 +247,6 @@ class Leaderboard extends React.Component {
       toHome,
       toStorePoints,
       showPopupCoins,
-      showPopupGems,
       sortType,
     } = this.state;
 
@@ -273,7 +273,11 @@ class Leaderboard extends React.Component {
     }
 
     const popupCoins = showPopupCoins ? (
-      <PopupCoins handleClose={this.handlePopupClose('Coins')} username={influencer.username} />
+      <PopupCoins
+        dateNextUpdate={influencer.dateNextUpdate}
+        handleClose={this.handlePopupClose('Coins')}
+        username={influencer.username}
+      />
     ) : null;
 
     const sortIcon =

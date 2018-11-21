@@ -6,11 +6,13 @@ import mixpanel from 'mixpanel-browser';
 
 import Currency from '../Currency';
 import Content from '../Content';
+import Countdown from '../Countdown';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
 import Popup from '../Popup';
 
 const propTypes = {
+  dateNextUpdate: PropTypes.number.isRequired,
   handleClose: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
 };
@@ -23,8 +25,10 @@ class PopupCoins extends React.Component {
     mixpanel.track('Visited Coin Popup', { influencer: username });
   }
 
+  getNextUpdate = () => {};
+
   render() {
-    const { handleClose, username } = this.props;
+    const { dateNextUpdate, handleClose, username } = this.props;
 
     return (
       <div>
@@ -35,24 +39,24 @@ class PopupCoins extends React.Component {
             <Currency.CoinsMany large />
           </Content.Centered>
 
-          <Fonts.H1 centered>Get Comment Coins</Fonts.H1>
-          <Fonts.H3 centered noMarginTop>
-            by commenting on @jon_klaasen's Instagram Posts since 6pm Pacific Time, Wednesday, 15
-            Nov
-          </Fonts.H3>
+          <Fonts.H1 centered>Earn Comment Coins</Fonts.H1>
+          <Fonts.P centered noMargin>
+            by commenting on <strong>@{username}'s Instagram Posts</strong> since 6pm Pacific Time,
+            Wednesday, 15 Nov
+          </Fonts.P>
           <br />
           <Row>
-            <FaTachometerAlt /> <Fonts.H3> Early comments</Fonts.H3>
+            <FaTachometerAlt /> <Fonts.P> Early comments</Fonts.P>
           </Row>
           <Row>
-            <FaComment /> <Fonts.H3> Amount of comments</Fonts.H3>
+            <FaComment /> <Fonts.P> Amount of comments</Fonts.P>
           </Row>
           <Row>
-            <FaUserTag /> <Fonts.H3> Tagging Friends</Fonts.H3>
+            <FaUserTag /> <Fonts.P> Tagging Friends</Fonts.P>
           </Row>
-          <Fonts.H3 centered>
-            Next comment coin update on 6pm Pacific Time, Wednesday, 22 Nov
-          </Fonts.H3>
+          <Content.Spacing />
+          <Fonts.P centered>Time left until next leaderboard update</Fonts.P>
+          <Countdown date={dateNextUpdate} />
         </Popup.CardTransparent>
       </div>
     );
@@ -66,7 +70,7 @@ const Row = styled.div`
   margin-bottom: 8px;
 
   > svg {
-    font-size: 32px;
+    font-size: 24px;
     margin-right: 8px;
   }
 
