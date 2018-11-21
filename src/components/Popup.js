@@ -11,14 +11,17 @@ const Background = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background-color: black;
   opacity: 0.2;
+  // z-index: 1;
+  overflow-y: auto;
 `;
 
 const BackgroundLight = styled(Background)`
-  background-color: white
+  background-color: white;
   opacity: 0.95;
+  opacity: 1;
 `;
 
 const Card = styled.div`
@@ -29,7 +32,7 @@ const Card = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
   width: 632px;
-  height: 95%;
+  min-height: 95%;
   background-color: white;
   opacity: 1;
   border-radius: 5px;

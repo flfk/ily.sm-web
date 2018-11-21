@@ -6,7 +6,7 @@ import actions from '../data/actions';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
-import { Row, Footer, PopupCoins, PopupGems, Searchbar, SortBtn } from '../components/leaderboard';
+import { Row, Footer, PopupCoins, Searchbar, SortBtn } from '../components/leaderboard';
 
 import TXNS from '../data/txns_jon_klaasen';
 import USERS from '../data/users';
@@ -30,8 +30,8 @@ class Leaderboard extends React.Component {
     },
     inputSearch: '',
     toHome: false,
+    toStorePoints: false,
     showPopupCoins: false,
-    showPopupGems: false,
     sortType: DEFAULT_SORT_BY,
   };
 
@@ -40,7 +40,7 @@ class Leaderboard extends React.Component {
     if (influencerUsername) {
       this.setInfluencer();
       this.setLeaderboard();
-      mixpanel.track('Visited Leaderboard', { influencerUsername });
+      mixpanel.track('Visited Leaderboard', { influencer: influencerUsername });
     } else {
       this.setState({ toHome: true });
     }
@@ -136,6 +136,19 @@ class Leaderboard extends React.Component {
     />
   );
 
+  goToStorePoints = () => {
+    const { influencer } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/gems',
+          search: `?i=${influencer.id}`,
+        }}
+      />
+    );
+  };
+
   handleSearch = inputSearch => {
     const { fans } = this.state;
     const fansFiltered = fans.filter(fan => fan.username.includes(inputSearch.toLowerCase()));
@@ -160,7 +173,7 @@ class Leaderboard extends React.Component {
   };
 
   handleEarnGems = () => {
-    this.setState({ showPopupGems: true });
+    this.setState({ toStorePoints: true });
   };
 
   handlePopupClose = popupName => {
@@ -231,12 +244,14 @@ class Leaderboard extends React.Component {
       influencer,
       inputSearch,
       toHome,
+      toStorePoints,
       showPopupCoins,
       showPopupGems,
       sortType,
     } = this.state;
 
     if (toHome) return this.goToHome();
+    if (toStorePoints) return this.goToStorePoints();
 
     const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
 
@@ -259,10 +274,6 @@ class Leaderboard extends React.Component {
 
     const popupCoins = showPopupCoins ? (
       <PopupCoins handleClose={this.handlePopupClose('Coins')} username={influencer.username} />
-    ) : null;
-
-    const popupGems = showPopupGems ? (
-      <PopupGems handleClose={this.handlePopupClose('Gems')} influencerID={influencer.id} />
     ) : null;
 
     const sortIcon =
@@ -294,7 +305,6 @@ class Leaderboard extends React.Component {
         <Footer handleEarnCoins={this.handleEarnCoins} handleEarnGems={this.handleEarnGems} />
 
         {popupCoins}
-        {popupGems}
       </div>
     );
   }

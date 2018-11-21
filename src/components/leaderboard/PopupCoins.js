@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FaComment, FaTachometerAlt, FaUserTag } from 'react-icons/fa';
+import mixpanel from 'mixpanel-browser';
 
 import Currency from '../Currency';
 import Content from '../Content';
@@ -17,7 +18,10 @@ const propTypes = {
 const defaultProps = {};
 
 class PopupCoins extends React.Component {
-  state = {};
+  componentDidMount() {
+    const { username } = this.props;
+    mixpanel.track('Visited Coin Popup', { influencer: username });
+  }
 
   render() {
     const { handleClose, username } = this.props;
