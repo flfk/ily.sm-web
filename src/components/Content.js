@@ -64,6 +64,11 @@ const Spacing8px = styled.div`
   height: 8px;
 `;
 
+const Spacing16px = styled.div`
+  width: 100%;
+  height: 16px;
+`;
+
 Content.Centered = Centered;
 Content.CenteredBothAxis = CenteredBothAxis;
 Content.NoPadding = NoPadding;
@@ -71,5 +76,6 @@ Content.Row = Row;
 Content.Seperator = Seperator;
 Content.Spacing = Spacing;
 Content.Spacing8px = Spacing8px;
+Content.Spacing16px = Spacing16px;
 
 export default Content;

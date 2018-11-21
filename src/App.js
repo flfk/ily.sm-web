@@ -9,6 +9,7 @@ import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
 import OrderConfirmation from './containers/OrderConfirmation';
+import StorePoints from './containers/StorePoints';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
@@ -44,6 +45,7 @@ class App extends Component {
             <Route path="/checkout" component={Checkout} />
             <Route path="/confirmation" component={OrderConfirmation} />
             <Route path="/dashboard" component={Dashboard} />
+            <Route path="/gems" component={StorePoints} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />

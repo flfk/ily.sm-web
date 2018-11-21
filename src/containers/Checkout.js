@@ -117,7 +117,9 @@ class Checkout extends React.Component {
 
   handleNext = () => {
     if (this.isUsernameValid() && this.isEmailValid()) {
+      const { influencer } = this.state;
       this.setState({ checkoutStep: 1 });
+      mixpanel.track('Completed Checkout Info', { influencer: influencer.username });
     }
   };
 
