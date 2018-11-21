@@ -20,23 +20,6 @@ const addDocTxn = async txn => {
   return newTxn;
 };
 
-const fetchDocsTxns = async influencerID => {
-  const txns = [];
-  try {
-    const txnsRef = db.collection(COLL_TXNS);
-    const snapshot = await txnsRef.where('influencerID', '==', influencerID).get();
-    snapshot.forEach(doc => {
-      const txn = doc.data();
-      const { id } = doc;
-      txn.id = id;
-      txns.push(txn);
-    });
-  } catch (error) {
-    console.error('Error actions, fetchDocsTxns', error);
-  }
-  return txns;
-};
-
 const fetchDocGift = async giftID => {
   let gift = {};
   try {
@@ -48,23 +31,6 @@ const fetchDocGift = async giftID => {
     console.error('Error actions, fetchDocGift', error);
   }
   return gift;
-};
-
-const fetchDocsGiftOptions = async influencerID => {
-  const giftOptions = [];
-  try {
-    const giftOptionsRef = db.collection(COLL_GIFT_OPTIONS);
-    const snapshot = await giftOptionsRef.where('influencerID', '==', influencerID).get();
-    snapshot.forEach(doc => {
-      const option = doc.data();
-      const { id } = doc;
-      option.id = id;
-      giftOptions.push(option);
-    });
-  } catch (error) {
-    console.error('Error actions, fetchDocsGiftOptions', error);
-  }
-  return giftOptions;
 };
 
 const fetchDocInfluencerByID = async influencerID => {
@@ -99,6 +65,53 @@ const fetchDocInfluencerByUsername = async username => {
   return influencer;
 };
 
+const fetchDocOrder = async orderID => {
+  let order = {};
+  try {
+    const orderRef = db.collection(COLL_ORDERS).doc(orderID);
+    const snapshot = await orderRef.get();
+    order = snapshot.data();
+    order.id = snapshot.id;
+  } catch (error) {
+    console.error('Error actions, fetchDocOrder', error);
+  }
+  return order;
+};
+
+const fetchDocsGiftOptions = async influencerID => {
+  const giftOptions = [];
+  try {
+    const giftOptionsRef = db.collection(COLL_GIFT_OPTIONS);
+    const snapshot = await giftOptionsRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const option = doc.data();
+      const { id } = doc;
+      option.id = id;
+      giftOptions.push(option);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsGiftOptions', error);
+  }
+  return giftOptions;
+};
+
+const fetchDocsTxns = async influencerID => {
+  const txns = [];
+  try {
+    const txnsRef = db.collection(COLL_TXNS);
+    const snapshot = await txnsRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const txn = doc.data();
+      const { id } = doc;
+      txn.id = id;
+      txns.push(txn);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsTxns', error);
+  }
+  return txns;
+};
+
 const fetchOrderNum = async () => {
   const lastOrderRef = db.collection(COLL_UTILS).doc(DOC_LAST_ORDER);
   const snapshot = await lastOrderRef.get();
@@ -116,9 +129,10 @@ actions.addDocOrder = addDocOrder;
 actions.addDocTxn = addDocTxn;
 actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchDocGift = fetchDocGift;
-actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByUsername = fetchDocInfluencerByUsername;
+actions.fetchDocOrder = fetchDocOrder;
+actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 
 actions.fetchOrderNum = fetchOrderNum;
 

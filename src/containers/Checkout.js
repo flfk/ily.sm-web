@@ -20,7 +20,6 @@ const CLIENT = {
 const ENV = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
 const CURRENCY = 'USD';
 
-const PRICE_PLACE_HOLDER = 9.99;
 const PAYPAL_VARIABLE_FEE = 0.036;
 const PAYPAL_FIXED_FEE = 0.3;
 
@@ -34,11 +33,10 @@ class Checkout extends React.Component {
       gemsEarned: '-',
       imgURL: '',
       influencerID: '',
+      id: '',
       name: '',
       price: '-',
     },
-    hasTouchedEmail: false,
-    hasTouchedUsername: false,
     influencer: {
       displayName: '',
       username: '',
@@ -46,6 +44,7 @@ class Checkout extends React.Component {
     },
     orderID: '',
     paypalErrorMsg: '',
+    toConfirmation: false,
     username: '',
     usernameErrMsg: '',
     usernameIsValid: false,
@@ -69,6 +68,7 @@ class Checkout extends React.Component {
     const orderNum = await actions.fetchOrderNum();
     const order = await actions.addDocOrder({
       email,
+      giftID: gift.id,
       paypalFee: this.getPaypalFee(gift.price),
       total: gift.price,
       txnID: txn.id,
@@ -77,7 +77,7 @@ class Checkout extends React.Component {
       username: usernameFormatted,
       purchaseDate: getTimestamp(),
     });
-    this.setState({ orderID: order.id });
+    this.setState({ orderID: order.id, toConfirmation: true });
 
     mixpanel.track('Purchased Gift', { influencer: influencer.username });
     mixpanel.people.track_charge(gift.price);
@@ -89,6 +89,19 @@ class Checkout extends React.Component {
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
+
+  goToConfirmation = () => {
+    const { orderID } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/confirmation',
+          search: `?id=${orderID}`,
+        }}
+      />
+    );
+  };
 
   handleBlurEmail = () => {
     const isValid = this.isEmailValid();
@@ -167,10 +180,13 @@ class Checkout extends React.Component {
       gift,
       influencer,
       paypalErrorMsg,
+      toConfirmation,
       username,
       usernameErrMsg,
       usernameIsValid,
     } = this.state;
+
+    if (toConfirmation) return this.goToConfirmation();
 
     const btnPayPal = (
       <PayPalCheckout
