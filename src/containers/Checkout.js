@@ -4,6 +4,7 @@ import mixpanel from 'mixpanel-browser';
 import validator from 'validator';
 
 import actions from '../data/actions';
+import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
@@ -25,6 +26,7 @@ const PAYPAL_FIXED_FEE = 0.3;
 
 class Checkout extends React.Component {
   state = {
+    checkoutStep: 0,
     email: '',
     emailErrMsg: '',
     emailIsValid: false,
@@ -100,6 +102,14 @@ class Checkout extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
+  handleNext = () => {
+    if (this.isUsernameValid() && this.isEmailValid()) {
+      this.setState({ checkoutStep: 1 });
+    }
+  };
+
+  handlePrev = () => this.setState({ checkoutStep: 0 });
+
   isEmailValid = () => {
     const { email } = this.state;
     if (!validator.isEmail(email)) {
@@ -148,26 +158,9 @@ class Checkout extends React.Component {
 
   setInfluencer = async () => {};
 
-  validateForm = () => {
-    const { username, email } = this.state;
-    let isFormValid = true;
-    if (username === '') {
-      this.setState({ usernameErrMsg: 'Instagram username required.' });
-      isFormValid = false;
-    } else {
-      this.setState({ usernameErrMsg: '' });
-    }
-    if (!validator.isEmail(email)) {
-      this.setState({ emailErrMsg: 'Valid email address required.' });
-      isFormValid = false;
-    } else {
-      this.setState({ emailErrMsg: '' });
-    }
-    return isFormValid;
-  };
-
   render() {
     const {
+      checkoutStep,
       email,
       emailErrMsg,
       emailIsValid,
@@ -198,7 +191,6 @@ class Checkout extends React.Component {
     const paymentForm =
       emailIsValid && usernameIsValid ? (
         <div>
-          <Content.Seperator />
           <Content.Row>
             <Fonts.P centered>You'll receive</Fonts.P>
             <Fonts.H3 centered noMargin>
@@ -228,19 +220,15 @@ class Checkout extends React.Component {
               .
             </Fonts.FinePrint>
           </Content>
+          <Content.Spacing8px />
+          <Content.Row justifyStart>
+            <Btn.Tertiary onClick={this.handlePrev}>Back</Btn.Tertiary>
+          </Content.Row>
         </div>
       ) : null;
 
-    return (
-      <Content>
-        <Fonts.H1 centered>
-          Send {influencer.displayName} {gift.name}
-        </Fonts.H1>
-        <Content.Row justifyCenter>
-          <GiftImg src={gift.imgURL} />
-        </Content.Row>
-        <Fonts.H3 centered>{influencer.displayName} will be so happy!</Fonts.H3>
-        <Content.Seperator />
+    const infoForm = (
+      <div>
         <InputText
           errMsg={usernameErrMsg}
           label="Instagram username to recieve gems"
@@ -259,7 +247,27 @@ class Checkout extends React.Component {
           value={email}
           isValid={emailIsValid}
         />
-        {paymentForm}
+        <Content.Row justifyEnd>
+          <Btn primary short narrow onClick={this.handleNext}>
+            Next
+          </Btn>
+        </Content.Row>
+      </div>
+    );
+
+    const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
+
+    return (
+      <Content>
+        <Fonts.H1 centered>
+          Send {influencer.displayName} {gift.name}
+        </Fonts.H1>
+        <Content.Row justifyCenter>
+          <GiftImg src={gift.imgURL} />
+        </Content.Row>
+        <Fonts.H3 centered>{influencer.displayName} will be so happy!</Fonts.H3>
+        <Content.Seperator />
+        {checkoutContent}
       </Content>
     );
   }
