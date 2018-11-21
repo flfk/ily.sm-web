@@ -11,6 +11,7 @@ import Popup from '../Popup';
 
 const propTypes = {
   handleClose: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
@@ -19,7 +20,7 @@ class PopupCoins extends React.Component {
   state = {};
 
   render() {
-    const { handleClose, influencer } = this.props;
+    const { handleClose, username } = this.props;
 
     return (
       <div>
