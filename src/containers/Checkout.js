@@ -249,7 +249,7 @@ class Checkout extends React.Component {
       <div>
         <InputText
           errMsg={usernameErrMsg}
-          label="Instagram username to recieve gems"
+          label="Instagram username to receive gems"
           placeholder="@myInstaAccount"
           onBlur={this.handleBlurUsername}
           onChange={this.handleChangeInput('username')}

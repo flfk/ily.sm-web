@@ -12,13 +12,14 @@ const propTypes = {
   handleClick: PropTypes.func.isRequired,
   imgURL: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
+  gemsEarned: PropTypes.number.isRequired,
   giftID: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const GiftRow = ({ handleClick, imgURL, price, giftID, name }) => {
+const GiftRow = ({ handleClick, imgURL, price, gemsEarned, giftID, name }) => {
   return (
     <div>
       <Content.Row alignCenter>
@@ -37,7 +38,7 @@ const GiftRow = ({ handleClick, imgURL, price, giftID, name }) => {
           </Btn>
           <Content.Row justifyCenter>
             <Fonts.P>
-              earn <strong>15</strong>{' '}
+              earn <strong>{gemsEarned}</strong>{' '}
             </Fonts.P>
             <Currency.GemsSingle small />
           </Content.Row>

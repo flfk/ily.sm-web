@@ -73,6 +73,7 @@ class StorePoints extends React.Component {
           handleClick={this.handleGiftCheckout}
           imgURL={option.imgURL}
           price={option.price}
+          gemsEarned={option.gemsEarned}
           giftID={option.id}
           name={option.name}
         />
@@ -82,7 +83,7 @@ class StorePoints extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>What gift do you want to send {influencer.displayName}?</Fonts.H1>
+        <Fonts.H1 centered>What gift do you want to send {influencer.displayName}? </Fonts.H1>
         <Content.Centered>
           <Currency.GemsMany large />
         </Content.Centered>

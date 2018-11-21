@@ -41,8 +41,9 @@ class PopupCoins extends React.Component {
 
           <Fonts.H1 centered>Earn Comment Coins</Fonts.H1>
           <Fonts.P centered noMargin>
-            by commenting on <strong>@{username}'s Instagram Posts</strong> since 6pm Pacific Time,
-            Wednesday, 15 Nov
+            by commenting on{' '}
+            <Fonts.A href={`https://www.instagram.com/${username}`}>@{username}</Fonts.A>'s Recent
+            Instagram Posts <strong>since 15 Nov</strong>
           </Fonts.P>
           <br />
           <Row>
@@ -52,10 +53,10 @@ class PopupCoins extends React.Component {
             <FaComment /> <Fonts.P> Amount of comments</Fonts.P>
           </Row>
           <Row>
-            <FaUserTag /> <Fonts.P> Tagging Friends</Fonts.P>
+            <FaUserTag /> <Fonts.P> Tagging friends</Fonts.P>
           </Row>
           <Content.Spacing />
-          <Fonts.P centered>Time left until next leaderboard update</Fonts.P>
+          <Fonts.P centered>Time left until this week's Comment Coins awarded</Fonts.P>
           <Countdown date={dateNextUpdate} />
         </Popup.CardTransparent>
       </div>
