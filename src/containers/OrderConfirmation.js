@@ -8,13 +8,13 @@ import Content from '../components/Content';
 import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
-import { getParams } from '../utils/Helpers';
+import { getDateAddDays, getParams } from '../utils/Helpers';
 import GiftImg from '../components/GiftImg';
 
 class OrderConfirmation extends React.Component {
   state = {
     influencer: {
-      dateNextUpdate: 0,
+      dateUpdateLast: 0,
       displayName: '',
       fandom: '',
     },
@@ -24,6 +24,7 @@ class OrderConfirmation extends React.Component {
       influencerID: '',
       id: '',
       name: '',
+      prefix: '',
       price: '-',
     },
     order: {
@@ -67,11 +68,13 @@ class OrderConfirmation extends React.Component {
 
     if (toLeaderboard) return this.goToLeaderboard();
 
+    const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
+
     return (
       <Content>
         <Fonts.H1 centered>Thanks for your gift!</Fonts.H1>
         <Fonts.H3 centered>
-          You sent {influencer.displayName} {gift.name}
+          You sent {influencer.displayName} {gift.prefix} {gift.name}
         </Fonts.H3>
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
@@ -82,7 +85,7 @@ class OrderConfirmation extends React.Component {
         <Fonts.H3 centered noMarginBottom>
           This weeks winners announced in
         </Fonts.H3>
-        <Countdown date={influencer.dateNextUpdate} />
+        <Countdown date={dateUpdateNext} />
         <Content.Spacing />
         <Fonts.P centered>Your order confirmation number is #{order.orderNum}</Fonts.P>
         <Content.Spacing />
