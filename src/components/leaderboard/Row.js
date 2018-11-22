@@ -13,6 +13,7 @@ import Wrapper from '../Wrapper';
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
 const propTypes = {
+  inProgress: PropTypes.bool.isRequired,
   pointsComments: PropTypes.number.isRequired,
   pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
@@ -22,7 +23,14 @@ const propTypes = {
 
 const defaultProps = {};
 
-const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, username }) => {
+const LeaderboardRow = ({
+  inProgress,
+  pointsComments,
+  pointsPaid,
+  profilePicURL,
+  rank,
+  username,
+}) => {
   const gemScore = pointsPaid ? (
     <GemScore>
       <Text>
@@ -31,20 +39,23 @@ const LeaderboardRow = ({ pointsComments, pointsPaid, profilePicURL, rank, usern
     </GemScore>
   ) : null;
 
+  const rankFormatted = inProgress && pointsPaid === 0 ? '-' : rank;
+  const pointsCommentsFormatted = inProgress ? '?' : getShortenedNumber(pointsComments);
+
   return (
     <Container key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
         <Wrapper.ProfileImage>
           <img src={profilePicURL} alt="" />
         </Wrapper.ProfileImage>{' '}
-        <Rank>{rank}</Rank>
+        <Rank>{rankFormatted}</Rank>
         <Text>{username}</Text>
       </ContentLHS>
       <Score>
         {gemScore}
         <CoinScore>
           <Text>
-            <Currency.CoinsSingle small /> {getShortenedNumber(pointsComments)}
+            <Currency.CoinsSingle small /> {pointsCommentsFormatted}
           </Text>
         </CoinScore>
       </Score>
