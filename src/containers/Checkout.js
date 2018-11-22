@@ -36,6 +36,7 @@ class Checkout extends React.Component {
       influencerID: '',
       id: '',
       name: '',
+      prefix: '',
       price: '-',
     },
     influencer: {
@@ -269,7 +270,7 @@ class Checkout extends React.Component {
     return (
       <Content>
         <Fonts.H1 centered>
-          Send {influencer.displayName} {gift.name}
+          Send {influencer.displayName} {gift.prefix} {gift.name}
         </Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
