@@ -8,7 +8,14 @@ import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getDateAddDays } from '../utils/Helpers';
-import { Row, Footer, PopupCoins, Searchbar, SortBtn } from '../components/leaderboard';
+import {
+  Footer,
+  PopupCoins,
+  Row,
+  Searchbar,
+  SortBtn,
+  WeekRadioBtn,
+} from '../components/leaderboard';
 
 import TXNS from '../data/txns_jon_klaasen';
 import USERS from '../data/users';
@@ -311,9 +318,13 @@ class Leaderboard extends React.Component {
           <Fonts.H1 centered noMarginBottom>
             Weekly {influencer.fandom} Leaderboard
           </Fonts.H1>
-          <Btn onClick={this.handleWeekSelect('current')}>This Week</Btn>
-          <Btn onClick={this.handleWeekSelect('last')}>Last Weeks Winners</Btn>
-          <br />
+          <Content.Spacing8px />
+          <WeekRadioBtn
+            handleCurrent={this.handleWeekSelect('current')}
+            handleLast={this.handleWeekSelect('last')}
+            weekType={weekType}
+          />
+          <Content.Spacing8px />
           <Content.Row>
             <Searchbar
               type="text"
