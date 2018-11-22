@@ -26,9 +26,9 @@ const PAYPAL_FIXED_FEE = 0.3;
 class Checkout extends React.Component {
   state = {
     checkoutStep: 0,
-    email: '',
-    emailErrMsg: '',
-    emailIsValid: false,
+    // email: '',
+    // emailErrMsg: '',
+    // emailIsValid: false,
     gift: {
       description: '',
       gemsEarned: '-',
@@ -68,7 +68,7 @@ class Checkout extends React.Component {
     });
     const orderNum = await actions.fetchOrderNum();
     const order = await actions.addDocOrder({
-      email,
+      // email,
       giftID: gift.id,
       paypalFee: this.getPaypalFee(gift.price),
       total: gift.price,
@@ -104,10 +104,10 @@ class Checkout extends React.Component {
     );
   };
 
-  handleBlurEmail = () => {
-    const isValid = this.isEmailValid();
-    this.setState({ emailIsValid: isValid });
-  };
+  // handleBlurEmail = () => {
+  //   const isValid = this.isEmailValid();
+  //   this.setState({ emailIsValid: isValid });
+  // };
 
   handleBlurUsername = () => {
     const isValid = this.isUsernameValid();
@@ -117,7 +117,7 @@ class Checkout extends React.Component {
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
   handleNext = () => {
-    if (this.isUsernameValid() && this.isEmailValid()) {
+    if (this.isUsernameValid()) {
       const { influencer } = this.state;
       this.setState({ checkoutStep: 1 });
       mixpanel.track('Completed Checkout Info', { influencer: influencer.username });
@@ -126,15 +126,15 @@ class Checkout extends React.Component {
 
   handlePrev = () => this.setState({ checkoutStep: 0 });
 
-  isEmailValid = () => {
-    const { email } = this.state;
-    if (!validator.isEmail(email)) {
-      this.setState({ emailErrMsg: 'Valid email address required.' });
-      return false;
-    }
-    this.setState({ emailErrMsg: '' });
-    return true;
-  };
+  // isEmailValid = () => {
+  //   const { email } = this.state;
+  //   if (!validator.isEmail(email)) {
+  //     this.setState({ emailErrMsg: 'Valid email address required.' });
+  //     return false;
+  //   }
+  //   this.setState({ emailErrMsg: '' });
+  //   return true;
+  // };
 
   isUsernameValid = () => {
     const { username } = this.state;
@@ -177,9 +177,9 @@ class Checkout extends React.Component {
   render() {
     const {
       checkoutStep,
-      email,
-      emailErrMsg,
-      emailIsValid,
+      // email,
+      // emailErrMsg,
+      // emailIsValid,
       gift,
       influencer,
       paypalErrorMsg,
@@ -207,44 +207,43 @@ class Checkout extends React.Component {
 
     const paypalError = paypalErrorMsg ? <Fonts.ERROR>{paypalErrorMsg}</Fonts.ERROR> : null;
 
-    const paymentForm =
-      emailIsValid && usernameIsValid ? (
-        <div>
-          <Content.Row>
-            <Fonts.P centered>You'll receive</Fonts.P>
-            <Fonts.H3 centered noMargin>
-              <Currency.GemsSingle small /> {gift.gemsEarned}
-            </Fonts.H3>
-          </Content.Row>
-          <Content.Spacing8px />
-          <Content.Row>
-            <Fonts.P centered>Total price</Fonts.P>
-            <Fonts.H3 centered noMargin>
-              $ {gift.price}
-            </Fonts.H3>
-          </Content.Row>
-          <Content.Spacing />
-          {paypalError}
-          {btnPayPal}
-          <Content>
-            <Fonts.FinePrint>
-              By clicking on Checkout, you agree with the{' '}
-              <Link to="/termsConditions" target="_blank">
-                Terms and Conditions of Use
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacyPolicy" target="_blank">
-                Privacy Policy
-              </Link>
-              .
-            </Fonts.FinePrint>
-          </Content>
-          <Content.Spacing8px />
-          <Content.Row justifyStart>
-            <Btn.Tertiary onClick={this.handlePrev}>Back</Btn.Tertiary>
-          </Content.Row>
-        </div>
-      ) : null;
+    const paymentForm = usernameIsValid ? (
+      <div>
+        <Content.Row>
+          <Fonts.P centered>You'll receive</Fonts.P>
+          <Fonts.H3 centered noMargin>
+            <Currency.GemsSingle small /> {gift.gemsEarned}
+          </Fonts.H3>
+        </Content.Row>
+        <Content.Spacing8px />
+        <Content.Row>
+          <Fonts.P centered>Total price</Fonts.P>
+          <Fonts.H3 centered noMargin>
+            $ {gift.price}
+          </Fonts.H3>
+        </Content.Row>
+        <Content.Spacing />
+        {paypalError}
+        {btnPayPal}
+        <Content>
+          <Fonts.FinePrint>
+            By clicking on Checkout, you agree with the{' '}
+            <Link to="/termsConditions" target="_blank">
+              Terms and Conditions of Use
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacyPolicy" target="_blank">
+              Privacy Policy
+            </Link>
+            .
+          </Fonts.FinePrint>
+        </Content>
+        <Content.Spacing8px />
+        <Content.Row justifyStart>
+          <Btn.Tertiary onClick={this.handlePrev}>Back</Btn.Tertiary>
+        </Content.Row>
+      </div>
+    ) : null;
 
     const infoForm = (
       <div>
@@ -256,15 +255,6 @@ class Checkout extends React.Component {
           onChange={this.handleChangeInput('username')}
           value={username}
           isValid={usernameIsValid}
-        />
-        <InputText
-          errMsg={emailErrMsg}
-          label="Email to send confirmation to"
-          placeholder="MyEmail@example.com"
-          onBlur={this.handleBlurEmail}
-          onChange={this.handleChangeInput('email')}
-          value={email}
-          isValid={emailIsValid}
         />
         <Content.Row justifyEnd>
           <Btn primary short narrow onClick={this.handleNext}>
