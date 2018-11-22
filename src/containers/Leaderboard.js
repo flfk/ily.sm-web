@@ -109,6 +109,14 @@ class Leaderboard extends React.Component {
     return fanData;
   };
 
+  getFansPlaceholder = (fansCurrent, fansLast) => {
+    const fansCurrentUsernames = fansCurrent.map(fan => fan.username);
+    const fansPlaceholder = fansLast
+      .filter(fan => !fansCurrentUsernames.includes(fan.username))
+      .map(fan => ({ ...fan, pointsComments: 0, pointsPaid: 0 }));
+    return fansPlaceholder;
+  };
+
   getFansByWeek = (dateUpdateLast, txns, weekType) => {
     const dateRange = this.getDateRange(dateUpdateLast, weekType);
     const txnsFiltered = txns.filter(
@@ -225,10 +233,11 @@ class Leaderboard extends React.Component {
     this.setState({ influencer });
     const txns = await this.fetchTxns(influencer);
     const { dateUpdateLast } = influencer;
-    const fansCurrent = this.getFansByWeek(dateUpdateLast, txns, 'current');
     const fansLast = this.getFansByWeek(dateUpdateLast, txns, 'last');
+    const fansCurrent = this.getFansByWeek(dateUpdateLast, txns, 'current');
+    const fansPlaceholder = this.getFansPlaceholder(fansCurrent, fansLast);
     if (txns.length > 0) {
-      this.setState({ fansCurrent, fansLast });
+      this.setState({ fansCurrent: fansCurrent.concat(fansPlaceholder), fansLast });
     } else {
       this.setState({ toHome: true });
     }
@@ -292,6 +301,7 @@ class Leaderboard extends React.Component {
         .map(fan => (
           <Row
             key={fan.username}
+            inProgress={weekType === 'current'}
             pointsComments={fan.pointsComments}
             pointsPaid={fan.pointsPaid}
             profilePicURL={fan.profilePicURL}
