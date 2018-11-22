@@ -24,7 +24,7 @@ class WeekRadioBtn extends React.Component {
     const isLast = weekType === 'last';
 
     return (
-      <Content.Row alignCenter>
+      <Content.Row alignCenter justifyCenter>
         <RadioBtn active={isLast} onClick={handleLast}>
           Last Week's Winners
         </RadioBtn>
