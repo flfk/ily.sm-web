@@ -14,7 +14,7 @@ import { getDateAddDays } from '../../utils/Helpers';
 import Popup from '../Popup';
 
 const propTypes = {
-  dateUpdateLast: PropTypes.number.isRequired,
+  dateUpdateNext: PropTypes.number.isRequired,
   handleClose: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
 };
@@ -30,9 +30,9 @@ class PopupCoins extends React.Component {
   getNextUpdate = () => {};
 
   render() {
-    const { dateUpdateLast, handleClose, username } = this.props;
+    const { dateUpdateNext, handleClose, username } = this.props;
 
-    const dateUpdateNext = getDateAddDays(dateUpdateLast, 7);
+    const dateUpdateLast = getDateAddDays(dateUpdateNext, -7);
 
     const sinceTxt = moment(dateUpdateLast).format('DD MMM');
 
@@ -48,8 +48,8 @@ class PopupCoins extends React.Component {
           <Fonts.H1 centered>Earn Comment Coins</Fonts.H1>
           <Fonts.P centered noMargin>
             by commenting on{' '}
-            <Fonts.A href={`https://www.instagram.com/${username}`}>@{username}</Fonts.A>'s Recent
-            Instagram Posts <strong>since {sinceTxt}</strong>
+            <Fonts.A href={`https://www.instagram.com/${username}`}>@{username}</Fonts.A>'s recent
+            Instagram posts <strong>since {sinceTxt}</strong>
           </Fonts.P>
           <br />
           <Row>

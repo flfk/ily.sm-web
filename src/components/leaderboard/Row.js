@@ -39,6 +39,23 @@ const LeaderboardRow = ({
     </GemScore>
   ) : null;
 
+  let medal = null;
+  if (!inProgress) {
+    switch (rank) {
+      case 1:
+        medal = '🥇';
+        break;
+      case 2:
+        medal = '🥈';
+        break;
+      case 3:
+        medal = '🥉';
+        break;
+      default:
+        break;
+    }
+  }
+
   const rankFormatted = inProgress && pointsPaid === 0 ? '-' : rank;
   const pointsCommentsFormatted = inProgress ? '?' : getShortenedNumber(pointsComments);
 
@@ -50,6 +67,9 @@ const LeaderboardRow = ({
         </Wrapper.ProfileImage>{' '}
         <Rank>{rankFormatted}</Rank>
         <Text>{username}</Text>
+        <span role="img" aria-label="trophy">
+          {medal}
+        </span>
       </ContentLHS>
       <Score>
         {gemScore}

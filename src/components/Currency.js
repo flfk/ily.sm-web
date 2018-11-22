@@ -13,11 +13,13 @@ import Gem3 from '../assets/Gem3.png';
 const propTypes = {
   small: PropTypes.bool,
   large: PropTypes.bool,
+  tiny: PropTypes.bool,
 };
 
 const defaultProps = {
   small: false,
   large: false,
+  tiny: false,
 };
 
 const ImgDiv = styled.div`
@@ -34,11 +36,13 @@ const IconDiv = styled(ImgDiv)`
   display: inline-block;
   height: ${props => (props.small ? '24px' : '40px')}
   width: ${props => (props.small ? '24px' : '40px')}
+  ${props => (props.tiny ? 'height: 14px' : '')}
+  ${props => (props.tiny ? 'width: 14px' : '')}
   background-image: url(${props => props.img});
   background-size: cover;
 `;
 
-const CoinsSingle = ({ small }) => <IconDiv img={Coin0} small={small} />;
+const CoinsSingle = ({ small, tiny }) => <IconDiv img={Coin0} small={small} tiny={tiny} />;
 
 CoinsSingle.propTypes = propTypes;
 CoinsSingle.defaultProps = defaultProps;

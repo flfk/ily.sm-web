@@ -3,8 +3,8 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import actions from '../data/actions';
-import Btn from '../components/Btn';
 import Content from '../components/Content';
+import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getDateAddDays } from '../utils/Helpers';
@@ -24,7 +24,7 @@ const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
 
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems'; // alternative is coins
-const DEFAULT_WEEEK_TYPE = 'last'; // alternative is current
+const DEFAULT_WEEEK_TYPE = 'current'; // alternative is current
 
 class Leaderboard extends React.Component {
   state = {
@@ -311,9 +311,26 @@ class Leaderboard extends React.Component {
         ));
     }
 
+    const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
+
+    let countdownTxt = null;
+    if (influencer.dateUpdateLast > 0) {
+      countdownTxt =
+        weekType === 'current' ? (
+          <Content.Row justifyCenter>
+            <Countdown date={dateUpdateNext} small />
+            <Fonts.P>
+              until <Currency.CoinsSingle tiny /> awarded
+            </Fonts.P>
+          </Content.Row>
+        ) : (
+          <Fonts.P>Winners Announced</Fonts.P>
+        );
+    }
+
     const popupCoins = showPopupCoins ? (
       <PopupCoins
-        dateUpdateLast={influencer.dateUpdateLast}
+        dateUpdateNext={dateUpdateNext}
         handleClose={this.handlePopupClose('Coins')}
         username={influencer.username}
       />
@@ -335,6 +352,8 @@ class Leaderboard extends React.Component {
             weekType={weekType}
           />
           <Content.Spacing8px />
+          <Content.Row justifyCenter>{countdownTxt}</Content.Row>
+          <Content.Spacing16px />
           <Content.Row>
             <Searchbar
               type="text"
