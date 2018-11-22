@@ -6,9 +6,12 @@ import Fonts from '../utils/Fonts';
 
 const propTypes = {
   date: PropTypes.number.isRequired,
+  small: PropTypes.bool,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  small: false,
+};
 
 const INTERVAL_IN_MILLIS = 1000;
 
@@ -101,36 +104,41 @@ class Countdown extends React.Component {
 
   render() {
     const { days, hours, mins, secs } = this.state;
+    const { small } = this.props;
+
+    const text = small
+      ? { days: 'd', hours: 'h', mins: 'm', secs: 's' }
+      : { days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs' };
 
     return (
-      <Container>
-        <div>
-          <span>
-            <H1 noMarginTop>{this.addLeadingZeros(days)}</H1>
-            <Fonts.P>days</Fonts.P>
-          </span>
-        </div>
+      <Container small={small}>
+        <Unit small={small}>
+          <H1 noMarginTop small={small}>
+            {this.addLeadingZeros(days)}
+          </H1>
+          <Fonts.P>{text.days}</Fonts.P>
+        </Unit>
 
-        <div>
-          <span>
-            <H1 noMarginTop>{this.addLeadingZeros(hours)}</H1>
-            <Fonts.P>Hours</Fonts.P>
-          </span>
-        </div>
+        <Unit small={small}>
+          <H1 noMarginTop small={small}>
+            {this.addLeadingZeros(hours)}
+          </H1>
+          <Fonts.P>{text.hours}</Fonts.P>
+        </Unit>
 
-        <div>
-          <span>
-            <H1 noMarginTop>{this.addLeadingZeros(mins)}</H1>
-            <Fonts.P>Mins</Fonts.P>
-          </span>
-        </div>
+        <Unit small={small}>
+          <H1 noMarginTop small={small}>
+            {this.addLeadingZeros(mins)}
+          </H1>
+          <Fonts.P>{text.mins}</Fonts.P>
+        </Unit>
 
-        <div>
-          <span>
-            <H1 noMarginTop>{this.addLeadingZeros(secs)}</H1>
-            <Fonts.P>Secs</Fonts.P>
-          </span>
-        </div>
+        <Unit small={small}>
+          <H1 noMarginTop small={small}>
+            {this.addLeadingZeros(secs)}
+          </H1>
+          <Fonts.P>{text.secs}</Fonts.P>
+        </Unit>
       </Container>
     );
   }
@@ -139,11 +147,21 @@ class Countdown extends React.Component {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: ${props => (props.small ? 'center' : 'space-around')};
+  margin-right: ${props => (props.small ? '4px' : '')};
+  height: ${props => (props.small ? '16px' : '')};
 `;
 
 const H1 = styled(Fonts.H1)`
   margin-bottom: 4px;
+  font-size: ${props => (props.small ? '14px' : '')};
+  margin: ${props => (props.small ? '0' : '')};
+  margin-right: ${props => (props.small ? '4px' : '')};
+  margin-left: ${props => (props.small ? '4px' : '')};
+`;
+
+const Unit = styled.div`
+  display: ${props => (props.small ? 'flex' : '')};
 `;
 
 Countdown.propTypes = propTypes;

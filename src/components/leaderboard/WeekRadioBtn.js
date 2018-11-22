@@ -25,12 +25,12 @@ class WeekRadioBtn extends React.Component {
 
     return (
       <Content.Row alignCenter justifyCenter>
-        <RadioBtn active={isLast} onClick={handleLast}>
-          Last Week's Winners
-        </RadioBtn>
-        <Seperator />
         <RadioBtn active={isCurrent} onClick={handleCurrent}>
           This Week's Progress
+        </RadioBtn>
+        <Seperator />
+        <RadioBtn active={isLast} onClick={handleLast}>
+          Last Week's Winners
         </RadioBtn>
       </Content.Row>
     );
