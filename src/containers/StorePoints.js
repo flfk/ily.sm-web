@@ -3,10 +3,10 @@ import { Redirect } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 
 import actions from '../data/actions';
-import Currency from '../components/Currency';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import GiftRow from '../components/leaderboard/GiftRow';
+import GiftImg from '../components/GiftImg';
 import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 
@@ -15,6 +15,7 @@ class StorePoints extends React.Component {
     giftOptions: [],
     influencer: {
       id: '',
+      storeImgURL: '',
     },
     toCheckout: false,
     selectedGiftID: '',
@@ -85,7 +86,7 @@ class StorePoints extends React.Component {
         <Popup.BtnClose handleClose={this.handleClose} />
         <Fonts.H1 centered>What gift do you want to send {influencer.displayName}? </Fonts.H1>
         <Content.Centered>
-          <Currency.GemsMany large />
+          <GiftImg src={influencer.storeImgURL} large />
         </Content.Centered>
         <Content.Spacing />
         {giftsDiv}

@@ -10,6 +10,11 @@ export const formatUsername = username =>
 export const getDate = dateStart =>
   moment.tz(dateStart, 'America/Los_Angeles').format('dddd, MMM Do, YYYY');
 
+export const getDateAddDays = (date, days) =>
+  moment(date)
+    .add(days, 'days')
+    .valueOf();
+
 export const getFormattedNumber = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 export const getParams = props => {

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FaComment, FaTachometerAlt, FaUserTag } from 'react-icons/fa';
+import moment from 'moment-timezone';
 import mixpanel from 'mixpanel-browser';
 
 import Currency from '../Currency';
@@ -9,10 +10,11 @@ import Content from '../Content';
 import Countdown from '../Countdown';
 import Colors from '../../utils/Colors';
 import Fonts from '../../utils/Fonts';
+import { getDateAddDays } from '../../utils/Helpers';
 import Popup from '../Popup';
 
 const propTypes = {
-  dateNextUpdate: PropTypes.number.isRequired,
+  dateUpdateLast: PropTypes.number.isRequired,
   handleClose: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
 };
@@ -28,7 +30,11 @@ class PopupCoins extends React.Component {
   getNextUpdate = () => {};
 
   render() {
-    const { dateNextUpdate, handleClose, username } = this.props;
+    const { dateUpdateLast, handleClose, username } = this.props;
+
+    const dateUpdateNext = getDateAddDays(dateUpdateLast, 7);
+
+    const sinceTxt = moment(dateUpdateLast).format('DD MMM');
 
     return (
       <div>
@@ -43,7 +49,7 @@ class PopupCoins extends React.Component {
           <Fonts.P centered noMargin>
             by commenting on{' '}
             <Fonts.A href={`https://www.instagram.com/${username}`}>@{username}</Fonts.A>'s Recent
-            Instagram Posts <strong>since 15 Nov</strong>
+            Instagram Posts <strong>since {sinceTxt}</strong>
           </Fonts.P>
           <br />
           <Row>
@@ -57,7 +63,7 @@ class PopupCoins extends React.Component {
           </Row>
           <Content.Spacing />
           <Fonts.P centered>Time left until this week's Comment Coins awarded</Fonts.P>
-          <Countdown date={dateNextUpdate} />
+          <Countdown date={dateUpdateNext} />
         </Popup.CardTransparent>
       </div>
     );
