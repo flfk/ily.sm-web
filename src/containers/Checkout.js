@@ -30,6 +30,7 @@ class Checkout extends React.Component {
     emailErrMsg: '',
     emailIsValid: false,
     gift: {
+      description: '',
       gemsEarned: '-',
       imgURL: '',
       influencerID: '',
@@ -283,7 +284,7 @@ class Checkout extends React.Component {
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
         </Content.Row>
-        <Fonts.H3 centered>{influencer.displayName} will be so happy!</Fonts.H3>
+        <Fonts.H3 centered>{gift.description}</Fonts.H3>
         <Content.Seperator />
         {checkoutContent}
       </Content>

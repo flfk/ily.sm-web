@@ -95,11 +95,14 @@ const fetchDocsGiftOptions = async influencerID => {
   return giftOptions;
 };
 
-const fetchDocsTxns = async influencerID => {
+const fetchDocsTxns = async (dateMin, influencerID) => {
   const txns = [];
   try {
     const txnsRef = db.collection(COLL_TXNS);
-    const snapshot = await txnsRef.where('influencerID', '==', influencerID).get();
+    const snapshot = await txnsRef
+      .where('influencerID', '==', influencerID)
+      .where('timestamp', '>', dateMin)
+      .get();
     snapshot.forEach(doc => {
       const txn = doc.data();
       const { id } = doc;
