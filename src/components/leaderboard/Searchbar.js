@@ -4,7 +4,6 @@ import { FaSearch } from 'react-icons/fa';
 import styled from 'styled-components';
 
 import Colors from '../../utils/Colors';
-import Media from '../../utils/Media';
 
 const propTypes = {
   onChange: PropTypes.func.isRequired,
