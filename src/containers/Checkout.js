@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
-import validator from 'validator';
+// import validator from 'validator';
 
 import actions from '../data/actions';
 import Btn from '../components/Btn';
@@ -58,7 +58,7 @@ class Checkout extends React.Component {
   }
 
   addGiftOrder = async paypalPaymentID => {
-    const { email, gift, influencer, username } = this.state;
+    const { gift, influencer, username } = this.state;
     const usernameFormatted = formatUsername(username);
     const txn = await actions.addDocTxn({
       changePointsComments: 0,
