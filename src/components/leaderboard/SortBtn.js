@@ -15,13 +15,12 @@ const defaultProps = {};
 const BtnSort = styled.button`
   display: flex;
   align-items: center;
-  // padding: 0.5em 0.5em;
-  height: 38px;
+  padding: 0.5em 0.5em;
   border-radius: 3px;
-  min-width: 106px;
+  min-width: 116px;
 
   border: 1px solid ${Colors.greys.light};
-  font-size: 14px;
+  font-size: 16px;
   color: ${Colors.greys.supporting};
   background-color: transparent;
   cursor: pointer;

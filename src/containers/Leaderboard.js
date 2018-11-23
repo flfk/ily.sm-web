@@ -120,7 +120,7 @@ class Leaderboard extends React.Component {
   getFansByWeek = (dateUpdateLast, txns, weekType) => {
     const dateRange = this.getDateRange(dateUpdateLast, weekType);
     const txnsFiltered = txns.filter(
-      txn => txn.timestamp > dateRange.start && txn.timestamp < dateRange.end
+      txn => txn.timestamp >= dateRange.start && txn.timestamp < dateRange.end
     );
     const fans = this.getFans(txnsFiltered);
     return fans;
@@ -319,9 +319,11 @@ class Leaderboard extends React.Component {
         weekType === 'current' ? (
           <Content.Row justifyCenter>
             <Countdown date={dateUpdateNext} small />
-            <Fonts.P>
-              until <Currency.CoinsSingle tiny /> awarded
-            </Fonts.P>
+            <Fonts.P>until</Fonts.P>
+            <Content.Gap />
+            <Currency.CoinsSingle tiny />
+            <Content.Gap />
+            <Fonts.P>awarded</Fonts.P>
           </Content.Row>
         ) : (
           <Fonts.P>Winners Announced</Fonts.P>
@@ -337,7 +339,7 @@ class Leaderboard extends React.Component {
     ) : null;
 
     const sortIcon =
-      sortType === 'coins' ? <Currency.CoinsSingle small /> : <Currency.GemsSingle small />;
+      sortType === 'coins' ? <Currency.CoinsSingle tiny /> : <Currency.GemsSingle tiny />;
 
     return (
       <div>
@@ -354,7 +356,7 @@ class Leaderboard extends React.Component {
           <Content.Spacing8px />
           <Content.Row justifyCenter>{countdownTxt}</Content.Row>
           <Content.Spacing16px />
-          <Content.Row>
+          <Content.Row alignTop>
             <Searchbar
               type="text"
               onChange={this.handleChangeInputSearch}
