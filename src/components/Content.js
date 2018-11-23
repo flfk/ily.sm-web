@@ -23,6 +23,11 @@ const NoPadding = styled(Content)`
   padding: 0;
 `;
 
+const Centered = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const CenteredBothAxis = styled(Content)`
   justify-content: center;
 `;
@@ -30,6 +35,9 @@ const CenteredBothAxis = styled(Content)`
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
+  justify-content: ${props => (props.justifyCenter ? 'center' : '')};
+  justify-content: ${props => (props.justifyEnd ? 'flex-end' : '')};
+  justify-content: ${props => (props.justifyStart ? 'flex-start' : '')};
   align-items: flex-end;
   align-items: ${props => (props.alignCenter ? 'center' : '')};
   align-items: ${props => (props.alignTop ? 'flex-start' : '')};
@@ -51,10 +59,23 @@ const Spacing = styled.div`
   height: 32px;
 `;
 
+const Spacing8px = styled.div`
+  width: 100%;
+  height: 8px;
+`;
+
+const Spacing16px = styled.div`
+  width: 100%;
+  height: 16px;
+`;
+
+Content.Centered = Centered;
+Content.CenteredBothAxis = CenteredBothAxis;
 Content.NoPadding = NoPadding;
 Content.Row = Row;
 Content.Seperator = Seperator;
 Content.Spacing = Spacing;
-Content.CenteredBothAxis = CenteredBothAxis;
+Content.Spacing8px = Spacing8px;
+Content.Spacing16px = Spacing16px;
 
 export default Content;

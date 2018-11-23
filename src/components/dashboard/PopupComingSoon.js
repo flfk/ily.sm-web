@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import Coins from './Coins';
+import Currency from '../Currency';
 import Fonts from '../../utils/Fonts';
 import InfluencerProfile from './InfluencerProfile';
 import Popup from '../Popup';
@@ -37,13 +37,13 @@ class PopupComingSoon extends React.Component {
           />
           <br />
           <Row>
-            <Coins.Few /> <Fonts.P> Comment on a post (faster is better)</Fonts.P>
+            <Currency.CoinsFew /> <Fonts.P> Comment on a post (faster is better)</Fonts.P>
           </Row>
           <Row>
-            <Coins.Some /> <Fonts.P> Tag a friend in a post</Fonts.P>
+            <Currency.CoinsSome /> <Fonts.P> Tag a friend in a post</Fonts.P>
           </Row>
           <Row>
-            <Coins.Many /> <Fonts.P> Unlock trophies</Fonts.P>
+            <Currency.CoinsMany /> <Fonts.P> Unlock trophies</Fonts.P>
           </Row>
         </Popup.CardTransparent>
       </div>

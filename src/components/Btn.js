@@ -56,6 +56,10 @@ const Tertiary = styled.button`
     outline: none;
   }
 
+  ${Media.tablet} {
+    font-size: 14px;
+  }
+
   ${props => (props.noPadding ? 'padding: 0' : '')};
 `;
 

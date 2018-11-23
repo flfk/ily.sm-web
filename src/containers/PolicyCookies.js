@@ -22,25 +22,25 @@ const PrivacyPolicy = props => {
         using our services. Cookies can also help ensure marketing you see online is more relevant
         to you and your interests.
       </Fonts.P>
-      <Fonts.H2>Why does Meetsta use cookies and similar technologies?</Fonts.H2>
+      <Fonts.H2>Why does ily.sm use cookies and similar technologies?</Fonts.H2>
       <Fonts.P>
         We use cookies, pixels, local storage, and similar technologies to show you relevant
-        content, improve your experience, and help protect Meetsta and our users. We may use these
+        content, improve your experience, and help protect ily.sm and our users. We may use these
         technologies to deliver the service, provide you with a service that is easy to use, enables
         you to move around the Service and use its features, such as accessing secure areas, and
-        store information so that Meetsta responds faster. We may use these technologies to collect
+        store information so that ily.sm responds faster. We may use these technologies to collect
         information about how you use the Service, for example which pages you go to most often and
         if you get error messages from certain pages. We may use these technologies to allow us to
         remember choices you make (such as your user name, language or the region you're in) and
         tailor the Service to provide enhanced features and content for you. These cookies can also
         be used to remember changes you've made to text size, font and other parts of pages that you
-        can customize. Meetsta or our advertising partners may use these technologies to deliver
+        can customize. ily.sm or our advertising partners may use these technologies to deliver
         advertising that is relevant to your interests. These technologies can remember that your
         device has visited a site or service, and may also be able to track your device's browsing
-        activity on other sites or services other than Meetsta. This information may be shared with
-        organizations outside Meetsta, such as advertisers and/or advertising networks to deliver
-        the advertising, and to help measure the effectiveness of an advertising campaign. *We may
-        use these technologies to understand, improve, and research products and services.
+        activity on other sites or services other than ily.sm. This information may be shared with
+        organizations outside ily.sm, such as advertisers and/or advertising networks to deliver the
+        advertising, and to help measure the effectiveness of an advertising campaign. *We may use
+        these technologies to understand, improve, and research products and services.
       </Fonts.P>
       <Fonts.H2>How long will cookies stay on my device?</Fonts.H2>
       <Fonts.P>
@@ -51,9 +51,9 @@ const PrivacyPolicy = props => {
       </Fonts.P>
       <Fonts.H2>First and third party cookies</Fonts.H2>
       <Fonts.P>
-        First-party cookies are cookies that belong to Meetsta, third-party cookies are cookies that
+        First-party cookies are cookies that belong to ily.sm, third-party cookies are cookies that
         another party places on your device through our Service. Third-party cookies may be placed
-        on your device by someone providing a service for Meetsta, for example to help us understand
+        on your device by someone providing a service for ily.sm, for example to help us understand
         how our service is being used. Third-party cookies may also be placed on your device by our
         business partners so that they can use them to advertise products and services to you
         elsewhere on the Internet.
