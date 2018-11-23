@@ -9,8 +9,7 @@ class LandingPage extends Component {
       <Redirect
         push
         to={{
-          pathname: '/',
-          search: `?i=${DEFAULT_INFLUENCER_USERNAME}`,
+          pathname: `/${DEFAULT_INFLUENCER_USERNAME}`,
         }}
       />
     );
