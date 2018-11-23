@@ -54,6 +54,11 @@ const Seperator = styled.div`
   background-color: ${Colors.greys.light};
 `;
 
+const Gap = styled.div`
+  width: 4px;
+  height: 100%;
+`;
+
 const Spacing = styled.div`
   width: 100%;
   height: 32px;
@@ -71,6 +76,7 @@ const Spacing16px = styled.div`
 
 Content.Centered = Centered;
 Content.CenteredBothAxis = CenteredBothAxis;
+Content.Gap = Gap;
 Content.NoPadding = NoPadding;
 Content.Row = Row;
 Content.Seperator = Seperator;

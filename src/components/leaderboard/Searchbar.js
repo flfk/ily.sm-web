@@ -20,7 +20,7 @@ const Container = styled.div`
   flex-basis: 1;
   flex-grow: 1;
   margin-right: 8px;
-  font-size: 14px;
+  font-size: 16px;
 
   align-items: center;
   padding: 0.5em 0.5em;
@@ -40,7 +40,8 @@ const Container = styled.div`
 `;
 
 const Input = styled.input`
-  height: 100%
+  height: 100%;
+  padding: 0;
   flex-basis: 1;
   color: ${Colors.greys.primary};
   font-size: 16px;

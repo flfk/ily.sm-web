@@ -71,7 +71,7 @@ const Input = styled.input`
   padding: 0.5em 0.5em;
   border-radius: 3px;
   border: 1px solid ${Colors.greys.light};
-  font-size: 14px;
+  font-size: 16px;
   color: ${Colors.greys.primary};
 
   margin-bottom: ${props => (props.hasError ? '8px' : '16px')};

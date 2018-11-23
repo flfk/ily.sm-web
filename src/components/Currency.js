@@ -62,7 +62,7 @@ const CoinsMany = ({ large }) => <ImgDiv img={Coin3} large={large} />;
 CoinsMany.propTypes = propTypes;
 CoinsMany.defaultProps = defaultProps;
 
-const GemsSingle = ({ small }) => <IconDiv img={Gem0} small={small} />;
+const GemsSingle = ({ small, tiny }) => <IconDiv img={Gem0} small={small} tiny={tiny} />;
 
 GemsSingle.propTypes = propTypes;
 GemsSingle.defaultProps = defaultProps;
