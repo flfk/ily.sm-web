@@ -4,6 +4,7 @@ import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import Checkout from './containers/Checkout';
+import Dashboard from './containers/Dashboard';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
@@ -42,6 +43,7 @@ class App extends Component {
           <NavBar />
           <Switch>
             <Route path="/checkout" component={Checkout} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />
             <Route path="/gems" component={StorePoints} />
             <Route path="/top" component={Leaderboard} />

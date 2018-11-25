@@ -71,17 +71,19 @@ class Checkout extends React.Component {
     const order = await actions.addDocOrder({
       // email,
       giftID: gift.id,
+      influencerID: influencer.id,
       paypalFee: this.getPaypalFee(gift.price),
       total: gift.price,
       txnID: txn.id,
       orderNum,
       paypalPaymentID,
-      username: usernameFormatted,
       purchaseDate: getTimestamp(),
+      username: usernameFormatted,
+      wasThanked: false,
     });
     this.setState({ orderID: order.id, toConfirmation: true });
-
-    mixpanel.track('Purchased Gift', { influencer: influencer.username });
+    mixpanel.people.set({ $name: usernameFormatted });
+    mixpanel.track('Purchased Gift', { influencer: influencer.username, gift: gift.name });
     mixpanel.people.track_charge(gift.price);
   };
 

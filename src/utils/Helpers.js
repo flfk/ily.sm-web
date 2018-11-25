@@ -21,6 +21,12 @@ export const getParams = props => {
   return qs.parse(props.location.search, { ignoreQueryPrefix: true });
 };
 
+export const getPathname = props => {
+  const { pathname } = props.location;
+  const pathnameFormatted = pathname.replace('/', '').toLowerCase();
+  return pathnameFormatted;
+};
+
 export const getTimeRange = (dateStart, dateEnd) => {
   const timeStart = moment.tz(dateStart, 'America/Los_Angeles').format('H:mm');
   const timeEnd = moment.tz(dateEnd, 'America/Los_Angeles').format('H:mm');

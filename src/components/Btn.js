@@ -42,6 +42,7 @@ const Btn = styled.button`
 
 const Tertiary = styled.button`
   padding: 0.5em 0.5em;
+  width: ${props => (props.narrow ? '96px' : '')};
   font-size: 16px;
   font-weight: bold;
   background-color: transparent;
