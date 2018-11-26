@@ -135,7 +135,7 @@ class Dashboard extends React.Component {
         </Content.Row>
         <Content.Spacing16px />
         <Content.Seperator />
-        <Fonts.H2>Gifts Recieved</Fonts.H2>
+        <Fonts.H2>Gifts Received</Fonts.H2>
         {giftsRecieved}
       </Content>
     );
