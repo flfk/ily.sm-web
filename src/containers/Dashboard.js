@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 import actions from '../data/actions';
 import Content from '../components/Content';
 import DashboardRow from '../components/DashboardRow';
+import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import { getParams } from '../utils/Helpers';
 
@@ -13,6 +14,7 @@ const COMMISSION = 0.15;
 class Dashboard extends React.Component {
   state = {
     giftOptions: [],
+    isLoading: false,
     influencer: {
       pathname: '',
       id: '',
@@ -41,12 +43,14 @@ class Dashboard extends React.Component {
   };
 
   setData = async () => {
+    this.setState({ isLoading: true });
     const influencerID = this.getInfluencerID();
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
     this.setState({ influencer });
     const giftOptions = await actions.fetchDocsGiftOptions(influencer.id);
     const orders = await actions.fetchDocsOrders(influencer.id);
     this.setState({ giftOptions, orders });
+    this.setState({ isLoading: false });
   };
 
   updateOrders = (orderID, wasThanked) => {
@@ -60,7 +64,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, orders } = this.state;
+    const { giftOptions, influencer, isLoading, orders } = this.state;
     // console.log('orders', orders);
 
     const totalRevenue = orders.reduce(
@@ -99,6 +103,15 @@ class Dashboard extends React.Component {
           );
         })
         .value();
+    }
+
+    if (isLoading) {
+      return (
+        <Content>
+          <Fonts.H3 centered>Loading Dashboard</Fonts.H3>
+          <Spinner />
+        </Content>
+      );
     }
 
     return (
