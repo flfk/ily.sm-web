@@ -16,6 +16,7 @@ import {
   SortBtn,
   WeekRadioBtn,
 } from '../components/leaderboard';
+import Spinner from '../components/Spinner';
 
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
 import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
@@ -46,6 +47,7 @@ class Leaderboard extends React.Component {
     showPopupCoins: false,
     sortType: DEFAULT_SORT_BY,
     weekType: DEFAULT_WEEEK_TYPE,
+    isLoading: false,
   };
 
   componentDidMount() {
@@ -246,6 +248,7 @@ class Leaderboard extends React.Component {
   };
 
   setData = async () => {
+    this.setState({ isLoading: true });
     const influencer = await this.fetchInfluencer();
     mixpanel.track('Visited Leaderboard', { influencer: influencer.username });
     this.setState({ influencer });
@@ -259,6 +262,7 @@ class Leaderboard extends React.Component {
     } else {
       this.setState({ toHome: true });
     }
+    this.setState({ isLoading: false });
   };
 
   sortByCoins = (fanA, fanB) => {
@@ -296,6 +300,7 @@ class Leaderboard extends React.Component {
       fansLast,
       influencer,
       inputSearch,
+      isLoading,
       toHome,
       toStorePoints,
       showPopupCoins,
@@ -312,21 +317,29 @@ class Leaderboard extends React.Component {
 
     let leaderboard = null;
     if (fans) {
-      leaderboard = fans
-        .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
-        .sort(selectedSort)
-        .slice(0, MAX_ROWS)
-        .map(fan => (
-          <Row
-            key={fan.username}
-            inProgress={weekType === 'current'}
-            pointsComments={fan.pointsComments}
-            pointsPaid={fan.pointsPaid}
-            profilePicURL={fan.profilePicURL}
-            rank={fan.rank}
-            username={fan.username}
-          />
-        ));
+      leaderboard = isLoading ? (
+        <div>
+          <Content.Spacing />
+          <Content.Spacing />
+          <Spinner />
+        </div>
+      ) : (
+        fans
+          .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
+          .sort(selectedSort)
+          .slice(0, MAX_ROWS)
+          .map(fan => (
+            <Row
+              key={fan.username}
+              inProgress={weekType === 'current'}
+              pointsComments={fan.pointsComments}
+              pointsPaid={fan.pointsPaid}
+              profilePicURL={fan.profilePicURL}
+              rank={fan.rank}
+              username={fan.username}
+            />
+          ))
+      );
     }
 
     const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
