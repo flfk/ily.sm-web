@@ -147,6 +147,7 @@ class Countdown extends React.Component {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: flex-end;
   justify-content: ${props => (props.small ? 'center' : 'space-around')};
   margin-right: ${props => (props.small ? '4px' : '')};
   height: ${props => (props.small ? '16px' : '')};
@@ -162,6 +163,7 @@ const H1 = styled(Fonts.H1)`
 
 const Unit = styled.div`
   display: ${props => (props.small ? 'flex' : '')};
+  align-items: flex-end;
 `;
 
 Countdown.propTypes = propTypes;

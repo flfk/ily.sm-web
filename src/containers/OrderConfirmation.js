@@ -17,6 +17,7 @@ class OrderConfirmation extends React.Component {
       dateUpdateLast: 0,
       displayName: '',
       fandom: '',
+      pathname: '',
     },
     gift: {
       gemsEarned: '-',
@@ -44,14 +45,17 @@ class OrderConfirmation extends React.Component {
     return id;
   };
 
-  goToLeaderboard = () => (
-    <Redirect
-      push
-      to={{
-        pathname: '/jon_klaasen',
-      }}
-    />
-  );
+  goToLeaderboard = () => {
+    const { influencer } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: `${influencer.pathname}`,
+        }}
+      />
+    );
+  };
 
   handleToLeaderboard = () => this.setState({ toLeaderboard: true });
 
