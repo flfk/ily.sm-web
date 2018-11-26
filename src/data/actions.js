@@ -46,12 +46,12 @@ const fetchDocInfluencerByID = async influencerID => {
   return influencer;
 };
 
-const fetchDocInfluencerByUsername = async username => {
+const fetchDocInfluencerByField = async (field, value) => {
   let influencer = {};
   try {
     const influencerRef = db.collection(COLL_INFLUENCERS);
     const snapshot = await influencerRef
-      .where('username', '==', username)
+      .where(field, '==', value)
       .limit(1)
       .get();
     snapshot.forEach(doc => {
@@ -60,7 +60,7 @@ const fetchDocInfluencerByUsername = async username => {
       influencer.id = id;
     });
   } catch (error) {
-    console.error('Error actions, fetchDocInfluencerByUsername', error);
+    console.error('Error actions, fetchDocInfluencerByField', error);
   }
   return influencer;
 };
@@ -95,6 +95,23 @@ const fetchDocsGiftOptions = async influencerID => {
   return giftOptions;
 };
 
+const fetchDocsOrders = async influencerID => {
+  const orders = [];
+  try {
+    const ordersRef = db.collection(COLL_ORDERS);
+    const snapshot = await ordersRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const order = doc.data();
+      const { id } = doc;
+      order.id = id;
+      orders.push(order);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsOrders', error);
+  }
+  return orders;
+};
+
 const fetchDocsTxns = async (dateMin, influencerID) => {
   const txns = [];
   try {
@@ -124,6 +141,17 @@ const fetchOrderNum = async () => {
   return data.orderNum + 1;
 };
 
+const updateDocOrder = async (orderID, order) => {
+  try {
+    const orderRef = db.collection(COLL_ORDERS).doc(orderID);
+    const updatedDocOrder = orderRef.update({ ...order });
+    return updatedDocOrder;
+  } catch (error) {
+    console.error('Error actions, updateDocOrder ', error);
+  }
+  return {};
+};
+
 // EXPORTS
 
 const actions = {};
@@ -133,10 +161,11 @@ actions.addDocTxn = addDocTxn;
 actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchDocGift = fetchDocGift;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
-actions.fetchDocInfluencerByUsername = fetchDocInfluencerByUsername;
+actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
 actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
-
+actions.fetchDocsOrders = fetchDocsOrders;
 actions.fetchOrderNum = fetchOrderNum;
+actions.updateDocOrder = updateDocOrder;
 
 export default actions;

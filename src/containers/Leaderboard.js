@@ -7,7 +7,7 @@ import Content from '../components/Content';
 import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
-import { getDateAddDays } from '../utils/Helpers';
+import { getDateAddDays, getPathname } from '../utils/Helpers';
 import {
   Footer,
   PopupCoins,
@@ -16,11 +16,15 @@ import {
   SortBtn,
   WeekRadioBtn,
 } from '../components/leaderboard';
+import Spinner from '../components/Spinner';
 
-import TXNS from '../data/txns_jon_klaasen';
-import USERS from '../data/users';
+import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
+import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
+import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
+import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
 
-const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
+// const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
+// const MOSTLY_LUCA_ID = 'DwV35s6UFN6YN3exxeoV';
 
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems'; // alternative is coins
@@ -43,29 +47,52 @@ class Leaderboard extends React.Component {
     showPopupCoins: false,
     sortType: DEFAULT_SORT_BY,
     weekType: DEFAULT_WEEEK_TYPE,
+    isLoading: false,
   };
 
   componentDidMount() {
-    const influencerUsername = this.getInfluencerUsername();
-    if (influencerUsername) {
+    const pathname = getPathname(this.props);
+    if (pathname) {
       this.setData();
-      mixpanel.track('Visited Leaderboard', { influencer: influencerUsername });
     } else {
       this.setState({ toHome: true });
     }
   }
 
   fetchInfluencer = async () => {
-    const influencerID = this.getInfluencerID();
-    const influencer = await actions.fetchDocInfluencerByID(influencerID);
+    const pathname = getPathname(this.props);
+    console.log('pathname', pathname);
+    const influencer = await actions.fetchDocInfluencerByField('pathname', pathname);
     return influencer;
   };
 
   fetchTxns = async influencer => {
+    const DATA = this.getDATA();
     const dateMin = getDateAddDays(influencer.dateUpdateLast, -7);
     const txnsFirebase = await actions.fetchDocsTxns(dateMin, influencer.id);
-    const txns = txnsFirebase.concat(TXNS).filter(txn => txn.timestamp > dateMin);
+    const txns = txnsFirebase.concat(DATA.TXNS).filter(txn => txn.timestamp > dateMin);
     return txns;
+  };
+
+  getDATA = () => {
+    const pathname = getPathname(this.props);
+    switch (pathname) {
+      case 'jonklaasen':
+        return {
+          TXNS: TXNS_JON_KLAASEN,
+          USERS: USERS_JON_KLAASEN,
+        };
+      case 'mostlyluca':
+        return {
+          TXNS: TXNS_MOSTLY_LUCA,
+          USERS: USERS_MOSTLY_LUCA,
+        };
+      default:
+        return {
+          TXNS: TXNS_JON_KLAASEN,
+          USERS: USERS_JON_KLAASEN,
+        };
+    }
   };
 
   getDateRange = (dateUpdateLast, weekType) => {
@@ -81,25 +108,17 @@ class Leaderboard extends React.Component {
     };
   };
 
-  getInfluencerUsername = () => {
-    const { pathname } = this.props.location;
-    const username = pathname.replace('/', '');
-    return username;
-  };
-
-  getInfluencerID = username => {
-    switch (username) {
-      case 'jon_klaasen':
-        return JON_KLAASEN_ID;
-      default:
-        return JON_KLAASEN_ID;
-    }
-  };
+  // getPathname = () => {
+  //   const { pathname } = this.props.location;
+  //   const pathnameFormatted = pathname.replace('/', '').toLowerCase();
+  //   return pathnameFormatted;
+  // };
 
   getFans = txns => {
     const { sortType } = this.state;
+    const DATA = this.getDATA();
     const txnsReduced = txns.reduce(this.reduceTxns, []).map(fan => {
-      const userExisting = USERS.find(user => user.username === fan.username);
+      const userExisting = DATA.USERS.find(user => user.username === fan.username);
       if (userExisting) {
         return { ...fan, profilePicURL: userExisting.profilePicURL };
       }
@@ -127,7 +146,7 @@ class Leaderboard extends React.Component {
   };
 
   getFanWithProfilePicURL = fan => {
-    const profile = USERS.find(user => user.username === fan.username);
+    const profile = USERS_JON_KLAASEN.find(user => user.username === fan.username);
     if (profile) {
       return { ...fan, profilePicURL: profile.profilePicURL };
     }
@@ -229,7 +248,9 @@ class Leaderboard extends React.Component {
   };
 
   setData = async () => {
+    this.setState({ isLoading: true });
     const influencer = await this.fetchInfluencer();
+    mixpanel.track('Visited Leaderboard', { influencer: influencer.username });
     this.setState({ influencer });
     const txns = await this.fetchTxns(influencer);
     const { dateUpdateLast } = influencer;
@@ -241,6 +262,7 @@ class Leaderboard extends React.Component {
     } else {
       this.setState({ toHome: true });
     }
+    this.setState({ isLoading: false });
   };
 
   sortByCoins = (fanA, fanB) => {
@@ -278,6 +300,7 @@ class Leaderboard extends React.Component {
       fansLast,
       influencer,
       inputSearch,
+      isLoading,
       toHome,
       toStorePoints,
       showPopupCoins,
@@ -294,21 +317,29 @@ class Leaderboard extends React.Component {
 
     let leaderboard = null;
     if (fans) {
-      leaderboard = fans
-        .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
-        .sort(selectedSort)
-        .slice(0, MAX_ROWS)
-        .map(fan => (
-          <Row
-            key={fan.username}
-            inProgress={weekType === 'current'}
-            pointsComments={fan.pointsComments}
-            pointsPaid={fan.pointsPaid}
-            profilePicURL={fan.profilePicURL}
-            rank={fan.rank}
-            username={fan.username}
-          />
-        ));
+      leaderboard = isLoading ? (
+        <div>
+          <Content.Spacing />
+          <Content.Spacing />
+          <Spinner />
+        </div>
+      ) : (
+        fans
+          .filter(fan => fan.username.includes(inputSearch.toLowerCase()))
+          .sort(selectedSort)
+          .slice(0, MAX_ROWS)
+          .map(fan => (
+            <Row
+              key={fan.username}
+              inProgress={weekType === 'current'}
+              pointsComments={fan.pointsComments}
+              pointsPaid={fan.pointsPaid}
+              profilePicURL={fan.profilePicURL}
+              rank={fan.rank}
+              username={fan.username}
+            />
+          ))
+      );
     }
 
     const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
