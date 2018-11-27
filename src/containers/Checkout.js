@@ -26,9 +26,6 @@ const PAYPAL_FIXED_FEE = 0.3;
 class Checkout extends React.Component {
   state = {
     checkoutStep: 0,
-    // email: '',
-    // emailErrMsg: '',
-    // emailIsValid: false,
     gift: {
       description: '',
       gemsEarned: '-',
@@ -44,6 +41,9 @@ class Checkout extends React.Component {
       username: '',
       id: '',
     },
+    note: '',
+    noteErrMsg: '',
+    noteIsValid: false,
     orderID: '',
     paypalErrorMsg: '',
     toConfirmation: false,
@@ -58,7 +58,7 @@ class Checkout extends React.Component {
   }
 
   addGiftOrder = async paypalPaymentID => {
-    const { gift, influencer, username } = this.state;
+    const { gift, influencer, note, username } = this.state;
     const usernameFormatted = formatUsername(username);
     const txn = await actions.addDocTxn({
       changePointsComments: 0,
@@ -69,7 +69,7 @@ class Checkout extends React.Component {
     });
     const orderNum = await actions.fetchOrderNum();
     const order = await actions.addDocOrder({
-      // email,
+      note,
       giftID: gift.id,
       influencerID: influencer.id,
       paypalFee: this.getPaypalFee(gift.price),
@@ -107,10 +107,10 @@ class Checkout extends React.Component {
     );
   };
 
-  // handleBlurEmail = () => {
-  //   const isValid = this.isEmailValid();
-  //   this.setState({ emailIsValid: isValid });
-  // };
+  handleBlurNote = () => {
+    const isValid = this.isNoteValid();
+    this.setState({ noteIsValid: isValid });
+  };
 
   handleBlurUsername = () => {
     const isValid = this.isUsernameValid();
@@ -129,15 +129,9 @@ class Checkout extends React.Component {
 
   handlePrev = () => this.setState({ checkoutStep: 0 });
 
-  // isEmailValid = () => {
-  //   const { email } = this.state;
-  //   if (!validator.isEmail(email)) {
-  //     this.setState({ emailErrMsg: 'Valid email address required.' });
-  //     return false;
-  //   }
-  //   this.setState({ emailErrMsg: '' });
-  //   return true;
-  // };
+  isNoteValid = () => {
+    return true;
+  };
 
   isUsernameValid = () => {
     const { username } = this.state;
@@ -180,9 +174,9 @@ class Checkout extends React.Component {
   render() {
     const {
       checkoutStep,
-      // email,
-      // emailErrMsg,
-      // emailIsValid,
+      note,
+      noteErrMsg,
+      noteIsValid,
       gift,
       influencer,
       paypalErrorMsg,
@@ -258,6 +252,15 @@ class Checkout extends React.Component {
           onChange={this.handleChangeInput('username')}
           value={username}
           isValid={usernameIsValid}
+        />
+        <InputText.Area
+          errMsg={noteErrMsg}
+          label={`Want to say something to ${influencer.displayName}? (Optional)`}
+          placeholder="Your message"
+          onBlur={this.handleBlurNote}
+          onChange={this.handleChangeInput('note')}
+          value={note}
+          isValid={noteIsValid}
         />
         <Content.Row justifyEnd>
           <Btn primary short narrow onClick={this.handleNext}>
