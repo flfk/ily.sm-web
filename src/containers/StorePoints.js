@@ -57,7 +57,8 @@ class StorePoints extends React.Component {
     const influencerID = this.getInfluencerID();
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
     const giftOptions = await actions.fetchDocsGiftOptions(influencerID);
-    this.setState({ giftOptions, influencer });
+    const giftOptionsActive = giftOptions.filter(option => option.isActive);
+    this.setState({ giftOptions: giftOptionsActive, influencer });
     mixpanel.track('Visited Gem Store', { influencer: influencer.username });
   };
 

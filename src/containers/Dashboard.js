@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 
 import actions from '../data/actions';
@@ -51,6 +52,7 @@ class Dashboard extends React.Component {
     const orders = await actions.fetchDocsOrders(influencer.id);
     this.setState({ giftOptions, orders });
     this.setState({ isLoading: false });
+    mixpanel.track('Visited Dashboard', { influencer: influencer.username });
   };
 
   updateOrders = (orderID, wasThanked) => {

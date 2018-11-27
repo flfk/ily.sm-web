@@ -22,6 +22,8 @@ import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
 import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
+import TXNS_MACKENZIE_SOL from '../data/txns_mostly_luca';
+import USERS_MACKENZIE_SOL from '../data/users_mostly_luca';
 
 // const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
 // const MOSTLY_LUCA_ID = 'DwV35s6UFN6YN3exxeoV';
@@ -81,6 +83,11 @@ class Leaderboard extends React.Component {
         return {
           TXNS: TXNS_JON_KLAASEN,
           USERS: USERS_JON_KLAASEN,
+        };
+      case 'mackenziesol':
+        return {
+          TXNS: TXNS_MACKENZIE_SOL,
+          USERS: USERS_MACKENZIE_SOL,
         };
       case 'mostlyluca':
         return {
@@ -157,21 +164,6 @@ class Leaderboard extends React.Component {
     const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
     const fansUpdated = fans.sort(selectedSort).map((fan, index) => ({ ...fan, rank: index + 1 }));
     return fansUpdated;
-  };
-
-  getInfluencerDisplayName = influencerID => {
-    switch (influencerID) {
-      case 'jon_klaasen':
-        return 'KlaasenNation';
-      case 'mackenziesol':
-        return 'Mackenzie Sol';
-      case 'raeganbeast':
-        return 'Raegan Beast';
-      case 'andreswilley':
-        return 'Andre Swilley';
-      default:
-        return null;
-    }
   };
 
   goToHome = () => (
