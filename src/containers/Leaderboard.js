@@ -1,21 +1,16 @@
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import styled from 'styled-components';
 
 import actions from '../data/actions';
+import CommentCoinPlaceholder from '../assets/CommentCoinPlaceholder.png';
 import Content from '../components/Content';
 import Countdown from '../components/Countdown';
-import Currency from '../components/Currency';
+
 import Fonts from '../utils/Fonts';
 import { getDateAddDays, getPathname } from '../utils/Helpers';
-import {
-  Footer,
-  PopupCoins,
-  Row,
-  Searchbar,
-  SortBtn,
-  WeekRadioBtn,
-} from '../components/leaderboard';
+import { Footer, PopupCoins, Row, Searchbar, SortBtn, RadioBtn } from '../components/leaderboard';
 import Spinner from '../components/Spinner';
 
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
@@ -49,7 +44,7 @@ class Leaderboard extends React.Component {
     toHome: false,
     toStorePoints: false,
     showPopupCoins: false,
-    sortType: DEFAULT_SORT_BY,
+    currencyType: DEFAULT_SORT_BY,
     weekType: DEFAULT_WEEEK_TYPE,
     isLoading: false,
   };
@@ -117,14 +112,8 @@ class Leaderboard extends React.Component {
     };
   };
 
-  // getPathname = () => {
-  //   const { pathname } = this.props.location;
-  //   const pathnameFormatted = pathname.replace('/', '').toLowerCase();
-  //   return pathnameFormatted;
-  // };
-
   getFans = txns => {
-    const { sortType } = this.state;
+    const { currencyType } = this.state;
     const DATA = this.getDATA();
     const txnsReduced = txns.reduce(this.reduceTxns, []).map(fan => {
       const userExisting = DATA.USERS.find(user => user.username === fan.username);
@@ -133,7 +122,7 @@ class Leaderboard extends React.Component {
       }
       return fan;
     });
-    const fanData = this.getSortedFans(txnsReduced, sortType);
+    const fanData = this.sortFans(txnsReduced, currencyType);
     return fanData;
   };
 
@@ -162,12 +151,6 @@ class Leaderboard extends React.Component {
     return fan;
   };
 
-  getSortedFans = (fans, sortType) => {
-    const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
-    const fansUpdated = fans.sort(selectedSort).map((fan, index) => ({ ...fan, rank: index + 1 }));
-    return fansUpdated;
-  };
-
   goToHome = () => (
     <Redirect
       push
@@ -190,33 +173,35 @@ class Leaderboard extends React.Component {
     );
   };
 
-  handleChangeInputSearch = event => this.setState({ inputSearch: event.target.value });
-
-  handleWeekSelect = type => () => this.setState({ weekType: type });
-
-  handleEarnCoins = () => {
-    this.setState({ showPopupCoins: true });
-  };
-
-  handleEarnGems = () => {
-    this.setState({ toStorePoints: true });
-  };
-
-  handleSort = () => {
-    const { fansCurrent, fansLast, sortType } = this.state;
-    const sortTypeUpdated = sortType === 'coins' ? 'gems' : 'coins';
-    const fansCurrentUpdated = this.getSortedFans(fansCurrent, sortTypeUpdated);
-    const fansLastUpdated = this.getSortedFans(fansLast, sortTypeUpdated);
+  handleCurrencySelect = currency => () => {
+    const { fansCurrent, fansLast } = this.state;
+    const fansCurrentUpdated = this.sortFans(fansCurrent, currency);
+    const fansLastUpdated = this.sortFans(fansLast, currency);
     this.setState({
       fansCurrent: fansCurrentUpdated,
       fansLast: fansLastUpdated,
-      sortType: sortTypeUpdated,
+      currencyType: currency,
     });
+  };
+
+  handleChangeInputSearch = event => this.setState({ inputSearch: event.target.value });
+
+  handleEarn = currency => {
+    if (currency === 'coins') {
+      return () => this.setState({ showPopupCoins: true });
+    }
+    return () => this.setState({ toStorePoints: true });
   };
 
   handlePopupClose = popupName => {
     const key = `showPopup${popupName}`;
     return () => this.setState({ [key]: false });
+  };
+
+  handleWeekToggle = () => {
+    const { weekType } = this.state;
+    const weekTypeUpdated = weekType === 'current' ? 'last' : 'current';
+    this.setState({ weekType: weekTypeUpdated });
   };
 
   reduceTxns = (aggr, txn) => {
@@ -273,6 +258,12 @@ class Leaderboard extends React.Component {
     return fanB.pointsPaid - fanA.pointsPaid;
   };
 
+  sortFans = (fans, currency) => {
+    const sortSelected = currency === 'coins' ? this.sortByCoins : this.sortByGems;
+    const fansUpdated = fans.sort(sortSelected).map((fan, index) => ({ ...fan, rank: index + 1 }));
+    return fansUpdated;
+  };
+
   updateFanPoints = (fan, changePointsComments, changePointsPaid) => {
     let { pointsComments, pointsPaid } = fan;
     if (changePointsComments > 0) {
@@ -298,14 +289,14 @@ class Leaderboard extends React.Component {
       toHome,
       toStorePoints,
       showPopupCoins,
-      sortType,
+      currencyType,
       weekType,
     } = this.state;
 
     if (toHome) return this.goToHome();
     if (toStorePoints) return this.goToStorePoints();
 
-    const selectedSort = sortType === 'coins' ? this.sortByCoins : this.sortByGems;
+    const selectedSort = currencyType === 'coins' ? this.sortByCoins : this.sortByGems;
 
     const fans = weekType === 'last' ? fansLast : fansCurrent;
 
@@ -330,9 +321,23 @@ class Leaderboard extends React.Component {
               pointsPaid={fan.pointsPaid}
               profilePicURL={fan.profilePicURL}
               rank={fan.rank}
+              type={currencyType}
               username={fan.username}
             />
           ))
+      );
+    }
+
+    if (fans && weekType === 'current' && currencyType === 'coins') {
+      leaderboard = (
+        <div>
+          <Content.Spacing8px />
+          <Content.Row justifyEnd>
+            <PlaceholderWrapper>
+              <img src={CommentCoinPlaceholder} alt="" />
+            </PlaceholderWrapper>
+          </Content.Row>
+        </div>
       );
     }
 
@@ -344,11 +349,7 @@ class Leaderboard extends React.Component {
         weekType === 'current' ? (
           <Content.Row justifyCenter>
             <Countdown date={dateUpdateNext} small />
-            <Fonts.P>until</Fonts.P>
-            <Content.Gap />
-            <Currency.CoinsSingle tiny />
-            <Content.Gap />
-            <Fonts.P>awarded</Fonts.P>
+            <Fonts.P>left</Fonts.P>
           </Content.Row>
         ) : (
           <Fonts.P>Winners Announced</Fonts.P>
@@ -363,9 +364,6 @@ class Leaderboard extends React.Component {
       />
     ) : null;
 
-    const sortIcon =
-      sortType === 'coins' ? <Currency.CoinsSingle tiny /> : <Currency.GemsSingle tiny />;
-
     return (
       <div>
         <Content>
@@ -373,10 +371,10 @@ class Leaderboard extends React.Component {
             Weekly {influencer.fandom} Leaderboard
           </Fonts.H1>
           <Content.Spacing8px />
-          <WeekRadioBtn
-            handleCurrent={this.handleWeekSelect('current')}
-            handleLast={this.handleWeekSelect('last')}
-            weekType={weekType}
+          <RadioBtn
+            handleCoins={this.handleCurrencySelect('coins')}
+            handleGems={this.handleCurrencySelect('gems')}
+            type={currencyType}
           />
           <Content.Spacing8px />
           <Content.Row justifyCenter>{countdownTxt}</Content.Row>
@@ -388,7 +386,7 @@ class Leaderboard extends React.Component {
               placeholder="Search usernames"
               value={inputSearch}
             />
-            <SortBtn handleSort={this.handleSort} sortSelected={sortIcon} />
+            <SortBtn handleSort={this.handleWeekToggle} sortSelected={weekType} />
           </Content.Row>
           {leaderboard}
           <Content.Spacing />
@@ -396,12 +394,24 @@ class Leaderboard extends React.Component {
           <Content.Spacing />
           <Content.Spacing />
         </Content>
-        <Footer handleEarnCoins={this.handleEarnCoins} handleEarnGems={this.handleEarnGems} />
+        <Footer currencyType={currencyType} handleEarn={this.handleEarn(currencyType)} />
 
         {popupCoins}
       </div>
     );
   }
 }
+
+const PlaceholderWrapper = styled.div`
+  margin-right: 8px;
+
+  height: 88px;
+  width: 296px;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+`;
 
 export default Leaderboard;

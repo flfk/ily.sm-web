@@ -6,22 +6,22 @@ import Content from '../Content';
 import Footer from '../Footer';
 
 const propTypes = {
-  handleEarnCoins: PropTypes.func.isRequired,
-  handleEarnGems: PropTypes.func.isRequired,
+  handleEarn: PropTypes.func.isRequired,
+  currencyType: PropTypes.string.isRequired,
 };
 
 // const defaultProps = {};
 
-const LeaderboardFooter = ({ handleEarnCoins, handleEarnGems }) => {
+const LeaderboardFooter = ({ handleEarn, currencyType }) => {
+  const btnTxt = currencyType === 'coins' ? 'Earn Comment Coins' : 'Earn Gift Gems';
   return (
     <Footer>
       <Content>
         <Content.Spacing8px />
-        <Btn primary short onClick={handleEarnGems}>
-          Earn Gift Gems
+        <Btn primary short onClick={handleEarn}>
+          {btnTxt}
         </Btn>
         <Content.Spacing8px />
-        <Btn.Tertiary onClick={handleEarnCoins}>Earn Comment Coins</Btn.Tertiary>
       </Content>
     </Footer>
   );

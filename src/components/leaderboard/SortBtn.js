@@ -7,14 +7,26 @@ import Colors from '../../utils/Colors';
 
 const propTypes = {
   handleSort: PropTypes.func.isRequired,
-  sortSelected: PropTypes.element.isRequired,
+  sortSelected: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
+const SortBtn = ({ handleSort, sortSelected }) => {
+  const sortText = sortSelected === 'current' ? 'This Week' : 'Last Week';
+
+  return (
+    <BtnSort onClick={handleSort}>
+      <Selector>
+        {sortText} <FaSortDown />
+      </Selector>
+    </BtnSort>
+  );
+};
+
 const BtnSort = styled.button`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.5em 0.5em;
   border-radius: 3px;
   min-width: 116px;
@@ -40,17 +52,6 @@ const Selector = styled.div`
   display: flex;
   align-items: center;
 `;
-
-const SortBtn = ({ handleSort, sortSelected }) => {
-  return (
-    <BtnSort onClick={handleSort}>
-      Sort by{' '}
-      <Selector>
-        {sortSelected} <FaSortDown />
-      </Selector>
-    </BtnSort>
-  );
-};
 
 SortBtn.propTypes = propTypes;
 SortBtn.defaultProps = defaultProps;
