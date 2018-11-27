@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import styled from 'styled-components';
 
 import Content from '../Content';
@@ -33,24 +32,6 @@ const LeaderboardRow = ({
   type,
   username,
 }) => {
-  const gemScore =
-    type === 'gems' ? (
-      <GemScore>
-        <Text>
-          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
-        </Text>
-      </GemScore>
-    ) : null;
-
-  const coinScore =
-    type === 'coins' ? (
-      <CoinScore>
-        <Text>
-          <Currency.CoinsSingle small /> {pointsCommentsFormatted}
-        </Text>
-      </CoinScore>
-    ) : null;
-
   let medal = null;
   if (!inProgress) {
     switch (rank) {
@@ -70,6 +51,24 @@ const LeaderboardRow = ({
 
   const rankFormatted = inProgress && pointsPaid === 0 ? '-' : rank;
   const pointsCommentsFormatted = inProgress ? '?' : getShortenedNumber(pointsComments);
+
+  const gemScore =
+    type === 'gems' && pointsPaid > 0 ? (
+      <Score>
+        <Text>
+          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
+        </Text>
+      </Score>
+    ) : null;
+
+  const coinScore =
+    type === 'coins' ? (
+      <Score>
+        <Text>
+          <Currency.CoinsSingle small /> {pointsCommentsFormatted}
+        </Text>
+      </Score>
+    ) : null;
 
   return (
     <Container key={username} alignCenter>
