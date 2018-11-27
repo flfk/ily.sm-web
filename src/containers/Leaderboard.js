@@ -8,14 +8,7 @@ import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getDateAddDays, getPathname } from '../utils/Helpers';
-import {
-  Footer,
-  PopupCoins,
-  Row,
-  Searchbar,
-  SortBtn,
-  WeekRadioBtn,
-} from '../components/leaderboard';
+import { Footer, PopupCoins, Row, Searchbar, SortBtn, RadioBtn } from '../components/leaderboard';
 import Spinner from '../components/Spinner';
 
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
@@ -328,6 +321,7 @@ class Leaderboard extends React.Component {
               pointsPaid={fan.pointsPaid}
               profilePicURL={fan.profilePicURL}
               rank={fan.rank}
+              type={sortType}
               username={fan.username}
             />
           ))
@@ -371,10 +365,10 @@ class Leaderboard extends React.Component {
             Weekly {influencer.fandom} Leaderboard
           </Fonts.H1>
           <Content.Spacing8px />
-          <WeekRadioBtn
-            handleCurrent={this.handleWeekSelect('current')}
-            handleLast={this.handleWeekSelect('last')}
-            weekType={weekType}
+          <RadioBtn
+            handleCoins={this.handleWeekSelect('last')}
+            handleGems={this.handleWeekSelect('current')}
+            type={sortType}
           />
           <Content.Spacing8px />
           <Content.Row justifyCenter>{countdownTxt}</Content.Row>
@@ -386,7 +380,7 @@ class Leaderboard extends React.Component {
               placeholder="Search usernames"
               value={inputSearch}
             />
-            <SortBtn handleSort={this.handleSort} sortSelected={sortIcon} />
+            <SortBtn handleSort={this.handleSort} sortSelected={weekType} />
           </Content.Row>
           {leaderboard}
           <Content.Spacing />
