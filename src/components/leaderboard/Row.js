@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import styled from 'styled-components';
 
 import Content from '../Content';
@@ -18,6 +17,7 @@ const propTypes = {
   pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
 };
 
@@ -29,16 +29,9 @@ const LeaderboardRow = ({
   pointsPaid,
   profilePicURL,
   rank,
+  type,
   username,
 }) => {
-  const gemScore = pointsPaid ? (
-    <GemScore>
-      <Text>
-        <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
-      </Text>
-    </GemScore>
-  ) : null;
-
   let medal = null;
   if (!inProgress) {
     switch (rank) {
@@ -59,6 +52,24 @@ const LeaderboardRow = ({
   const rankFormatted = inProgress && pointsPaid === 0 ? '-' : rank;
   const pointsCommentsFormatted = inProgress ? '?' : getShortenedNumber(pointsComments);
 
+  const gemScore =
+    type === 'gems' && pointsPaid > 0 ? (
+      <Score>
+        <Text>
+          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
+        </Text>
+      </Score>
+    ) : null;
+
+  const coinScore =
+    type === 'coins' ? (
+      <Score>
+        <Text>
+          <Currency.CoinsSingle small /> {pointsCommentsFormatted}
+        </Text>
+      </Score>
+    ) : null;
+
   return (
     <Container key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
@@ -73,11 +84,7 @@ const LeaderboardRow = ({
       </ContentLHS>
       <Score>
         {gemScore}
-        <CoinScore>
-          <Text>
-            <Currency.CoinsSingle small /> {pointsCommentsFormatted}
-          </Text>
-        </CoinScore>
+        {coinScore}
       </Score>
     </Container>
   );
