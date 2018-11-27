@@ -20,10 +20,12 @@ import Spinner from '../components/Spinner';
 
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
 import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
+
+import TXNS_MACKENZIE_SOL from '../data/txns_mackenziesol';
+import USERS_MACKENZIE_SOL from '../data/users_mackenziesol';
+
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
-import TXNS_MACKENZIE_SOL from '../data/txns_mostly_luca';
-import USERS_MACKENZIE_SOL from '../data/users_mostly_luca';
 
 // const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
 // const MOSTLY_LUCA_ID = 'DwV35s6UFN6YN3exxeoV';
