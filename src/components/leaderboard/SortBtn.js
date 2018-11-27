@@ -26,7 +26,7 @@ const SortBtn = ({ handleSort, sortSelected }) => {
 
 const BtnSort = styled.button`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.5em 0.5em;
   border-radius: 3px;
   min-width: 116px;

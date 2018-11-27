@@ -42,7 +42,7 @@ const Container = styled.div`
 const Input = styled.input`
   height: 100%;
   padding: 0;
-  flex-basis: 1;
+
   color: ${Colors.greys.primary};
   font-size: 16px;
   border: none;
