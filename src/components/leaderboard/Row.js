@@ -18,6 +18,7 @@ const propTypes = {
   pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
 };
 
@@ -29,15 +30,26 @@ const LeaderboardRow = ({
   pointsPaid,
   profilePicURL,
   rank,
+  type,
   username,
 }) => {
-  const gemScore = pointsPaid ? (
-    <GemScore>
-      <Text>
-        <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
-      </Text>
-    </GemScore>
-  ) : null;
+  const gemScore =
+    type === 'gems' ? (
+      <GemScore>
+        <Text>
+          <Currency.GemsSingle small /> {getShortenedNumber(pointsPaid)}
+        </Text>
+      </GemScore>
+    ) : null;
+
+  const coinScore =
+    type === 'coins' ? (
+      <CoinScore>
+        <Text>
+          <Currency.CoinsSingle small /> {pointsCommentsFormatted}
+        </Text>
+      </CoinScore>
+    ) : null;
 
   let medal = null;
   if (!inProgress) {
@@ -73,11 +85,7 @@ const LeaderboardRow = ({
       </ContentLHS>
       <Score>
         {gemScore}
-        <CoinScore>
-          <Text>
-            <Currency.CoinsSingle small /> {pointsCommentsFormatted}
-          </Text>
-        </CoinScore>
+        {coinScore}
       </Score>
     </Container>
   );
