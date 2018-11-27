@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 
@@ -21,15 +22,66 @@ class Dashboard extends React.Component {
       id: '',
     },
     orders: [],
+    orderIDSelected: '',
   };
 
   componentDidMount() {
     this.setData();
   }
 
+  getDatedRows = (giftOptions, orders) => {
+    const datedRows = _.chain(orders)
+      .sort((a, b) => b.purchaseDate - a.purchaseDate)
+      .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
+      .groupBy('date')
+      .map((group, date) => {
+        const rows = group.map(order => {
+          const giftOption = giftOptions.find(option => option.id === order.giftID);
+          return (
+            <DashboardRow
+              key={order.id}
+              name={giftOption.name}
+              username={order.username}
+              handleSelect={this.handleSelectGift}
+              handleUndo={this.handleUndo(order.id)}
+              wasOpened={order.wasOpened}
+              value={order.id}
+            />
+          );
+        });
+        return (
+          <div key={date}>
+            <Fonts.P>{date.toUpperCase()}</Fonts.P>
+            <Content.Spacing8px />
+            {rows}
+            <Content.Spacing16px />
+          </div>
+        );
+      })
+      .value();
+    return datedRows;
+  };
+
   getInfluencerID = () => {
     const { i } = getParams(this.props);
     return i;
+  };
+
+  goToGift = () => {
+    const { orderIDSelected } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/gift',
+          search: `?id=${orderIDSelected}`,
+        }}
+      />
+    );
+  };
+
+  handleSelectGift = event => {
+    this.setState({ orderIDSelected: event.target.value });
   };
 
   handleThankFan = (snapLensURL, orderID) => () => {
@@ -66,45 +118,23 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, orders } = this.state;
-    // console.log('orders', orders);
+    const { giftOptions, influencer, isLoading, orders, orderIDSelected } = this.state;
+
+    if (orderIDSelected) return this.goToGift();
 
     const totalRevenue = orders.reduce(
       (aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION),
       0
     );
 
-    let giftsRecieved = null;
+    let unopenedGifts = null;
+    let openedGifts = null;
 
     if (orders) {
-      giftsRecieved = _.chain(orders)
-        .sort((a, b) => b.purchaseDate - a.purchaseDate)
-        .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
-        .groupBy('date')
-        .map((group, date) => {
-          const rows = group.map(order => {
-            const giftOption = giftOptions.find(option => option.id === order.giftID);
-            return (
-              <DashboardRow
-                key={order.id}
-                name={giftOption.name}
-                username={order.username}
-                handleThankFan={this.handleThankFan(giftOption.snapLensURL, order.id)}
-                handleUndo={this.handleUndo(order.id)}
-                wasThanked={order.wasThanked}
-              />
-            );
-          });
-          return (
-            <div key={date}>
-              <Fonts.P>{date.toUpperCase()}</Fonts.P>
-              <Content.Spacing8px />
-              {rows}
-              <Content.Spacing16px />
-            </div>
-          );
-        })
-        .value();
+      const unopenedOrders = orders.filter(order => !order.wasOpened);
+      const openedOrders = orders.filter(order => order.wasOpened);
+      unopenedGifts = this.getDatedRows(giftOptions, unopenedOrders);
+      openedGifts = this.getDatedRows(giftOptions, openedOrders);
     }
 
     if (isLoading) {
@@ -137,8 +167,10 @@ class Dashboard extends React.Component {
         </Content.Row>
         <Content.Spacing16px />
         <Content.Seperator />
-        <Fonts.H2>Gifts Received</Fonts.H2>
-        {giftsRecieved}
+        <Fonts.H2>Unopened Gifts</Fonts.H2>
+        {unopenedGifts}
+        <Fonts.H2>Opened Gifts</Fonts.H2>
+        {openedGifts}
       </Content>
     );
   }

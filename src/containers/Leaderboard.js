@@ -60,7 +60,6 @@ class Leaderboard extends React.Component {
 
   fetchInfluencer = async () => {
     const pathname = getPathname(this.props);
-    console.log('pathname', pathname);
     const influencer = await actions.fetchDocInfluencerByField('pathname', pathname);
     return influencer;
   };

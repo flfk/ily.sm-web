@@ -13,7 +13,7 @@ const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
 const propTypes = {
   inProgress: PropTypes.bool.isRequired,
-  pointsComments: PropTypes.number.isRequired,
+  pointsComments: PropTypes.number,
   pointsPaid: PropTypes.number.isRequired,
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
@@ -21,7 +21,9 @@ const propTypes = {
   username: PropTypes.string.isRequired,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  pointsComments: 0,
+};
 
 const LeaderboardRow = ({
   inProgress,
@@ -119,14 +121,14 @@ const Score = styled.div`
   font-size: 14px;
 `;
 
-const CoinScore = styled.div`
-  width: 60px;
-`;
+// const CoinScore = styled.div`
+//   width: 60px;
+// `;
 
-const GemScore = styled.div`
-  width: 56px;
-  margin-right: 8px;
-`;
+// const GemScore = styled.div`
+//   width: 56px;
+//   margin-right: 8px;
+// `;
 
 LeaderboardRow.propTypes = propTypes;
 LeaderboardRow.defaultProps = defaultProps;
