@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Colors from '../utils/Colors';
+import Fonts from '../utils/Fonts';
 import Media from '../utils/Media';
 
 const propTypes = {
@@ -99,6 +100,7 @@ const Input = styled.input`
   border-radius: 3px;
   border: 1px solid ${Colors.greys.light};
   font-size: 16px;
+  font-family: ${Fonts.family.body}
   color: ${Colors.greys.primary};
 
   margin-bottom: ${props => (props.hasError ? '8px' : '16px')};
@@ -120,6 +122,8 @@ const InputArea = styled.textarea`
   border-radius: 3px;
   border: 1px solid ${Colors.greys.light};
   font-size: 16px;
+  font-family: ${Fonts.family.body};
+
   color: ${Colors.greys.primary};
 
   margin-bottom: ${props => (props.hasError ? '8px' : '16px')};
