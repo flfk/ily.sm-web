@@ -22,6 +22,9 @@ import USERS_MACKENZIE_SOL from '../data/users_mackenziesol';
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
 
+import TXNS_RAEGAN_BEAST from '../data/txns_raeganbeast';
+import USERS_RAEGAN_BEAST from '../data/users_raeganbeast';
+
 // const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
 // const MOSTLY_LUCA_ID = 'DwV35s6UFN6YN3exxeoV';
 
@@ -89,6 +92,11 @@ class Leaderboard extends React.Component {
         return {
           TXNS: TXNS_MOSTLY_LUCA,
           USERS: USERS_MOSTLY_LUCA,
+        };
+      case 'raeganbeast':
+        return {
+          TXNS: TXNS_RAEGAN_BEAST,
+          USERS: USERS_RAEGAN_BEAST,
         };
       default:
         return {
@@ -222,6 +230,7 @@ class Leaderboard extends React.Component {
       pointsComments: changePointsComments,
       pointsPaid: changePointsPaid,
     };
+
     return [...aggr, userNew];
   };
 
