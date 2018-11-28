@@ -81,15 +81,6 @@ class Gift extends React.Component {
   render() {
     const { gift, isBeingOpened, isLoading, order } = this.state;
 
-    if (isLoading) {
-      return (
-        <Content>
-          <Fonts.H3 centered>Loading Gift</Fonts.H3>
-          <Spinner />
-        </Content>
-      );
-    }
-
     const customFields =
       order.wasOpened && !isBeingOpened && order.isCustom ? (
         <div>
@@ -140,6 +131,8 @@ class Gift extends React.Component {
         </Content>
       </Footer>
     );
+
+    if (isLoading) return <Spinner />;
 
     return (
       <div>

@@ -311,11 +311,7 @@ class Leaderboard extends React.Component {
     let leaderboard = null;
     if (fans) {
       leaderboard = isLoading ? (
-        <div>
-          <Content.Spacing />
-          <Content.Spacing />
-          <Spinner />
-        </div>
+        <Spinner />
       ) : (
         fans
           .filter(fan => fan.username.includes(inputSearch.toLowerCase()))

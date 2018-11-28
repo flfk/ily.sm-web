@@ -121,29 +121,25 @@ class Dashboard extends React.Component {
 
     if (orderIDSelected) return this.goToGift();
 
-    const totalRevenue = orders.reduce(
-      (aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION),
-      0
-    );
+    const totalRevenue = orders
+      .filter(order => order.wasOpened)
+      .reduce((aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION), 0);
 
     let unopenedGifts = null;
     let openedGifts = null;
+    let unopenedGiftsTitle = null;
+    let openedGiftsTitle = null;
 
     if (orders) {
       const unopenedOrders = orders.filter(order => !order.wasOpened);
       const openedOrders = orders.filter(order => order.wasOpened);
       unopenedGifts = this.getDatedRows(giftOptions, unopenedOrders);
       openedGifts = this.getDatedRows(giftOptions, openedOrders);
+      if (unopenedOrders.length > 0) unopenedGiftsTitle = <Fonts.H3>Unopened Gifts</Fonts.H3>;
+      if (openedOrders.length > 0) openedGiftsTitle = <Fonts.H3>Opened Gifts</Fonts.H3>;
     }
 
-    if (isLoading) {
-      return (
-        <Content>
-          <Fonts.H3 centered>Loading Dashboard</Fonts.H3>
-          <Spinner />
-        </Content>
-      );
-    }
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>
@@ -155,7 +151,7 @@ class Dashboard extends React.Component {
             ${totalRevenue.toFixed(2)}
           </Fonts.H2>
           <Content.Gap />
-          <Fonts.P>total gift income</Fonts.P>
+          <Fonts.P>from opened gifts</Fonts.P>
         </Content.Row>
         <Content.Row justifyCenter>
           <Fonts.H2 noMarginBottom centered>
@@ -166,9 +162,9 @@ class Dashboard extends React.Component {
         </Content.Row>
         <Content.Spacing16px />
         <Content.Seperator />
-        <Fonts.H2>Unopened Gifts</Fonts.H2>
+        {unopenedGiftsTitle}
         {unopenedGifts}
-        <Fonts.H2>Opened Gifts</Fonts.H2>
+        {openedGiftsTitle}
         {openedGifts}
       </Content>
     );
