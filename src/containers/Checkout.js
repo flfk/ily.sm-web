@@ -333,13 +333,11 @@ class Checkout extends React.Component {
 
     const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
 
-    const title = gift.isCustom
-      ? `Create Your Own Gift for ${influencer.displayName}`
-      : `Send ${influencer.displayName} ${gift.prefix} ${gift.name}`;
-
     return (
       <Content>
-        <Fonts.H1 centered>{title}</Fonts.H1>
+        <Fonts.H1 centered>
+          Send {influencer.displayName} {gift.prefix} {gift.name}
+        </Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gift.imgURL} />
         </Content.Row>

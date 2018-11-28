@@ -24,6 +24,7 @@ class OrderConfirmation extends React.Component {
       imgURL: '',
       influencerID: '',
       id: '',
+      isCustom: false,
       name: '',
       prefix: '',
       price: '-',

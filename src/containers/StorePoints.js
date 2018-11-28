@@ -93,7 +93,7 @@ class StorePoints extends React.Component {
           price={option.price}
           gemsEarned={option.gemsEarned}
           giftID={option.id}
-          name={option.name}
+          name="Create Your Own"
         />
       ));
 

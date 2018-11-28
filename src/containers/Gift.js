@@ -40,6 +40,8 @@ class Gift extends React.Component {
     return id;
   };
 
+  handleURL = customURL => () => window.open(customURL, '_blank');
+
   handleClose = () => this.props.history.goBack();
 
   handleGiftOpen = () => {
@@ -48,12 +50,6 @@ class Gift extends React.Component {
     this.setState({ order: orderUpdated, isBeingOpened: true });
     this.interval = setInterval(this.timer, TIMER_INTERVAL_MILLIS);
     this.updateOrder(orderUpdated);
-  };
-
-  handleSnapLens = () => {
-    console.log('opening Lens');
-    const { gift } = this.state;
-    window.open(gift.snapLensURL, '_blank');
   };
 
   setData = async () => {
@@ -94,12 +90,25 @@ class Gift extends React.Component {
       );
     }
 
+    const customFields =
+      order.wasOpened && !isBeingOpened && order.isCustom ? (
+        <div>
+          <Content.Row alignCenter>
+            <Fonts.H3>{order.customName}</Fonts.H3>
+            <Btn narrow short onClick={this.handleURL(order.customURL)}>
+              Open Link
+            </Btn>
+          </Content.Row>
+          <Content.Seperator />
+        </div>
+      ) : null;
+
     const giftName = order.wasOpened && !isBeingOpened ? `${gift.prefix} ${gift.name}` : 'a gift';
 
     const giftValue = isBeingOpened ? null : (
       <div>
         <Fonts.H3>Gift Value</Fonts.H3>
-        <Fonts.P>$ {(order.total - order.paypalFee) * (1 - COMMISSION)}</Fonts.P>
+        <Fonts.P>$ {((order.total - order.paypalFee) * (1 - COMMISSION)).toFixed(2)}</Fonts.P>
         <Content.Spacing />
       </div>
     );
@@ -112,8 +121,8 @@ class Gift extends React.Component {
     );
 
     let btnPrimary = order.wasOpened ? (
-      <Btn primary onClick={this.handleSnapLens}>
-        Record Thank Yous
+      <Btn primary onClick={this.handleURL(gift.snapLensURL)}>
+        Record Thank You
       </Btn>
     ) : (
       <Btn primary onClick={this.handleGiftOpen}>
@@ -145,6 +154,7 @@ class Gift extends React.Component {
             isBeingOpened={isBeingOpened}
             imgURL={gift.imgURL}
           />
+          {customFields}
           {note}
           {giftValue}
           <Content.Spacing />
