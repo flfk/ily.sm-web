@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Colors from '../utils/Colors';
+import Fonts from '../utils/Fonts';
 import Media from '../utils/Media';
 
 const propTypes = {
@@ -48,6 +49,33 @@ const InputText = ({ errMsg, label, isValid, onChange, onBlur, noMargin, placeho
   );
 };
 
+const Area = ({ errMsg, label, isValid, onChange, onBlur, noMargin, placeholder, value }) => {
+  const errLabel = errMsg ? <ErrLabel>{errMsg}</ErrLabel> : null;
+
+  const hasError = errMsg.length > 0;
+
+  return (
+    <Container>
+      <Label>{label}</Label>
+      <InputArea
+        hasError={hasError}
+        isValid={isValid}
+        onChange={onChange}
+        onBlur={onBlur}
+        noMargin={noMargin}
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        rows={4}
+      />
+      {errLabel}
+    </Container>
+  );
+};
+
+Area.propTypes = propTypes;
+Area.defaultProps = defaultProps;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -72,6 +100,30 @@ const Input = styled.input`
   border-radius: 3px;
   border: 1px solid ${Colors.greys.light};
   font-size: 16px;
+  font-family: ${Fonts.family.body}
+  color: ${Colors.greys.primary};
+
+  margin-bottom: ${props => (props.hasError ? '8px' : '16px')};
+  border-color: ${props => (props.hasError ? Colors.error.primary : '')};
+  border-color: ${props => (props.isValid ? Colors.primary.green : '')};
+
+  ::placeholder {
+    color: ${Colors.greys.supporting};
+  }
+
+  :focus {
+    border: 1px solid ${Colors.primary.green};
+    outline: none;
+  }
+`;
+
+const InputArea = styled.textarea`
+  padding: 0.5em 0.5em;
+  border-radius: 3px;
+  border: 1px solid ${Colors.greys.light};
+  font-size: 16px;
+  font-family: ${Fonts.family.body};
+
   color: ${Colors.greys.primary};
 
   margin-bottom: ${props => (props.hasError ? '8px' : '16px')};
@@ -94,6 +146,7 @@ const ErrLabel = styled(Label)`
   font-weight: bold;
 `;
 
+InputText.Area = Area;
 InputText.ErrLabel = ErrLabel;
 
 InputText.propTypes = propTypes;

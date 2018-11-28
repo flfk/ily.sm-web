@@ -11,6 +11,7 @@ import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
 import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
 import InputText from '../components/InputText';
+import Spinner from '../components/Spinner';
 import PayPalCheckout from '../components/PayPalCheckout';
 
 const CLIENT = {
@@ -26,12 +27,17 @@ const PAYPAL_FIXED_FEE = 0.3;
 class Checkout extends React.Component {
   state = {
     checkoutStep: 0,
-    // email: '',
-    // emailErrMsg: '',
-    // emailIsValid: false,
+    customName: '',
+    customNameErrMsg: '',
+    customNameIsValid: '',
+    customURL: '',
+    customURLErrMsg: '',
+    customURLIsValid: '',
     gift: {
       description: '',
       gemsEarned: '-',
+      isActive: false,
+      isCustom: false,
       imgURL: '',
       influencerID: '',
       id: '',
@@ -44,6 +50,10 @@ class Checkout extends React.Component {
       username: '',
       id: '',
     },
+    isLoading: true,
+    note: '',
+    noteErrMsg: '',
+    noteIsValid: false,
     orderID: '',
     paypalErrorMsg: '',
     toConfirmation: false,
@@ -58,7 +68,7 @@ class Checkout extends React.Component {
   }
 
   addGiftOrder = async paypalPaymentID => {
-    const { gift, influencer, username } = this.state;
+    const { customName, customURL, gift, influencer, note, username } = this.state;
     const usernameFormatted = formatUsername(username);
     const txn = await actions.addDocTxn({
       changePointsComments: 0,
@@ -68,8 +78,8 @@ class Checkout extends React.Component {
       username: usernameFormatted,
     });
     const orderNum = await actions.fetchOrderNum();
-    const order = await actions.addDocOrder({
-      // email,
+    let order = {
+      note,
       giftID: gift.id,
       influencerID: influencer.id,
       paypalFee: this.getPaypalFee(gift.price),
@@ -79,9 +89,11 @@ class Checkout extends React.Component {
       paypalPaymentID,
       purchaseDate: getTimestamp(),
       username: usernameFormatted,
-      wasThanked: false,
-    });
-    this.setState({ orderID: order.id, toConfirmation: true });
+      wasOpened: false,
+    };
+    if (gift.isCustom) order = { ...order, customName, customURL, isCustom: true };
+    const orderAdded = await actions.addDocOrder(order);
+    this.setState({ orderID: orderAdded.id, toConfirmation: true });
     mixpanel.people.set({ $name: usernameFormatted });
     mixpanel.track('Purchased Gift', { influencer: influencer.username, gift: gift.name });
     mixpanel.people.track_charge(gift.price);
@@ -107,14 +119,15 @@ class Checkout extends React.Component {
     );
   };
 
-  // handleBlurEmail = () => {
-  //   const isValid = this.isEmailValid();
-  //   this.setState({ emailIsValid: isValid });
-  // };
+  handleBlur = field => () => {
+    let isValid = false;
+    if (field === 'customName') isValid = this.isCustomNameValid();
+    if (field === 'customURL') isValid = this.isCustomURLValid();
+    if (field === 'note') isValid = this.isNoteValid();
+    if (field === 'username') isValid = this.isUsernameValid();
 
-  handleBlurUsername = () => {
-    const isValid = this.isUsernameValid();
-    this.setState({ usernameIsValid: isValid });
+    const validFieldID = `${field}IsValid`;
+    this.setState({ [validFieldID]: isValid });
   };
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
@@ -129,15 +142,29 @@ class Checkout extends React.Component {
 
   handlePrev = () => this.setState({ checkoutStep: 0 });
 
-  // isEmailValid = () => {
-  //   const { email } = this.state;
-  //   if (!validator.isEmail(email)) {
-  //     this.setState({ emailErrMsg: 'Valid email address required.' });
-  //     return false;
-  //   }
-  //   this.setState({ emailErrMsg: '' });
-  //   return true;
-  // };
+  isCustomNameValid = () => {
+    const { customName } = this.state;
+    if (customName === '') {
+      this.setState({ customNameErrMsg: "Don't forget to name your gift." });
+      return false;
+    }
+    this.setState({ customNameErrMsg: '' });
+    return true;
+  };
+
+  isCustomURLValid = () => {
+    const { customURL, influencer } = this.state;
+    if (customURL === '') {
+      this.setState({
+        customURLErrMsg: `Don't forget to attach a link for ${influencer.displayName}`,
+      });
+      return false;
+    }
+    this.setState({ customURLErrMsg: '' });
+    return true;
+  };
+
+  isNoteValid = () => true;
 
   isUsernameValid = () => {
     const { username } = this.state;
@@ -172,7 +199,7 @@ class Checkout extends React.Component {
     const gift = await actions.fetchDocGift(giftID);
     const { influencerID } = gift;
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    this.setState({ gift, influencer });
+    this.setState({ gift, influencer, isLoading: false });
   };
 
   setInfluencer = async () => {};
@@ -180,11 +207,18 @@ class Checkout extends React.Component {
   render() {
     const {
       checkoutStep,
-      // email,
-      // emailErrMsg,
-      // emailIsValid,
+      customName,
+      customNameErrMsg,
+      customNameIsValid,
+      customURL,
+      customURLErrMsg,
+      customURLIsValid,
+      note,
+      noteErrMsg,
+      noteIsValid,
       gift,
       influencer,
+      isLoading,
       paypalErrorMsg,
       toConfirmation,
       username,
@@ -248,16 +282,49 @@ class Checkout extends React.Component {
       </div>
     ) : null;
 
+    const customInput = (
+      <div>
+        <InputText
+          errMsg={customNameErrMsg}
+          label="What do you want to name your gift?"
+          placeholder="My Special Gift"
+          onBlur={this.handleBlur('customName')}
+          onChange={this.handleChangeInput('customName')}
+          value={customName}
+          isValid={customNameIsValid}
+        />
+        <InputText
+          errMsg={customURLErrMsg}
+          label="Copy the link to an image or video you want to send"
+          placeholder="www.images.com/keyboard-cat/"
+          onBlur={this.handleBlur('customURL')}
+          onChange={this.handleChangeInput('customURL')}
+          value={customURL}
+          isValid={customURLIsValid}
+        />
+      </div>
+    );
+
     const infoForm = (
       <div>
         <InputText
           errMsg={usernameErrMsg}
           label="Instagram username to receive gems"
           placeholder="@myInstaAccount"
-          onBlur={this.handleBlurUsername}
+          onBlur={this.handleBlur('username')}
           onChange={this.handleChangeInput('username')}
           value={username}
           isValid={usernameIsValid}
+        />
+        {customInput}
+        <InputText.Area
+          errMsg={noteErrMsg}
+          label={`Want to say something to ${influencer.displayName}? (Optional)`}
+          placeholder="Your message"
+          onBlur={this.handleBlur('note')}
+          onChange={this.handleChangeInput('note')}
+          value={note}
+          isValid={noteIsValid}
         />
         <Content.Row justifyEnd>
           <Btn primary short narrow onClick={this.handleNext}>
@@ -268,6 +335,8 @@ class Checkout extends React.Component {
     );
 
     const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
+
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>

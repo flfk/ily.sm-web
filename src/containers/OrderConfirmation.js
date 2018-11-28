@@ -10,6 +10,7 @@ import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getDateAddDays, getParams } from '../utils/Helpers';
 import GiftImg from '../components/GiftImg';
+import Spinner from '../components/Spinner';
 
 class OrderConfirmation extends React.Component {
   state = {
@@ -24,10 +25,12 @@ class OrderConfirmation extends React.Component {
       imgURL: '',
       influencerID: '',
       id: '',
+      isCustom: false,
       name: '',
       prefix: '',
       price: '-',
     },
+    isLoading: true,
     order: {
       orderNum: '-',
       giftID: '',
@@ -64,15 +67,17 @@ class OrderConfirmation extends React.Component {
     const order = await actions.fetchDocOrder(orderID);
     const gift = await actions.fetchDocGift(order.giftID);
     const influencer = await actions.fetchDocInfluencerByID(gift.influencerID);
-    this.setState({ gift, influencer, order });
+    this.setState({ gift, influencer, order, isLoading: false });
   };
 
   render() {
-    const { gift, influencer, order, toLeaderboard } = this.state;
+    const { gift, influencer, isLoading, order, toLeaderboard } = this.state;
 
     if (toLeaderboard) return this.goToLeaderboard();
 
     const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
+
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>

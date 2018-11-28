@@ -5,6 +5,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import Checkout from './containers/Checkout';
 import Dashboard from './containers/Dashboard';
+import Gift from './containers/Gift';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
@@ -45,6 +46,7 @@ class App extends Component {
             <Route path="/checkout" component={Checkout} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />
+            <Route path="/gift" component={Gift} />
             <Route path="/gems" component={StorePoints} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />

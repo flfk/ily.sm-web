@@ -114,17 +114,17 @@ const A = styled.a`
   text-align: ${props => (props.centered ? 'center' : '')};
 `;
 
-const FONTS = {};
-FONTS.family = FONT_FAMILY;
-FONTS.sizes = FONT_SIZES;
-FONTS.LOGO = LOGO;
-FONTS.H1 = H1;
-FONTS.H2 = H2;
-FONTS.H3 = H3;
-FONTS.P = P;
-FONTS.Link = Link;
-FONTS.FinePrint = FinePrint;
-FONTS.ERROR = ERROR;
-FONTS.A = A;
+const Fonts = {};
+Fonts.family = FONT_FAMILY;
+Fonts.sizes = FONT_SIZES;
+Fonts.LOGO = LOGO;
+Fonts.H1 = H1;
+Fonts.H2 = H2;
+Fonts.H3 = H3;
+Fonts.P = P;
+Fonts.Link = Link;
+Fonts.FinePrint = FinePrint;
+Fonts.ERROR = ERROR;
+Fonts.A = A;
 
-export default FONTS;
+export default Fonts;

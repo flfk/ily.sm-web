@@ -6,9 +6,13 @@ import Colors from '../utils/Colors';
 
 const Spinner = () => {
   return (
-    <Content.Row justifyCenter>
-      <BounceLoader sizeUnit="px" size={24} color={Colors.primary.red} />
-    </Content.Row>
+    <div>
+      <Content.Spacing />
+      <Content.Spacing />
+      <Content.Row justifyCenter>
+        <BounceLoader sizeUnit="px" size={24} color={Colors.primary.red} />
+      </Content.Row>
+    </div>
   );
 };
 
