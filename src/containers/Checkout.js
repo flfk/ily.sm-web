@@ -11,6 +11,7 @@ import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
 import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
 import InputText from '../components/InputText';
+import Spinner from '../components/Spinner';
 import PayPalCheckout from '../components/PayPalCheckout';
 
 const CLIENT = {
@@ -49,6 +50,7 @@ class Checkout extends React.Component {
       username: '',
       id: '',
     },
+    isLoading: true,
     note: '',
     noteErrMsg: '',
     noteIsValid: false,
@@ -197,7 +199,7 @@ class Checkout extends React.Component {
     const gift = await actions.fetchDocGift(giftID);
     const { influencerID } = gift;
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    this.setState({ gift, influencer });
+    this.setState({ gift, influencer, isLoading: false });
   };
 
   setInfluencer = async () => {};
@@ -216,6 +218,7 @@ class Checkout extends React.Component {
       noteIsValid,
       gift,
       influencer,
+      isLoading,
       paypalErrorMsg,
       toConfirmation,
       username,
@@ -332,6 +335,8 @@ class Checkout extends React.Component {
     );
 
     const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
+
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>
