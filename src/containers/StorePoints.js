@@ -68,6 +68,7 @@ class StorePoints extends React.Component {
     if (toCheckout && selectedGiftID) return this.goToCheckout();
 
     const giftsDiv = giftOptions
+      .filter(option => !option.isCustom)
       .sort((a, b) => a.price - b.price)
       .map(option => (
         <GiftRow
@@ -81,6 +82,21 @@ class StorePoints extends React.Component {
         />
       ));
 
+    const giftsCustomDiv = giftOptions
+      .filter(option => option.isCustom)
+      .sort((a, b) => a.price - b.price)
+      .map(option => (
+        <GiftRow
+          key={option.id}
+          handleClick={this.handleGiftCheckout}
+          imgURL={option.imgURL}
+          price={option.price}
+          gemsEarned={option.gemsEarned}
+          giftID={option.id}
+          name="Create Your Own"
+        />
+      ));
+
     return (
       <Content>
         <Content.Spacing16px />
@@ -91,6 +107,9 @@ class StorePoints extends React.Component {
         </Content.Centered>
         <Content.Spacing />
         {giftsDiv}
+        <Content.Seperator />
+        <Content.Spacing />
+        {giftsCustomDiv}
       </Content>
     );
   }

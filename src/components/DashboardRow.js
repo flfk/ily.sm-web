@@ -6,32 +6,40 @@ import Content from './Content';
 import Fonts from '../utils/Fonts';
 
 const propTypes = {
-  handleThankFan: PropTypes.func.isRequired,
-  handleUndo: PropTypes.func.isRequired,
+  handleSelect: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
-  wasThanked: PropTypes.bool.isRequired,
+  wasOpened: PropTypes.bool.isRequired,
+  value: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const DashboardRow = ({ handleThankFan, handleUndo, name, username, wasThanked }) => {
-  const btn = wasThanked ? (
-    <Btn.Tertiary narrow onClick={handleUndo}>
-      Undo
+const DashboardRow = ({ handleSelect, name, username, wasOpened, value }) => {
+  const btn = wasOpened ? (
+    <Btn.Tertiary narrow onClick={handleSelect} value={value}>
+      See Gift
     </Btn.Tertiary>
   ) : (
-    <Btn primary narrow short onClick={handleThankFan}>
-      Thank Fan
+    <Btn primary narrow short onClick={handleSelect} value={value}>
+      Open Gift
     </Btn>
+  );
+
+  const text = wasOpened ? (
+    <Fonts.P>
+      {name} from <strong>{username}</strong>
+    </Fonts.P>
+  ) : (
+    <Fonts.P>
+      From <strong>{username}</strong>
+    </Fonts.P>
   );
 
   return (
     <div>
       <Content.Row alignCenter>
-        <Fonts.P>
-          {name} from <strong>{username}</strong>
-        </Fonts.P>
+        {text}
         {btn}
       </Content.Row>
       <Content.Spacing8px />

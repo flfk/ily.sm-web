@@ -1,16 +1,16 @@
 import _ from 'lodash';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 
 import actions from '../data/actions';
+import { COMMISSION } from '../utils/Constants';
 import Content from '../components/Content';
 import DashboardRow from '../components/DashboardRow';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import { getParams } from '../utils/Helpers';
-
-const COMMISSION = 0.15;
 
 class Dashboard extends React.Component {
   state = {
@@ -21,15 +21,66 @@ class Dashboard extends React.Component {
       id: '',
     },
     orders: [],
+    orderIDSelected: '',
   };
 
   componentDidMount() {
     this.setData();
   }
 
+  getDatedRows = (giftOptions, orders) => {
+    const datedRows = _.chain(orders)
+      .sort((a, b) => b.purchaseDate - a.purchaseDate)
+      .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
+      .groupBy('date')
+      .map((group, date) => {
+        const rows = group.map(order => {
+          const giftOption = giftOptions.find(option => option.id === order.giftID);
+          return (
+            <DashboardRow
+              key={order.id}
+              name={giftOption.name}
+              username={order.username}
+              handleSelect={this.handleSelectGift}
+              handleUndo={this.handleUndo(order.id)}
+              wasOpened={order.wasOpened}
+              value={order.id}
+            />
+          );
+        });
+        return (
+          <div key={date}>
+            <Fonts.P>{date.toUpperCase()}</Fonts.P>
+            <Content.Spacing8px />
+            {rows}
+            <Content.Spacing16px />
+          </div>
+        );
+      })
+      .value();
+    return datedRows;
+  };
+
   getInfluencerID = () => {
     const { i } = getParams(this.props);
     return i;
+  };
+
+  goToGift = () => {
+    const { orderIDSelected } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/gift',
+          search: `?id=${orderIDSelected}`,
+        }}
+      />
+    );
+  };
+
+  handleSelectGift = event => {
+    this.setState({ orderIDSelected: event.target.value });
   };
 
   handleThankFan = (snapLensURL, orderID) => () => {
@@ -66,55 +117,29 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, orders } = this.state;
-    // console.log('orders', orders);
+    const { giftOptions, influencer, isLoading, orders, orderIDSelected } = this.state;
 
-    const totalRevenue = orders.reduce(
-      (aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION),
-      0
-    );
+    if (orderIDSelected) return this.goToGift();
 
-    let giftsRecieved = null;
+    const totalRevenue = orders
+      .filter(order => order.wasOpened)
+      .reduce((aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION), 0);
+
+    let unopenedGifts = null;
+    let openedGifts = null;
+    let unopenedGiftsTitle = null;
+    let openedGiftsTitle = null;
 
     if (orders) {
-      giftsRecieved = _.chain(orders)
-        .sort((a, b) => b.purchaseDate - a.purchaseDate)
-        .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
-        .groupBy('date')
-        .map((group, date) => {
-          const rows = group.map(order => {
-            const giftOption = giftOptions.find(option => option.id === order.giftID);
-            return (
-              <DashboardRow
-                key={order.id}
-                name={giftOption.name}
-                username={order.username}
-                handleThankFan={this.handleThankFan(giftOption.snapLensURL, order.id)}
-                handleUndo={this.handleUndo(order.id)}
-                wasThanked={order.wasThanked}
-              />
-            );
-          });
-          return (
-            <div key={date}>
-              <Fonts.P>{date.toUpperCase()}</Fonts.P>
-              <Content.Spacing8px />
-              {rows}
-              <Content.Spacing16px />
-            </div>
-          );
-        })
-        .value();
+      const unopenedOrders = orders.filter(order => !order.wasOpened);
+      const openedOrders = orders.filter(order => order.wasOpened);
+      unopenedGifts = this.getDatedRows(giftOptions, unopenedOrders);
+      openedGifts = this.getDatedRows(giftOptions, openedOrders);
+      if (unopenedOrders.length > 0) unopenedGiftsTitle = <Fonts.H3>Unopened Gifts</Fonts.H3>;
+      if (openedOrders.length > 0) openedGiftsTitle = <Fonts.H3>Opened Gifts</Fonts.H3>;
     }
 
-    if (isLoading) {
-      return (
-        <Content>
-          <Fonts.H3 centered>Loading Dashboard</Fonts.H3>
-          <Spinner />
-        </Content>
-      );
-    }
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>
@@ -126,7 +151,7 @@ class Dashboard extends React.Component {
             ${totalRevenue.toFixed(2)}
           </Fonts.H2>
           <Content.Gap />
-          <Fonts.P>total gift income</Fonts.P>
+          <Fonts.P>from opened gifts</Fonts.P>
         </Content.Row>
         <Content.Row justifyCenter>
           <Fonts.H2 noMarginBottom centered>
@@ -137,8 +162,10 @@ class Dashboard extends React.Component {
         </Content.Row>
         <Content.Spacing16px />
         <Content.Seperator />
-        <Fonts.H2>Gifts Received</Fonts.H2>
-        {giftsRecieved}
+        {unopenedGiftsTitle}
+        {unopenedGifts}
+        {openedGiftsTitle}
+        {openedGifts}
       </Content>
     );
   }
