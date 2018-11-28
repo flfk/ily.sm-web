@@ -6,25 +6,45 @@ import Content from './Content';
 import Gift from '../assets/Gift.png';
 import GiftOpen from '../assets/GiftOpen.gif';
 
-const propTypes = {};
+const propTypes = {
+  imgURL: PropTypes.string.isRequired,
+  isBeingOpened: PropTypes.bool.isRequired,
+  wasOpened: PropTypes.bool.isRequired,
+};
 
 const defaultProps = {};
 
-const GiftAnimation = props => {
-  return (
-    <Content.Row justifyCenter>
-      <Wrapper>
-        <img src={GiftOpen} alt="" />
-      </Wrapper>
-      <Wrapper>
-        <img src={Gift} alt="" />
-      </Wrapper>
-    </Content.Row>
+const GiftAnimation = ({ imgURL, isBeingOpened, wasOpened }) => {
+  const giftImg = (
+    <WrapperGiftImg>
+      <img src={imgURL} alt="" />
+    </WrapperGiftImg>
   );
+
+  const giftAnimation = (
+    <WrapperAnimation>
+      <img src={GiftOpen} alt="" />
+    </WrapperAnimation>
+  );
+
+  const giftStatic = (
+    <WrapperStatic>
+      <Content.Spacing16px />
+      <Content.Spacing8px />
+      <img src={Gift} alt="" />
+    </WrapperStatic>
+  );
+
+  let gift = null;
+
+  if (!wasOpened) gift = giftStatic;
+  if (wasOpened) gift = giftImg;
+  if (isBeingOpened) gift = giftAnimation;
+
+  return <Content.Row justifyCenter>{gift}</Content.Row>;
 };
 
-const Wrapper = styled.div`
-  border: 1px solid red;
+const WrapperAnimation = styled.div`
   height: 180px;
   width: 180px;
 
@@ -34,14 +54,22 @@ const Wrapper = styled.div`
   }
 `;
 
-const Wrapper = styled.div`
-  border: 1px solid red;
-  height: 180px;
-  width: 180px;
+const WrapperGiftImg = styled(WrapperAnimation)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   img {
-    height: 100%;
-    width: 100%;
+    height: 80%;
+    width: 80%;
+  }
+`;
+
+const WrapperStatic = styled(WrapperGiftImg)`
+  img {
+    height: 50%;
+    width: 50%;
   }
 `;
 

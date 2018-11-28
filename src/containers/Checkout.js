@@ -79,7 +79,7 @@ class Checkout extends React.Component {
       paypalPaymentID,
       purchaseDate: getTimestamp(),
       username: usernameFormatted,
-      wasThanked: false,
+      wasOpened: false,
     });
     this.setState({ orderID: order.id, toConfirmation: true });
     mixpanel.people.set({ $name: usernameFormatted });
