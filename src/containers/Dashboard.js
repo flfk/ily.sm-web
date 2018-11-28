@@ -5,13 +5,12 @@ import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 
 import actions from '../data/actions';
+import { COMMISSION } from '../utils/Constants';
 import Content from '../components/Content';
 import DashboardRow from '../components/DashboardRow';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import { getParams } from '../utils/Helpers';
-
-const COMMISSION = 0.15;
 
 class Dashboard extends React.Component {
   state = {
