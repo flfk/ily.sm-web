@@ -46,11 +46,19 @@ export const getShortenedNumber = num => {
   }
 
   if (num < 1000000) {
-    return (num / 1000).toFixed(0) + 'k';
+    const numInK = num / 1000;
+    if (numInK < 10) {
+      return numInK.toFixed(1) + 'k';
+    }
+    return numInK.toFixed(0) + 'k';
   }
 
   if (num < 1000000000) {
-    return (num / 1000000).toFixed(1) + 'm';
+    const numInM = num / 1000000;
+    if (numInM < 10) {
+      return numInM.toFixed(1) + 'm';
+    }
+    return numInM.toFixed(1) + 'm';
   }
 
   return num;
