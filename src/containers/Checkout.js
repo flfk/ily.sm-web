@@ -11,6 +11,7 @@ import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
 import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
 import InputText from '../components/InputText';
+import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 import PayPalCheckout from '../components/PayPalCheckout';
 
@@ -131,6 +132,8 @@ class Checkout extends React.Component {
   };
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleClose = () => this.props.history.goBack();
 
   handleNext = () => {
     if (this.isUsernameValid()) {
@@ -340,6 +343,8 @@ class Checkout extends React.Component {
 
     return (
       <Content>
+        <Content.Spacing16px />
+        <Popup.BtnClose handleClose={this.handleClose} />
         <Fonts.H1 centered>
           Send {influencer.displayName} {gift.prefix} {gift.name}
         </Fonts.H1>

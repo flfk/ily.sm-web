@@ -9,6 +9,7 @@ import GiftRow from '../components/leaderboard/GiftRow';
 import GiftImg from '../components/GiftImg';
 import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
+import Spinner from '../components/Spinner';
 
 class StorePoints extends React.Component {
   state = {
@@ -17,6 +18,7 @@ class StorePoints extends React.Component {
       id: '',
       storeImgURL: '',
     },
+    isLoading: true,
     toCheckout: false,
     selectedGiftID: '',
   };
@@ -58,12 +60,12 @@ class StorePoints extends React.Component {
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
     const giftOptions = await actions.fetchDocsGiftOptions(influencerID);
     const giftOptionsActive = giftOptions.filter(option => option.isActive);
-    this.setState({ giftOptions: giftOptionsActive, influencer });
+    this.setState({ giftOptions: giftOptionsActive, influencer, isLoading: false });
     mixpanel.track('Visited Gem Store', { influencer: influencer.username });
   };
 
   render() {
-    const { giftOptions, influencer, toCheckout, selectedGiftID } = this.state;
+    const { giftOptions, influencer, isLoading, toCheckout, selectedGiftID } = this.state;
 
     if (toCheckout && selectedGiftID) return this.goToCheckout();
 
@@ -96,6 +98,8 @@ class StorePoints extends React.Component {
           name="Create Your Own"
         />
       ));
+
+    if (isLoading) return <Spinner />;
 
     return (
       <Content>
