@@ -13,8 +13,20 @@ import { getDateAddDays, getPathname } from '../utils/Helpers';
 import { Footer, PopupCoins, Row, Searchbar, SortBtn, RadioBtn } from '../components/leaderboard';
 import Spinner from '../components/Spinner';
 
+import TXNS_ANDRE_SWILLEY from '../data/txns_andreswilley';
+import USERS_ANDRE_SWILLEY from '../data/users_andreswilley';
+
+import TXNS_DYLAN_HARTMAN from '../data/txns_dylanhartman';
+import USERS_DYLAN_HARTMAN from '../data/users_dylanhartman';
+
+import TXNS_JACKSON_FELT from '../data/txns_raeganbeast';
+import USERS_JACKSON_FELT from '../data/users_raeganbeast';
+
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
 import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
+
+import TXNS_LUIGI_CASTILLO from '../data/txns_luigicastillo';
+import USERS_LUIGI_CASTILLO from '../data/users_luigicastillo';
 
 import TXNS_MACKENZIE_SOL from '../data/txns_mackenziesol';
 import USERS_MACKENZIE_SOL from '../data/users_mackenziesol';
@@ -22,11 +34,11 @@ import USERS_MACKENZIE_SOL from '../data/users_mackenziesol';
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
 
+import TXNS_PAYTON_MOORMEIER from '../data/txns_paytonmoormeier';
+import USERS_PAYTON_MOORMEIER from '../data/users_paytonmoormeier';
+
 import TXNS_RAEGAN_BEAST from '../data/txns_raeganbeast';
 import USERS_RAEGAN_BEAST from '../data/users_raeganbeast';
-
-// const JON_KLAASEN_ID = 'xMSUH5anEZbhDCQIecj0';
-// const MOSTLY_LUCA_ID = 'DwV35s6UFN6YN3exxeoV';
 
 const MAX_ROWS = 100;
 const DEFAULT_SORT_BY = 'gems'; // alternative is coins
@@ -78,10 +90,30 @@ class Leaderboard extends React.Component {
   getDATA = () => {
     const pathname = getPathname(this.props);
     switch (pathname) {
+      case 'andreswilley':
+        return {
+          TXNS: TXNS_ANDRE_SWILLEY,
+          USERS: USERS_ANDRE_SWILLEY,
+        };
+      case 'dylanhartman':
+        return {
+          TXNS: TXNS_DYLAN_HARTMAN,
+          USERS: USERS_DYLAN_HARTMAN,
+        };
+      case 'jacksonfelt':
+        return {
+          TXNS: TXNS_JACKSON_FELT,
+          USERS: USERS_JACKSON_FELT,
+        };
       case 'jonklaasen':
         return {
           TXNS: TXNS_JON_KLAASEN,
           USERS: USERS_JON_KLAASEN,
+        };
+      case 'luigicastillo':
+        return {
+          TXNS: TXNS_LUIGI_CASTILLO,
+          USERS: USERS_LUIGI_CASTILLO,
         };
       case 'mackenziesol':
         return {
@@ -92,6 +124,11 @@ class Leaderboard extends React.Component {
         return {
           TXNS: TXNS_MOSTLY_LUCA,
           USERS: USERS_MOSTLY_LUCA,
+        };
+      case 'iitspayton':
+        return {
+          TXNS: TXNS_PAYTON_MOORMEIER,
+          USERS: USERS_PAYTON_MOORMEIER,
         };
       case 'raeganbeast':
         return {

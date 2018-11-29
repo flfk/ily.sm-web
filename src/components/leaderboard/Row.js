@@ -11,6 +11,9 @@ import Wrapper from '../Wrapper';
 
 const INSTAGRAM_URL_BASE = 'https://www.instagram.com/';
 
+const DEFAULT_PROFILE_PIC_URL =
+  'https://scontent-lga3-1.cdninstagram.com/vp/dc651f3c631c68d6e0789e2d7c8af2e5/5C8EBFF1/t51.2885-19/44884218_345707102882519_2446069589734326272_n.jpg';
+
 const propTypes = {
   inProgress: PropTypes.bool.isRequired,
   pointsComments: PropTypes.number,
@@ -76,7 +79,7 @@ const LeaderboardRow = ({
     <Container key={username} alignCenter>
       <ContentLHS href={INSTAGRAM_URL_BASE + username} target="_blank">
         <Wrapper.ProfileImage>
-          <img src={profilePicURL} alt="" />
+          <img src={profilePicURL || DEFAULT_PROFILE_PIC_URL} alt="" />
         </Wrapper.ProfileImage>{' '}
         <Rank>{rankFormatted}</Rank>
         <Text>{username}</Text>
