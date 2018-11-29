@@ -19,8 +19,8 @@ import USERS_ANDRE_SWILLEY from '../data/users_andreswilley';
 import TXNS_DYLAN_HARTMAN from '../data/txns_dylanhartman';
 import USERS_DYLAN_HARTMAN from '../data/users_dylanhartman';
 
-import TXNS_JACKSON_FELT from '../data/txns_raeganbeast';
-import USERS_JACKSON_FELT from '../data/users_raeganbeast';
+import TXNS_JACKSON_FELT from '../data/txns_jacksonnfelt';
+import USERS_JACKSON_FELT from '../data/users_jacksonnfelt';
 
 import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
 import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
@@ -100,7 +100,7 @@ class Leaderboard extends React.Component {
           TXNS: TXNS_DYLAN_HARTMAN,
           USERS: USERS_DYLAN_HARTMAN,
         };
-      case 'jacksonfelt':
+      case 'jacksonnfelt':
         return {
           TXNS: TXNS_JACKSON_FELT,
           USERS: USERS_JACKSON_FELT,
@@ -112,7 +112,7 @@ class Leaderboard extends React.Component {
         };
       case 'luigicastillo':
         return {
-          TXNS: TXNS_LUIGI_CASTILLO,
+          TXNS: TXNS_LUIGI_CASTILLO.filter(txn => txn.username !== 'itsluigicastillo'),
           USERS: USERS_LUIGI_CASTILLO,
         };
       case 'mackenziesol':
@@ -127,7 +127,7 @@ class Leaderboard extends React.Component {
         };
       case 'iitspayton':
         return {
-          TXNS: TXNS_PAYTON_MOORMEIER,
+          TXNS: TXNS_PAYTON_MOORMEIER.filter(txn => txn.username !== 'iitspayton'),
           USERS: USERS_PAYTON_MOORMEIER,
         };
       case 'raeganbeast':
