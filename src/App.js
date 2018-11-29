@@ -3,6 +3,7 @@ import ReactGA from 'react-ga';
 import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
+import Admin from './containers/Admin';
 import Checkout from './containers/Checkout';
 import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
@@ -43,6 +44,7 @@ class App extends Component {
         <div>
           <NavBar />
           <Switch>
+            <Route path="/admin-admin-1" component={Admin} />
             <Route path="/checkout" component={Checkout} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />

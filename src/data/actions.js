@@ -95,6 +95,23 @@ const fetchDocsGiftOptions = async influencerID => {
   return giftOptions;
 };
 
+const fetchDocsInfluencers = async () => {
+  const influencers = [];
+  try {
+    const influencersRef = db.collection(COLL_INFLUENCERS);
+    const snapshot = await influencersRef.get();
+    snapshot.forEach(doc => {
+      const option = doc.data();
+      const { id } = doc;
+      option.id = id;
+      influencers.push(option);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsInfluencers', error);
+  }
+  return influencers;
+};
+
 const fetchDocsOrders = async influencerID => {
   const orders = [];
   try {
@@ -158,13 +175,14 @@ const actions = {};
 
 actions.addDocOrder = addDocOrder;
 actions.addDocTxn = addDocTxn;
-actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchDocGift = fetchDocGift;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
 actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
+actions.fetchDocsInfluencers = fetchDocsInfluencers;
 actions.fetchDocsOrders = fetchDocsOrders;
+actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchOrderNum = fetchOrderNum;
 actions.updateDocOrder = updateDocOrder;
 
