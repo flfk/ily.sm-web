@@ -21,6 +21,7 @@ const Container = styled.div`
   flex-grow: 1;
   margin-right: 8px;
   font-size: 16px;
+  min-width: 10px;
 
   align-items: center;
   padding: 0.5em 0.5em;
@@ -42,6 +43,7 @@ const Container = styled.div`
 const Input = styled.input`
   height: 100%;
   padding: 0;
+  min-width: 10px;
 
   color: ${Colors.greys.primary};
   font-size: 16px;

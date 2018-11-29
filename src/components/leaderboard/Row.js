@@ -84,10 +84,8 @@ const LeaderboardRow = ({
           {medal}
         </span>
       </ContentLHS>
-      <Score>
-        {gemScore}
-        {coinScore}
-      </Score>
+      {gemScore}
+      {coinScore}
     </Container>
   );
 };
@@ -95,11 +93,16 @@ const LeaderboardRow = ({
 const Container = styled(Content.Row)`
   margin-top: 8px;
   margin-bottom: 8px;
+  justify-content: space-between;
 `;
 
 const Text = styled(Fonts.H3)`
   font-size: 14px;
   margin: 0;
+  max-width: 144px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Rank = styled(Fonts.P)`
@@ -116,19 +119,10 @@ const ContentLHS = styled.a`
 
 const Score = styled.div`
   display: flex;
-  justify-content: flex-end;
-  flex-basis: 106px;
+  justify-content: flex-start;
+  flex-basis: 64px;
   font-size: 14px;
 `;
-
-// const CoinScore = styled.div`
-//   width: 60px;
-// `;
-
-// const GemScore = styled.div`
-//   width: 56px;
-//   margin-right: 8px;
-// `;
 
 LeaderboardRow.propTypes = propTypes;
 LeaderboardRow.defaultProps = defaultProps;

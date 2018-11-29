@@ -353,7 +353,7 @@ class Leaderboard extends React.Component {
         weekType === 'current' ? (
           <Content.Row justifyCenter>
             <Countdown date={dateUpdateNext} small />
-            <Fonts.P>left</Fonts.P>
+            <Fonts.P>until winners announced</Fonts.P>
           </Content.Row>
         ) : (
           <Fonts.P>Winners Announced</Fonts.P>
