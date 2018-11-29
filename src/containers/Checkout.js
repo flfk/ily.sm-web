@@ -282,7 +282,7 @@ class Checkout extends React.Component {
       </div>
     ) : null;
 
-    const customInput = (
+    const customInput = gift.isCustom ? (
       <div>
         <InputText
           errMsg={customNameErrMsg}
@@ -303,7 +303,7 @@ class Checkout extends React.Component {
           isValid={customURLIsValid}
         />
       </div>
-    );
+    ) : null;
 
     const infoForm = (
       <div>

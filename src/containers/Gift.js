@@ -96,13 +96,14 @@ class Gift extends React.Component {
 
     const giftName = order.wasOpened && !isBeingOpened ? `${gift.prefix} ${gift.name}` : 'a gift';
 
-    const giftValue = isBeingOpened ? null : (
-      <div>
-        <Fonts.H3>Gift Value</Fonts.H3>
-        <Fonts.P>$ {((order.total - order.paypalFee) * (1 - COMMISSION)).toFixed(2)}</Fonts.P>
-        <Content.Spacing />
-      </div>
-    );
+    const giftValue =
+      !order.wasOpened || isBeingOpened ? null : (
+        <div>
+          <Fonts.H3>Gift Value</Fonts.H3>
+          <Fonts.P>$ {((order.total - order.paypalFee) * (1 - COMMISSION)).toFixed(2)}</Fonts.P>
+          <Content.Spacing />
+        </div>
+      );
 
     const note = isBeingOpened ? null : (
       <div>
