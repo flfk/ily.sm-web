@@ -1,6 +1,6 @@
 {
   "name": "ily.sm-web",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "private": true,
   "dependencies": {
     "dotenv": "^6.1.0",

@@ -110,7 +110,7 @@ class Leaderboard extends React.Component {
           TXNS: TXNS_JON_KLAASEN,
           USERS: USERS_JON_KLAASEN,
         };
-      case 'luigicastillo':
+      case 'itsluigicastillo':
         return {
           TXNS: TXNS_LUIGI_CASTILLO.filter(txn => txn.username !== 'itsluigicastillo'),
           USERS: USERS_LUIGI_CASTILLO,
@@ -120,7 +120,7 @@ class Leaderboard extends React.Component {
           TXNS: TXNS_MACKENZIE_SOL,
           USERS: USERS_MACKENZIE_SOL,
         };
-      case 'mostlyluca':
+      case 'mostly_luca':
         return {
           TXNS: TXNS_MOSTLY_LUCA,
           USERS: USERS_MOSTLY_LUCA,
