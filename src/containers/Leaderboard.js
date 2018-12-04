@@ -28,8 +28,8 @@ import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
 import TXNS_LUIGI_CASTILLO from '../data/txns_luigicastillo';
 import USERS_LUIGI_CASTILLO from '../data/users_luigicastillo';
 
-import TXNS_MACKENZIE_SOL from '../data/txns_mackenziesol';
-import USERS_MACKENZIE_SOL from '../data/users_mackenziesol';
+import TXNS_MACKENZIE_SOL from '../data/mackenziesol_txns';
+import USERS_MACKENZIE_SOL from '../data/mackenziesol_users';
 
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
@@ -291,14 +291,16 @@ class Leaderboard extends React.Component {
 
   sortByCoins = (fanA, fanB) => {
     if (fanB.pointsComments === fanA.pointsComments) {
-      return fanB.pointsPaid - fanA.pointsPaid;
+      // return fanB.pointsPaid - fanA.pointsPaid;
+      return 0;
     }
     return fanB.pointsComments - fanA.pointsComments;
   };
 
   sortByGems = (fanA, fanB) => {
     if (fanB.pointsPaid === fanA.pointsPaid) {
-      return fanB.pointsComments - fanA.pointsComments;
+      // return fanB.pointsComments - fanA.pointsComments;
+      return 0;
     }
     return fanB.pointsPaid - fanA.pointsPaid;
   };
