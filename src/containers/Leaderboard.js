@@ -34,8 +34,8 @@ import USERS_MACKENZIE_SOL from '../data/mackenziesol_users';
 import TXNS_MOSTLY_LUCA from '../data/txns_mostly_luca';
 import USERS_MOSTLY_LUCA from '../data/users_mostly_luca';
 
-import TXNS_PAYTON_MOORMEIER from '../data/txns_paytonmoormeier';
-import USERS_PAYTON_MOORMEIER from '../data/users_paytonmoormeier';
+import TXNS_PAYTON_MOORMEIER from '../data/iitspayton_txns';
+import USERS_PAYTON_MOORMEIER from '../data/iitspayton_users';
 
 import TXNS_RAEGAN_BEAST from '../data/txns_raeganbeast';
 import USERS_RAEGAN_BEAST from '../data/users_raeganbeast';
