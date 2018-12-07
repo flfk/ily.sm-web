@@ -22,8 +22,8 @@ import USERS_DYLAN_HARTMAN from '../data/users_dylanhartman';
 import TXNS_JACKSON_FELT from '../data/txns_jacksonnfelt';
 import USERS_JACKSON_FELT from '../data/users_jacksonnfelt';
 
-import TXNS_JON_KLAASEN from '../data/txns_jon_klaasen';
-import USERS_JON_KLAASEN from '../data/users_jon_klaasen';
+import TXNS_JON_KLAASEN from '../data/jon_klaasen_txns';
+import USERS_JON_KLAASEN from '../data/jon_klaasen_users';
 
 import TXNS_LUIGI_CASTILLO from '../data/txns_luigicastillo';
 import USERS_LUIGI_CASTILLO from '../data/users_luigicastillo';
