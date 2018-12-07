@@ -9,6 +9,8 @@ import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
+import Login from './containers/Login';
+import InstaPopup from './containers/InstaPopup';
 import NavBar from './containers/NavBar';
 import OrderConfirmation from './containers/OrderConfirmation';
 import StorePoints from './containers/StorePoints';
@@ -46,10 +48,12 @@ class App extends Component {
           <Switch>
             <Route path="/admin-admin-1" component={Admin} />
             <Route path="/checkout" component={Checkout} />
-            <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/gift" component={Gift} />
             <Route path="/gems" component={StorePoints} />
+            <Route path="/login" component={Login} />
+            <Route path="/instagram-callback" component={InstaPopup} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />
