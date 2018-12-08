@@ -41,6 +41,10 @@ class App extends Component {
   };
 
   render() {
+    const clientID = process.env.REACT_APP_INSTA_CLIENT_ID;
+    const redirectURI = 'http://localhost:3000/instagram-callback';
+    const instaLoginURL = `https://api.instagram.com/oauth/authorize/?client_id=${clientID}&redirect_uri=${redirectURI}&response_type=code`;
+
     return (
       <BrowserRouter>
         <div>
@@ -53,6 +57,7 @@ class App extends Component {
             <Route path="/gift" component={Gift} />
             <Route path="/gems" component={StorePoints} />
             <Route path="/login" component={Login} />
+            <Route path="/instagram-login" ccomponent={() => (window.location = instaLoginURL)} />
             <Route path="/instagram-callback" component={InstaPopup} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />

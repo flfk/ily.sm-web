@@ -11,7 +11,8 @@ admin.initializeApp({
   databaseURL: `https://${process.env.GCLOUD_PROJECT}.firebaseio.com`,
 });
 
-const OAUTH_REDIRECT_URI = `https://${process.env.GCLOUD_PROJECT}.firebaseapp.com/popup.html`;
+// const OAUTH_REDIRECT_URI = `https://${process.env.GCLOUD_PROJECT}.firebaseapp.com/popup.html`;
+const OAUTH_REDIRECT_URI = 'http://localhost:3000/instagram-callback';
 const OAUTH_SCOPES = 'basic';
 
 /**
@@ -101,6 +102,9 @@ exports.token = functions.https.onRequest((req, res) => {
           return res.jsonp({
             token: firebaseToken,
           });
+        })
+        .catch(error => {
+          console.log('Error in oath2.getToken async function');
         });
     });
   } catch (error) {

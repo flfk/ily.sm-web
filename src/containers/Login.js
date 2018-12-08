@@ -8,7 +8,10 @@ import { getParams } from '../utils/Helpers';
 class Login extends React.Component {
   state = {};
 
-  componentDidMount() {}
+  componentDidMount() {
+    const { code } = getParams(this.props);
+    console.log(code);
+  }
 
   handleLogIn = () => {
     console.log('logging in');
