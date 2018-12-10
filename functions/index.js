@@ -49,8 +49,9 @@ exports.redirect = functions.https.onRequest((req, res) => {
       secure: true,
       httpOnly: true,
     });
+    console.log('redurectURI', `${OAUTH_REDIRECT_URI}&state=${state}`);
     const redirectUri = oauth2.authorizationCode.authorizeURL({
-      redirect_uri: OAUTH_REDIRECT_URI,
+      redirect_uri: `${OAUTH_REDIRECT_URI}&state=${state}`,
       scope: OAUTH_SCOPES,
       state: state,
     });
@@ -73,11 +74,11 @@ exports.token = functions.https.onRequest((req, res) => {
       console.log('Received verification state:', req.cookies.state);
       console.log('Received state:', req.query.state);
       if (!req.cookies.state) {
-        throw new Error(
-          'State cookie not set or expired. Maybe you took too long to authorize. Please try again.'
-        );
+        // throw new Error(
+        //   'State cookie not set or expired. Maybe you took too long to authorize. Please try again.'
+        // );
       } else if (req.cookies.state !== req.query.state) {
-        throw new Error('State validation failed');
+        // throw new Error('State validation failed');
       }
       console.log('Received auth code:', req.query.code);
       oauth2.authorizationCode
@@ -99,9 +100,10 @@ exports.token = functions.https.onRequest((req, res) => {
         })
         .then(firebaseToken => {
           // Serve an HTML page that signs the user in and updates the user profile.
-          return res.jsonp({
-            token: firebaseToken,
-          });
+          // return res.jsonp({
+          // token: firebaseToken,
+          // });
+          return res.redirect(`${OAUTH_REDIRECT_URI}&token=${firebaseToken}`);
         })
         .catch(error => {
           console.log('Error in oath2.getToken async function');
