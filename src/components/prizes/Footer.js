@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+// import styled from 'styled-components';
 
 import Btn from '../Btn';
 import Content from '../Content';
@@ -35,6 +36,11 @@ const LeaderboardFooter = ({ influencerName }) => {
     </Footer>
   );
 };
+
+// const BtnContainer = styled.div`
+//   margin-left: 32px;
+//   margin-right: 32px;
+// `;
 
 LeaderboardFooter.propTypes = propTypes;
 

@@ -13,7 +13,7 @@ import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
 import OrderConfirmation from './containers/OrderConfirmation';
-import StorePoints from './containers/StorePoints';
+import GiftStore from './containers/GiftStore';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
@@ -52,7 +52,7 @@ class App extends Component {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />
             <Route path="/gift" component={Gift} />
-            <Route path="/gems" component={StorePoints} />
+            <Route path="/gifts" component={GiftStore} />
             <Route path="/halloffame" component={HallOfFame} />
             <Route path="/home" component={LandingPage} />
             <Route path="/prizes" component={Prizes} />

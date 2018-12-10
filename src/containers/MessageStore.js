@@ -11,7 +11,7 @@ import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 
-class StorePoints extends React.Component {
+class MessageStore extends React.Component {
   state = {
     giftOptions: [],
     influencer: {
@@ -119,4 +119,4 @@ class StorePoints extends React.Component {
   }
 }
 
-export default StorePoints;
+export default MessageStore;

@@ -19,6 +19,7 @@ const ITEMS = [
     imgURL:
       'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/giftOptions%2FJonGift_macncheese.png?alt=media&token=ff3d4c30-83a4-43cb-ad3d-16cb4df32f52',
     name: 'Message from Freo',
+    type: 'Message',
     price: 45,
     isAvailable: true,
   },
@@ -28,6 +29,7 @@ const ITEMS = [
     imgURL:
       'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/giftOptions%2FJonGift_macncheese.png?alt=media&token=ff3d4c30-83a4-43cb-ad3d-16cb4df32f52',
     name: 'Send Freo a gift',
+    type: 'Gifts',
     price: 45,
     isAvailable: true,
   },
@@ -45,6 +47,8 @@ class Prizes extends React.Component {
     },
     items: ITEMS,
     isLoading: true,
+    toStoreGifts: false,
+    toStoreMessage: false,
   };
 
   componentDidMount() {
@@ -57,9 +61,33 @@ class Prizes extends React.Component {
     return influencer;
   };
 
-  handleSelectPrize = itemID => () => {
-    console.log(itemID, 'selected');
+  goToStoreGifts = () => {
+    const { influencer } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/gifts',
+          search: `?i=${influencer.id}`,
+        }}
+      />
+    );
   };
+
+  goToStoreMessage = () => {
+    const { influencer } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/message',
+          search: `?i=${influencer.id}`,
+        }}
+      />
+    );
+  };
+
+  handleSelectPrize = type => () => this.setState({ [`toStore${type}`]: true });
 
   setData = async () => {
     const influencer = await this.fetchInfluencer();
@@ -69,7 +97,10 @@ class Prizes extends React.Component {
   };
 
   render() {
-    const { influencer, items, isLoading } = this.state;
+    const { influencer, items, isLoading, toStoreGifts, toStoreMessage } = this.state;
+
+    if (toStoreGifts) return this.goToStoreGifts();
+    if (toStoreMessage) return this.goToStoreMessage();
 
     if (isLoading) return <Spinner />;
 
@@ -85,16 +116,18 @@ class Prizes extends React.Component {
       </Content.Row>
     );
 
-    const itemRows = items.map(item => (
-      <ItemRow
-        key={item.id}
-        imgURL={item.imgURL}
-        handleClick={this.handleSelectPrize(item.id)}
-        itemID={item.id}
-        name={item.name}
-        price={item.price}
-      />
-    ));
+    const itemRows = items.map(item => {
+      return (
+        <ItemRow
+          key={item.id}
+          imgURL={item.imgURL}
+          handleClick={this.handleSelectPrize(item.type)}
+          itemID={item.id}
+          name={item.name}
+          price={item.price}
+        />
+      );
+    });
 
     const footer = (
       <div>

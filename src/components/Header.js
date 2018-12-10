@@ -30,15 +30,21 @@ const Header = ({ fandom, profilePicURL, selectedScreen, username }) => {
         </Container>
       </Content.Row>
       <Content.Row>
-        <Link to={`/${username}`}>
-          <BtnRadio isActive={selectedScreen === 'CurrentPost'}>CURRENT POST</BtnRadio>
-        </Link>
-        <Link to={`/halloffame?i=${username}`}>
-          <BtnRadio isActive={selectedScreen === 'HallOfFame'}>HALL OF FAME</BtnRadio>
-        </Link>
-        <Link to={`/prizes?i=${username}`}>
-          <BtnRadio isActive={selectedScreen === 'Prizes'}>PRIZES</BtnRadio>
-        </Link>
+        <NavBtn>
+          <Link to={`/${username}`}>
+            <BtnRadio isActive={selectedScreen === 'CurrentPost'}>CURRENT POST</BtnRadio>
+          </Link>
+        </NavBtn>
+        <NavBtn>
+          <Link to={`/halloffame?i=${username}`}>
+            <BtnRadio isActive={selectedScreen === 'HallOfFame'}>HALL OF FAME</BtnRadio>
+          </Link>
+        </NavBtn>
+        <NavBtn>
+          <Link to={`/prizes?i=${username}`}>
+            <BtnRadio isActive={selectedScreen === 'Prizes'}>PRIZES</BtnRadio>
+          </Link>
+        </NavBtn>
       </Content.Row>
       <Content.Seperator />
     </div>
@@ -55,6 +61,10 @@ const Container = styled.div`
 const BtnRadio = styled(Btn.Tertiary)`
   color: ${props => (props.isActive ? '' : Colors.greys.supporting)};
   font-weight: ${props => (props.isActive ? 'bold' : 'normal')};
+`;
+
+const NavBtn = styled.div`
+  width: 80px;
 `;
 
 Header.propTypes = propTypes;
