@@ -22,12 +22,12 @@ const Header = ({ fandom, profilePicURL, selectedScreen, username }) => {
   return (
     <div>
       <Content.Row justifyCenter>
-        <div>
+        <Container>
           <Wrapper.ProfilePic isLarge>
             <img src={profilePicURL} alt="Profile Pic" />
           </Wrapper.ProfilePic>
-          <Fonts.H2 noMargin>{fandom}</Fonts.H2>
-        </div>
+          <Fonts.H2>{fandom}</Fonts.H2>
+        </Container>
       </Content.Row>
       <Content.Row>
         <Link to={`/${username}`}>
@@ -44,6 +44,13 @@ const Header = ({ fandom, profilePicURL, selectedScreen, username }) => {
     </div>
   );
 };
+
+const Container = styled.div`
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
 
 const BtnRadio = styled(Btn.Tertiary)`
   color: ${props => (props.isActive ? '' : Colors.greys.supporting)};
