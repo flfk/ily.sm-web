@@ -5,8 +5,10 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 import Admin from './containers/Admin';
 import Checkout from './containers/Checkout';
+import CurrentPost from './containers/CurrentPost';
 import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
+import HallOfFame from './containers/HallOfFame';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
@@ -15,6 +17,7 @@ import StorePoints from './containers/StorePoints';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
+import Prizes from './containers/Prizes';
 
 class App extends Component {
   constructor(props) {
@@ -50,12 +53,15 @@ class App extends Component {
             <Route path="/confirmation" component={OrderConfirmation} />
             <Route path="/gift" component={Gift} />
             <Route path="/gems" component={StorePoints} />
+            <Route path="/halloffame" component={HallOfFame} />
+            <Route path="/home" component={LandingPage} />
+            <Route path="/prizes" component={Prizes} />
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />
             <Route path="/cookiesPolicy" component={PolicyCookies} />
-            <Route path="/home" component={LandingPage} />
-            <Route path="/" component={Leaderboard} />
+
+            <Route path="/" component={CurrentPost} />
           </Switch>
         </div>
       </BrowserRouter>
