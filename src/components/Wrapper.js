@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 const Post = styled.div`
-  height: 144px;
-  width: 144px;
+  height: ${props => (props.isLarge ? '144px' : '106px')};
+  width: ${props => (props.isLarge ? '144px' : '106px')};
 
   img {
     height: 100%;

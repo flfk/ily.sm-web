@@ -2,6 +2,7 @@ import _ from 'lodash';
 import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import actions from '../data/actions';
 import Content from '../components/Content';
@@ -50,6 +51,7 @@ class CurrentPost extends React.Component {
       username: '',
     },
     isLoading: true,
+    toHome: false,
     mostRecent: {},
   };
 
@@ -89,13 +91,22 @@ class CurrentPost extends React.Component {
     return fans;
   };
 
+  goToHome = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/home',
+      }}
+    />
+  );
+
   setData = async () => {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
     if (!influencer) {
       this.setState({ toHome: true });
     } else {
-      mixpanel.track('Visited Leaderboard', { influencer: influencer.username });
+      mixpanel.track('Visited Current Post', { influencer: influencer.username });
     }
     const mostRecent = POST;
     const fans = this.getFans(mostRecent.comments);
@@ -104,7 +115,9 @@ class CurrentPost extends React.Component {
   };
 
   render() {
-    const { fans, influencer, isLoading, mostRecent } = this.state;
+    const { fans, influencer, isLoading, mostRecent, toHome } = this.state;
+
+    if (toHome) return this.goToHome();
 
     if (isLoading) return <Spinner />;
 
@@ -131,7 +144,7 @@ class CurrentPost extends React.Component {
         </Fonts.P>
         <Content.Spacing8px />
         <Content.Row justifyCenter>
-          <Wrapper.Post>
+          <Wrapper.Post isLarge>
             <img src={mostRecent.imgURL} alt="Most recent post" />
           </Wrapper.Post>
         </Content.Row>

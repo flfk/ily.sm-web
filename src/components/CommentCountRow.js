@@ -18,11 +18,14 @@ const propTypes = {
   profilePicURL: PropTypes.string.isRequired,
   rank: PropTypes.number.isRequired,
   username: PropTypes.string.isRequired,
+  isNarrow: PropTypes.bool,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  isNarrow: false,
+};
 
-const LeaderboardRow = ({ count, profilePicURL, rank, username }) => {
+const CommentCountRow = ({ count, isNarrow, profilePicURL, rank, username }) => {
   const commentLabel = count > 1 ? 'comments' : 'comment';
 
   return (
@@ -33,7 +36,7 @@ const LeaderboardRow = ({ count, profilePicURL, rank, username }) => {
           <img src={profilePicURL || DEFAULT_PROFILE_PIC_URL} alt="" />
         </Wrapper.ProfilePic>
         <Stats>
-          <Text>{username}</Text>
+          <Username isNarrow={isNarrow}>{username}</Username>
           <Fonts.P isSecondary>
             {getFormattedNumber(count)} {commentLabel}
           </Fonts.P>
@@ -49,17 +52,17 @@ const Container = styled(Content.Row)`
   justify-content: center;
 `;
 
-const Text = styled(Fonts.H3)`
+const Username = styled(Fonts.H3)`
   font-size: 14px;
   margin: 0;
-  width: 144px;
+  width: ${props => (props.isNarrow ? '80px' : '144px')};
 
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
 const Rank = styled(Fonts.P)`
-  margin-right: 16px;
+  margin-right: 8px;
   font-weight: bold;
   color: ${Colors.greys.supporting};
 `;
@@ -73,17 +76,10 @@ const UserLink = styled.a`
 const Stats = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 16px;
+  margin-left: 8px;
 `;
 
-const Score = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  flex-basis: 64px;
-  font-size: 14px;
-`;
+CommentCountRow.propTypes = propTypes;
+CommentCountRow.defaultProps = defaultProps;
 
-LeaderboardRow.propTypes = propTypes;
-LeaderboardRow.defaultProps = defaultProps;
-
-export default LeaderboardRow;
+export default CommentCountRow;
