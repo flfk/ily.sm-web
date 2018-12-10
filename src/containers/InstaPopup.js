@@ -37,25 +37,25 @@ class InstaPopup extends React.Component {
     }
   }
 
-  addScript = () => {
-    console.log('addScript called');
-    const { code, state } = getParams(this.props);
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    // This is the URL to the HTTP triggered 'token' Firebase Function.
-    // See https://firebase.google.com/docs/functions.
-    const tokenFunctionURL =
-      'https://us-central1-' + this.getFirebaseProjectId() + '.cloudfunctions.net/token';
-    script.src =
-      tokenFunctionURL +
-      '?code=' +
-      encodeURIComponent(code) +
-      '&state=' +
-      encodeURIComponent(state) +
-      '&callback=' +
-      this.tokenReceived.name;
-    document.head.appendChild(script);
-  };
+  // addScript = () => {
+  //   console.log('addScript called');
+  //   const { code, state } = getParams(this.props);
+  //   const script = document.createElement('script');
+  //   script.type = 'text/javascript';
+  //   // This is the URL to the HTTP triggered 'token' Firebase Function.
+  //   // See https://firebase.google.com/docs/functions.
+  //   const tokenFunctionURL =
+  //     'https://us-central1-' + this.getFirebaseProjectId() + '.cloudfunctions.net/token';
+  //   script.src =
+  //     tokenFunctionURL +
+  //     '?code=' +
+  //     encodeURIComponent(code) +
+  //     '&state=' +
+  //     encodeURIComponent(state) +
+  //     '&callback=' +
+  //     this.tokenReceived.name;
+  //   document.head.appendChild(script);
+  // };
 
   callToken = () => {
     console.log('calling Token');
