@@ -3,24 +3,28 @@ import { Redirect } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 
 import actions from '../data/actions';
+import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
-import GiftRow from '../components/leaderboard/GiftRow';
 import GiftImg from '../components/GiftImg';
+import InputText from '../components/InputText';
 import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 
 class MessageStore extends React.Component {
   state = {
-    giftOptions: [],
     influencer: {
       id: '',
       storeImgURL: '',
     },
+    message: '',
+    messageErrMsg: '',
+    messageIsValid: false,
     isLoading: true,
-    toCheckout: false,
+    toConfirmation: false,
     selectedGiftID: '',
+    orderID: '',
   };
 
   componentDidMount() {
@@ -32,7 +36,7 @@ class MessageStore extends React.Component {
   handleGiftCheckout = event => {
     const { influencer, giftOptions } = this.state;
     const giftID = event.target.value;
-    this.setState({ selectedGiftID: giftID, toCheckout: true });
+    this.setState({ selectedGiftID: giftID, toConfirmation: true });
     const giftSelected = giftOptions.find(option => option.id === giftID);
     mixpanel.track('Selected Gift', { influencer: influencer.username, gift: giftSelected.name });
   };
@@ -42,17 +46,43 @@ class MessageStore extends React.Component {
     return i;
   };
 
-  goToCheckout = () => {
-    const { selectedGiftID } = this.state;
+  goToConfirmation = () => {
+    const { orderID } = this.state;
     return (
       <Redirect
         push
         to={{
-          pathname: '/checkout',
-          search: `?gift=${selectedGiftID}`,
+          pathname: '/confirmation',
+          search: `?id=${orderID}`,
         }}
       />
     );
+  };
+
+  handleBlur = field => () => {
+    let isValid = false;
+    if (field === 'message') isValid = this.isMessageValid();
+    const validFieldID = `${field}IsValid`;
+    this.setState({ [validFieldID]: isValid });
+  };
+
+  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
+
+  handleSendMessage = () => {
+    console.log('Sending Message, need to enable');
+    if (this.isMessageValid()) {
+      this.setState({ toConfirmation: true });
+    }
+  };
+
+  isMessageValid = () => {
+    const { message } = this.state;
+    if (message === '') {
+      this.setState({ messageErrMsg: "Don't forget to write a message." });
+      return false;
+    }
+    this.setState({ messageErrMsg: '' });
+    return true;
   };
 
   setGiftOptions = async () => {
@@ -65,39 +95,17 @@ class MessageStore extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, toCheckout, selectedGiftID } = this.state;
+    const {
+      influencer,
+      isLoading,
+      message,
+      messageErrMsg,
+      messageIsValid,
+      toConfirmation,
+      selectedGiftID,
+    } = this.state;
 
-    if (toCheckout && selectedGiftID) return this.goToCheckout();
-
-    const giftsDiv = giftOptions
-      .filter(option => !option.isCustom)
-      .sort((a, b) => a.price - b.price)
-      .map(option => (
-        <GiftRow
-          key={option.id}
-          handleClick={this.handleGiftCheckout}
-          imgURL={option.imgURL}
-          price={option.price}
-          gemsEarned={option.gemsEarned}
-          giftID={option.id}
-          name={option.name}
-        />
-      ));
-
-    const giftsCustomDiv = giftOptions
-      .filter(option => option.isCustom)
-      .sort((a, b) => a.price - b.price)
-      .map(option => (
-        <GiftRow
-          key={option.id}
-          handleClick={this.handleGiftCheckout}
-          imgURL={option.imgURL}
-          price={option.price}
-          gemsEarned={option.gemsEarned}
-          giftID={option.id}
-          name="Create Your Own"
-        />
-      ));
+    if (toConfirmation && message) return this.goToConfirmation();
 
     if (isLoading) return <Spinner />;
 
@@ -105,15 +113,23 @@ class MessageStore extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>What gift do you want to send {influencer.displayName}? </Fonts.H1>
+        <Fonts.H1 centered>Send {influencer.displayName} a message and get one back</Fonts.H1>
         <Content.Centered>
           <GiftImg src={influencer.storeImgURL} large />
         </Content.Centered>
         <Content.Spacing />
-        {giftsDiv}
-        <Content.Seperator />
-        <Content.Spacing />
-        {giftsCustomDiv}
+        <InputText.Area
+          errMsg={messageErrMsg}
+          label={`What do you want to say to ${influencer.displayName}?`}
+          placeholder="Your message"
+          onBlur={this.handleBlur('message')}
+          onChange={this.handleChangeInput('message')}
+          value={message}
+          isValid={messageIsValid}
+        />
+        <Btn primary short onClick={this.handleSendMessage}>
+          Send
+        </Btn>
       </Content>
     );
   }

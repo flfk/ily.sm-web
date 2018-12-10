@@ -19,8 +19,9 @@ class GiftStore extends React.Component {
       storeImgURL: '',
     },
     isLoading: true,
-    toCheckout: false,
+    toConfirmation: false,
     selectedGiftID: '',
+    orderID: '',
   };
 
   componentDidMount() {
@@ -32,7 +33,7 @@ class GiftStore extends React.Component {
   handleGiftCheckout = event => {
     const { influencer, giftOptions } = this.state;
     const giftID = event.target.value;
-    this.setState({ selectedGiftID: giftID, toCheckout: true });
+    this.setState({ selectedGiftID: giftID, toConfirmation: true });
     const giftSelected = giftOptions.find(option => option.id === giftID);
     mixpanel.track('Selected Gift', { influencer: influencer.username, gift: giftSelected.name });
   };
@@ -42,14 +43,14 @@ class GiftStore extends React.Component {
     return i;
   };
 
-  goToCheckout = () => {
-    const { selectedGiftID } = this.state;
+  goToConfirmation = () => {
+    const { orderID } = this.state;
     return (
       <Redirect
         push
         to={{
-          pathname: '/checkout',
-          search: `?gift=${selectedGiftID}`,
+          pathname: '/confirmation',
+          search: `?id=${orderID}`,
         }}
       />
     );
@@ -65,9 +66,9 @@ class GiftStore extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, toCheckout, selectedGiftID } = this.state;
+    const { giftOptions, influencer, isLoading, toConfirmation, selectedGiftID } = this.state;
 
-    if (toCheckout && selectedGiftID) return this.goToCheckout();
+    if (toConfirmation && selectedGiftID) return this.goToConfirmation();
 
     const giftsDiv = giftOptions
       .sort((a, b) => a.price - b.price)

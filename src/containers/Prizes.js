@@ -153,7 +153,6 @@ class Prizes extends React.Component {
           {itemRows}
           <Content.Spacing />
         </Content>
-        {footer}
       </div>
     );
   }

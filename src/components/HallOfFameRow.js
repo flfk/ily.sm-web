@@ -9,25 +9,34 @@ import CommentCountRow from './CommentCountRow';
 import Wrapper from './Wrapper';
 
 const propTypes = {
-  dateFinished: PropTypes.number.isRequired,
+  dateFinished: PropTypes.number,
   imgURL: PropTypes.string.isRequired,
   winners: PropTypes.arrayOf(
     PropTypes.shape({
       count: PropTypes.number.isRequired,
-      profilePicURL: PropTypes.string.isRequired,
+      profilePicURL: PropTypes.string,
       rank: PropTypes.number.isRequired,
       username: PropTypes.string.isRequired,
     })
   ).isRequired,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  dateFinished: null,
+};
 
 const HallOfFameRow = ({ dateFinished, imgURL, winners }) => {
   // Placeholder cell
   if (dateFinished === null) {
     const placeholderRows = [1, 2, 3].map(place => (
-      <CommentCountRow count={0} isNarrow profilePicURL={''} rank={place} username={''} />
+      <CommentCountRow
+        key={place}
+        count={0}
+        isNarrow
+        profilePicURL={''}
+        rank={place}
+        username={''}
+      />
     ));
 
     return (
@@ -45,6 +54,7 @@ const HallOfFameRow = ({ dateFinished, imgURL, winners }) => {
   const winnersRows = winners.map(fan => {
     return (
       <CommentCountRow
+        key={fan.username}
         count={fan.count}
         isNarrow
         profilePicURL={fan.profilePicURL}

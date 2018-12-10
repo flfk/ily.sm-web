@@ -7,9 +7,7 @@ import Content from '../components/Content';
 import HallOfFameRow from '../components/HallOfFameRow';
 import Header from '../components/Header';
 import { getParams } from '../utils/Helpers';
-import Fonts from '../utils/Fonts';
 import Spinner from '../components/Spinner';
-import Wrapper from '../components/Wrapper';
 
 const POSTS = [
   {

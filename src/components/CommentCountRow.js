@@ -15,7 +15,7 @@ const DEFAULT_PROFILE_PIC_URL =
 
 const propTypes = {
   count: PropTypes.number.isRequired,
-  profilePicURL: PropTypes.string.isRequired,
+  profilePicURL: PropTypes.string,
   rank: PropTypes.number.isRequired,
   username: PropTypes.string.isRequired,
   isNarrow: PropTypes.bool,
@@ -23,6 +23,7 @@ const propTypes = {
 
 const defaultProps = {
   isNarrow: false,
+  profilePicURL: DEFAULT_PROFILE_PIC_URL,
 };
 
 const CommentCountRow = ({ count, isNarrow, profilePicURL, rank, username }) => {

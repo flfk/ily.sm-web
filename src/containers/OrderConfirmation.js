@@ -1,11 +1,10 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 
 import actions from '../data/actions';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
-import Countdown from '../components/Countdown';
 import Currency from '../components/Currency';
 import Fonts from '../utils/Fonts';
 import { getDateAddDays, getParams } from '../utils/Helpers';
@@ -35,7 +34,6 @@ class OrderConfirmation extends React.Component {
       orderNum: '-',
       giftID: '',
     },
-    toLeaderboard: false,
   };
 
   componentDidMount() {
@@ -48,20 +46,6 @@ class OrderConfirmation extends React.Component {
     return id;
   };
 
-  goToLeaderboard = () => {
-    const { influencer } = this.state;
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: `${influencer.pathname}`,
-        }}
-      />
-    );
-  };
-
-  handleToLeaderboard = () => this.setState({ toLeaderboard: true });
-
   setData = async () => {
     const orderID = this.getOrderID();
     const order = await actions.fetchDocOrder(orderID);
@@ -71,11 +55,9 @@ class OrderConfirmation extends React.Component {
   };
 
   render() {
-    const { gift, influencer, isLoading, order, toLeaderboard } = this.state;
+    const { gift, influencer, isLoading, order, toPrizes } = this.state;
 
-    if (toLeaderboard) return this.goToLeaderboard();
-
-    const dateUpdateNext = getDateAddDays(influencer.dateUpdateLast, 7);
+    if (toPrizes) return this.goToLeaderboard();
 
     if (isLoading) return <Spinner />;
 
@@ -91,16 +73,12 @@ class OrderConfirmation extends React.Component {
         <Fonts.H3 centered noMarginBottom>
           <strong>{order.username}</strong> received <Currency.GemsSingle small /> {gift.gemsEarned}
         </Fonts.H3>
-        <Fonts.H3 centered noMarginBottom>
-          This weeks winners announced in
-        </Fonts.H3>
-        <Countdown date={dateUpdateNext} />
         <Content.Spacing />
-        <Fonts.P centered>Your order confirmation number is #{order.orderNum}</Fonts.P>
-        <Content.Spacing />
-        <Btn primary short onClick={this.handleToLeaderboard}>
-          Back to leaderboard
-        </Btn>
+        <Link to={`/prizes?i=${influencer.username}`}>
+          <Btn primary short fill="true">
+            Back to Prizes
+          </Btn>
+        </Link>
       </Content>
     );
   }
