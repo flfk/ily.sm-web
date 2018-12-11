@@ -3,9 +3,11 @@ import { db } from './firebase';
 
 // Collection and document Names
 const COLL_GIFT_OPTIONS = 'giftOptions';
+const COLL_COMMENTS = 'comments';
 const COLL_INFLUENCERS = 'influencers';
+const COLL_POSTS = 'posts';
 const COLL_ORDERS = 'orders';
-const COLL_TXNS = 'txns';
+// const COLL_TXNS = 'txns';
 const COLL_UTILS = 'utils';
 
 const DOC_LAST_ORDER = 'lastOrder';
@@ -15,9 +17,53 @@ const addDocOrder = async order => {
   return newOrder;
 };
 
-const addDocTxn = async txn => {
-  const newTxn = await db.collection(COLL_TXNS).add(txn);
-  return newTxn;
+// const addDocTxn = async txn => {
+//   const newTxn = await db.collection(COLL_TXNS).add(txn);
+//   return newTxn;
+// };
+
+const fetchCollComments = async postID => {
+  const comments = [];
+  try {
+    const commentsRef = db
+      .collection(COLL_POSTS)
+      .doc(postID)
+      .collection(COLL_COMMENTS);
+    const snapshot = await commentsRef.get();
+    snapshot.forEach(doc => {
+      const comment = doc.data();
+      const { id } = doc;
+      comment.id = id;
+      comments.push(comment);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchCollComments', error);
+  }
+  return comments;
+};
+
+const fetchCollPosts = async influencerID => {
+  const posts = [];
+  try {
+    const postsRef = db.collection(COLL_POSTS);
+    const snapshot = await postsRef.where('influencerID', '==', influencerID).get();
+    const postsWOComments = [];
+    snapshot.forEach(doc => {
+      const post = doc.data();
+      const { id } = doc;
+      post.id = id;
+      postsWOComments.push(post);
+    });
+    await Promise.all(
+      postsWOComments.map(async postWOComments => {
+        const comments = await fetchCollComments(postWOComments.id);
+        posts.push({ ...postWOComments, comments });
+      })
+    );
+  } catch (error) {
+    console.error('Error actions, fetchCollPosts', error);
+  }
+  return posts;
 };
 
 const fetchDocGift = async giftID => {
@@ -95,6 +141,28 @@ const fetchDocsGiftOptions = async influencerID => {
   return giftOptions;
 };
 
+const fetchDocPostByField = async (field, value) => {
+  let post = {};
+  try {
+    const postRef = db.collection(COLL_POSTS);
+    const snapshot = await postRef
+      .where(field, '==', value)
+      .limit(1)
+      .get();
+    let postWOComments = {};
+    snapshot.forEach(doc => {
+      postWOComments = doc.data();
+      const { id } = doc;
+      postWOComments.id = id;
+    });
+    const comments = await fetchCollComments(postWOComments.id);
+    post = { ...postWOComments, comments };
+  } catch (error) {
+    console.error('Error actions, fetchDocPostByField', error);
+  }
+  return post;
+};
+
 const fetchDocsInfluencers = async () => {
   const influencers = [];
   try {
@@ -129,25 +197,25 @@ const fetchDocsOrders = async influencerID => {
   return orders;
 };
 
-const fetchDocsTxns = async (dateMin, influencerID) => {
-  const txns = [];
-  try {
-    const txnsRef = db.collection(COLL_TXNS);
-    const snapshot = await txnsRef
-      .where('influencerID', '==', influencerID)
-      .where('timestamp', '>', dateMin)
-      .get();
-    snapshot.forEach(doc => {
-      const txn = doc.data();
-      const { id } = doc;
-      txn.id = id;
-      txns.push(txn);
-    });
-  } catch (error) {
-    console.error('Error actions, fetchDocsTxns', error);
-  }
-  return txns;
-};
+// const fetchDocsTxns = async (dateMin, influencerID) => {
+//   const txns = [];
+//   try {
+//     const txnsRef = db.collection(COLL_TXNS);
+//     const snapshot = await txnsRef
+//       .where('influencerID', '==', influencerID)
+//       .where('timestamp', '>', dateMin)
+//       .get();
+//     snapshot.forEach(doc => {
+//       const txn = doc.data();
+//       const { id } = doc;
+//       txn.id = id;
+//       txns.push(txn);
+//     });
+//   } catch (error) {
+//     console.error('Error actions, fetchDocsTxns', error);
+//   }
+//   return txns;
+// };
 
 const fetchOrderNum = async () => {
   const lastOrderRef = db.collection(COLL_UTILS).doc(DOC_LAST_ORDER);
@@ -174,16 +242,19 @@ const updateDocOrder = async (orderID, order) => {
 const actions = {};
 
 actions.addDocOrder = addDocOrder;
-actions.addDocTxn = addDocTxn;
+// actions.addDocTxn = addDocTxn;
 actions.fetchDocGift = fetchDocGift;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
-actions.fetchDocOrder = fetchDocOrder;
+// actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 actions.fetchDocsInfluencers = fetchDocsInfluencers;
-actions.fetchDocsOrders = fetchDocsOrders;
-actions.fetchDocsTxns = fetchDocsTxns;
+// actions.fetchDocsOrders = fetchDocsOrders;
+// actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchOrderNum = fetchOrderNum;
-actions.updateDocOrder = updateDocOrder;
+// actions.updateDocOrder = updateDocOrder;
+
+actions.fetchCollPosts = fetchCollPosts;
+actions.fetchDocPostByField = fetchDocPostByField;
 
 export default actions;

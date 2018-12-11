@@ -47,6 +47,7 @@ class Prizes extends React.Component {
     },
     items: ITEMS,
     isLoading: true,
+    toStoreGems: false,
     toStoreGifts: false,
     toStoreMessage: false,
   };
@@ -87,7 +88,20 @@ class Prizes extends React.Component {
     );
   };
 
-  handleSelectPrize = type => () => this.setState({ [`toStore${type}`]: true });
+  goToStoreGems = () => {
+    const { influencer } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/gems',
+          search: `?i=${influencer.id}`,
+        }}
+      />
+    );
+  };
+
+  handleSelectStore = type => () => this.setState({ [`toStore${type}`]: true });
 
   setData = async () => {
     const influencer = await this.fetchInfluencer();
@@ -97,8 +111,9 @@ class Prizes extends React.Component {
   };
 
   render() {
-    const { influencer, items, isLoading, toStoreGifts, toStoreMessage } = this.state;
+    const { influencer, items, isLoading, toStoreGems, toStoreGifts, toStoreMessage } = this.state;
 
+    if (toStoreGems) return this.goToStoreGems();
     if (toStoreGifts) return this.goToStoreGifts();
     if (toStoreMessage) return this.goToStoreMessage();
 
@@ -112,7 +127,7 @@ class Prizes extends React.Component {
             13 <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
-        <Btn.Tertiary>Get More Gems</Btn.Tertiary>
+        <Btn.Tertiary onClick={this.handleSelectStore('Gems')}>Get More Gems</Btn.Tertiary>
       </Content.Row>
     );
 
@@ -121,7 +136,7 @@ class Prizes extends React.Component {
         <ItemRow
           key={item.id}
           imgURL={item.imgURL}
-          handleClick={this.handleSelectPrize(item.type)}
+          handleClick={this.handleSelectStore(item.type)}
           itemID={item.id}
           name={item.name}
           price={item.price}

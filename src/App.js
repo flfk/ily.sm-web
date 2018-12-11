@@ -8,6 +8,7 @@ import Checkout from './containers/Checkout';
 import CurrentPost from './containers/CurrentPost';
 import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
+import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
 import LandingPage from './containers/LandingPage';
 import Leaderboard from './containers/Leaderboard';
@@ -19,6 +20,7 @@ import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
 import Prizes from './containers/Prizes';
+import SignUp from './containers/SignUp';
 
 class App extends Component {
   constructor(props) {
@@ -52,6 +54,7 @@ class App extends Component {
             <Route path="/checkout" component={Checkout} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/confirmation" component={OrderConfirmation} />
+            <Route path="/gems" component={GemStore} />
             <Route path="/gift" component={Gift} />
             <Route path="/gifts" component={GiftStore} />
             <Route path="/halloffame" component={HallOfFame} />
@@ -61,6 +64,7 @@ class App extends Component {
             <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />
+            <Route path="/signup" component={SignUp} />
             <Route path="/cookiesPolicy" component={PolicyCookies} />
 
             <Route path="/" component={CurrentPost} />

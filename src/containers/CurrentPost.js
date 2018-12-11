@@ -13,18 +13,18 @@ import Fonts from '../utils/Fonts';
 import Spinner from '../components/Spinner';
 import Wrapper from '../components/Wrapper';
 
-const POST = {
-  code: 'BrJu1c0AbIz',
-  comments: [
-    { username: 'testing2', text: 'hello world' },
-    { username: 'testing', text: 'hello world' },
-    { username: 'testing', text: 'hello world' },
-  ],
-  imgURL:
-    'https://instagram.faep4-1.fna.fbcdn.net/vp/44646ad8bcb6b6ec554de5eebf7ffc8a/5CADE2CE/t51.2885-15/sh0.08/e35/s640x640/45454528_2147871442121795_3610633011215142597_n.jpg?_nc_ht=instagram.faep4-1.fna.fbcdn.net',
-  influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-  timestamp: '',
-};
+// const POST = {
+//   code: 'BrJu1c0AbIz',
+//   comments: [
+//     { username: 'testing2', text: 'hello world' },
+//     { username: 'testing', text: 'hello world' },
+//     { username: 'testing', text: 'hello world' },
+//   ],
+//   imgURL:
+//     'https://instagram.faep4-1.fna.fbcdn.net/vp/44646ad8bcb6b6ec554de5eebf7ffc8a/5CADE2CE/t51.2885-15/sh0.08/e35/s640x640/45454528_2147871442121795_3610633011215142597_n.jpg?_nc_ht=instagram.faep4-1.fna.fbcdn.net',
+//   influencerID: '3iZ4jV8gUfmEEdNSz6NE',
+//   timestamp: '',
+// };
 
 const USERS = [
   {
@@ -47,12 +47,11 @@ class CurrentPost extends React.Component {
       displayName: '',
       fandom: '',
       id: '',
-      mostRecentImgURL: '',
       username: '',
     },
     isLoading: true,
     toHome: false,
-    mostRecent: {},
+    postMostRecent: {},
   };
 
   componentDidMount() {
@@ -68,6 +67,11 @@ class CurrentPost extends React.Component {
     const pathname = getPathname(this.props);
     const influencer = await actions.fetchDocInfluencerByField('username', pathname);
     return influencer;
+  };
+
+  fetchPost = async code => {
+    const post = await actions.fetchDocPostByField('code', code);
+    return post;
   };
 
   getFans = comments => {
@@ -108,7 +112,7 @@ class CurrentPost extends React.Component {
     } else {
       mixpanel.track('Visited Current Post', { influencer: influencer.username });
     }
-    const mostRecent = POST;
+    const mostRecent = await this.fetchPost(influencer.codeMostRecent);
     const fans = this.getFans(mostRecent.comments);
     this.setState({ fans, mostRecent });
     this.setState({ isLoading: false });
@@ -150,6 +154,7 @@ class CurrentPost extends React.Component {
         </Content.Row>
         <Content.Spacing8px />
         {rows}
+        <Content.Spacing />
       </Content>
     );
   }

@@ -25,42 +25,26 @@ const CURRENCY = 'USD';
 const PAYPAL_VARIABLE_FEE = 0.036;
 const PAYPAL_FIXED_FEE = 0.3;
 
+const GEM_PACK = {
+  gems: 10,
+  id: 'abc123',
+  imgURL:
+    'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/gemPacks%2FGem3.png?alt=media&token=599883f4-1870-463e-a1c1-e2e136fb01c2',
+  price: 9.99,
+};
+
 class Checkout extends React.Component {
   state = {
-    checkoutStep: 0,
-    customName: '',
-    customNameErrMsg: '',
-    customNameIsValid: '',
-    customURL: '',
-    customURLErrMsg: '',
-    customURLIsValid: '',
-    gift: {
-      description: '',
-      gemsEarned: '-',
-      isActive: false,
-      isCustom: false,
-      imgURL: '',
-      influencerID: '',
-      id: '',
-      name: '',
-      prefix: '',
-      price: '-',
-    },
+    gemPack: {},
     influencer: {
       displayName: '',
       username: '',
       id: '',
     },
     isLoading: true,
-    note: '',
-    noteErrMsg: '',
-    noteIsValid: false,
     orderID: '',
     paypalErrorMsg: '',
     toConfirmation: false,
-    username: '',
-    usernameErrMsg: '',
-    usernameIsValid: false,
   };
 
   componentDidMount() {
@@ -120,67 +104,11 @@ class Checkout extends React.Component {
     );
   };
 
-  handleBlur = field => () => {
-    let isValid = false;
-    if (field === 'customName') isValid = this.isCustomNameValid();
-    if (field === 'customURL') isValid = this.isCustomURLValid();
-    if (field === 'note') isValid = this.isNoteValid();
-    if (field === 'username') isValid = this.isUsernameValid();
-
-    const validFieldID = `${field}IsValid`;
-    this.setState({ [validFieldID]: isValid });
-  };
-
-  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
-
   handleClose = () => this.props.history.goBack();
 
-  handleNext = () => {
-    if (this.isUsernameValid()) {
-      const { influencer, username } = this.state;
-      this.setState({ checkoutStep: 1 });
-      mixpanel.track('Completed Checkout Info', { influencer: influencer.username, username });
-    }
-  };
-
-  handlePrev = () => this.setState({ checkoutStep: 0 });
-
-  isCustomNameValid = () => {
-    const { customName } = this.state;
-    if (customName === '') {
-      this.setState({ customNameErrMsg: "Don't forget to name your gift." });
-      return false;
-    }
-    this.setState({ customNameErrMsg: '' });
-    return true;
-  };
-
-  isCustomURLValid = () => {
-    const { customURL, influencer } = this.state;
-    if (customURL === '') {
-      this.setState({
-        customURLErrMsg: `Don't forget to attach a link for ${influencer.displayName}`,
-      });
-      return false;
-    }
-    this.setState({ customURLErrMsg: '' });
-    return true;
-  };
-
-  isNoteValid = () => true;
-
-  isUsernameValid = () => {
-    const { username } = this.state;
-    if (username === '') {
-      this.setState({ usernameErrMsg: 'Instagram username required.' });
-      return false;
-    }
-    this.setState({ usernameErrMsg: '' });
-    return true;
-  };
-
   onSuccess = async payment => {
-    await this.addGiftOrder(payment.paymentID);
+    // XX TODO
+    // await this.addGiftOrder(payment.paymentID);
   };
 
   onError = error => {
@@ -198,36 +126,20 @@ class Checkout extends React.Component {
   };
 
   setData = async () => {
-    const giftID = this.getGiftID();
-    const gift = await actions.fetchDocGift(giftID);
-    const { influencerID } = gift;
+    const gemPackID = getParams(this.props).gempack;
+    // const gemPack = await actions.fetchDocGift(gemPackID);
+    const gemPack = GEM_PACK;
+    const influencerID = getParams(this.props).i;
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    this.setState({ gift, influencer, isLoading: false });
+    this.setState({ gemPack, influencer, isLoading: false });
   };
 
   setInfluencer = async () => {};
 
   render() {
-    const {
-      checkoutStep,
-      customName,
-      customNameErrMsg,
-      customNameIsValid,
-      customURL,
-      customURLErrMsg,
-      customURLIsValid,
-      note,
-      noteErrMsg,
-      noteIsValid,
-      gift,
-      influencer,
-      isLoading,
-      paypalErrorMsg,
-      toConfirmation,
-      username,
-      usernameErrMsg,
-      usernameIsValid,
-    } = this.state;
+    const { gemPack, influencer, isLoading, paypalErrorMsg, toConfirmation } = this.state;
+
+    if (isLoading) return <Spinner />;
 
     if (toConfirmation) return this.goToConfirmation();
 
@@ -237,29 +149,29 @@ class Checkout extends React.Component {
         commit
         currency={CURRENCY}
         env={ENV}
-        description={`Virtual ${gift.name} gift for ${influencer.displayName}`}
+        description={`Gem pack of ${gemPack.gems} gift for ${influencer.displayName}`}
         onSuccess={this.onSuccess}
         onError={this.onError}
         onCancel={this.onCancel}
-        total={gift.price}
+        total={gemPack.price}
       />
     );
 
     const paypalError = paypalErrorMsg ? <Fonts.ERROR>{paypalErrorMsg}</Fonts.ERROR> : null;
 
-    const paymentForm = usernameIsValid ? (
+    const paymentForm = (
       <div>
         <Content.Row>
           <Fonts.P centered>You'll receive</Fonts.P>
           <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> {gift.gemsEarned}
+            <Currency.GemsSingle small /> {gemPack.gems}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing8px />
         <Content.Row>
           <Fonts.P centered>Total price</Fonts.P>
           <Fonts.H3 centered noMargin>
-            $ {gift.price}
+            $ {gemPack.price}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing />
@@ -279,81 +191,19 @@ class Checkout extends React.Component {
           </Fonts.FinePrint>
         </Content>
         <Content.Spacing8px />
-        <Content.Row justifyStart>
-          <Btn.Tertiary onClick={this.handlePrev}>Back</Btn.Tertiary>
-        </Content.Row>
-      </div>
-    ) : null;
-
-    const customInput = gift.isCustom ? (
-      <div>
-        <InputText
-          errMsg={customNameErrMsg}
-          label="What do you want to name your gift?"
-          placeholder="My Special Gift"
-          onBlur={this.handleBlur('customName')}
-          onChange={this.handleChangeInput('customName')}
-          value={customName}
-          isValid={customNameIsValid}
-        />
-        <InputText
-          errMsg={customURLErrMsg}
-          label="Copy the link to an image or video you want to send"
-          placeholder="www.images.com/keyboard-cat/"
-          onBlur={this.handleBlur('customURL')}
-          onChange={this.handleChangeInput('customURL')}
-          value={customURL}
-          isValid={customURLIsValid}
-        />
-      </div>
-    ) : null;
-
-    const infoForm = (
-      <div>
-        <InputText
-          errMsg={usernameErrMsg}
-          label="Instagram username to receive gems"
-          placeholder="@myInstaAccount"
-          onBlur={this.handleBlur('username')}
-          onChange={this.handleChangeInput('username')}
-          value={username}
-          isValid={usernameIsValid}
-        />
-        {customInput}
-        <InputText.Area
-          errMsg={noteErrMsg}
-          label={`Want to say something to ${influencer.displayName}? (Optional)`}
-          placeholder="Your message"
-          onBlur={this.handleBlur('note')}
-          onChange={this.handleChangeInput('note')}
-          value={note}
-          isValid={noteIsValid}
-        />
-        <Content.Row justifyEnd>
-          <Btn primary short narrow onClick={this.handleNext}>
-            Next
-          </Btn>
-        </Content.Row>
       </div>
     );
-
-    const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
-
-    if (isLoading) return <Spinner />;
 
     return (
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>
-          Send {influencer.displayName} {gift.prefix} {gift.name}
-        </Fonts.H1>
+        <Fonts.H1 centered>Get a Gem Pack to spend on {influencer.displayName}'s prizes</Fonts.H1>
         <Content.Row justifyCenter>
-          <GiftImg src={gift.imgURL} />
+          <GiftImg src={gemPack.imgURL} />
         </Content.Row>
-        <Fonts.H3 centered>{gift.description}</Fonts.H3>
         <Content.Seperator />
-        {checkoutContent}
+        {paymentForm}
       </Content>
     );
   }

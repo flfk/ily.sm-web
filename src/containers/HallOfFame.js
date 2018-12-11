@@ -9,34 +9,6 @@ import Header from '../components/Header';
 import { getParams } from '../utils/Helpers';
 import Spinner from '../components/Spinner';
 
-const POSTS = [
-  {
-    code: 'BrJu1c0AbIz',
-    comments: [
-      { username: 'testing2', text: 'hello world' },
-      { username: 'testing', text: 'hello world' },
-      { username: 'testing', text: 'hello world' },
-    ],
-    imgURL:
-      'https://instagram.faep4-1.fna.fbcdn.net/vp/44646ad8bcb6b6ec554de5eebf7ffc8a/5CADE2CE/t51.2885-15/sh0.08/e35/s640x640/45454528_2147871442121795_3610633011215142597_n.jpg?_nc_ht=instagram.faep4-1.fna.fbcdn.net',
-    influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-    timestamp: 1544089660000,
-  },
-  {
-    code: 'BrCf8iVgqiG',
-    comments: [
-      { username: 'testing2', text: 'hello world' },
-      { username: 'testing', text: 'hello world' },
-      { username: 'testing', text: 'hello world' },
-      { username: 'testing3', text: 'hello world' },
-    ],
-    imgURL:
-      'https://instagram.faep4-1.fna.fbcdn.net/vp/fac36e8a6bcb957aa705842026421b72/5C998E46/t51.2885-15/e35/46380423_209286899954780_8459270140693207604_n.jpg',
-    influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-    timestamp: 1544084660000,
-  },
-];
-
 const USERS = [
   {
     profilePicURL:
@@ -61,7 +33,7 @@ class HallOfFame extends React.Component {
       username: '',
     },
     isLoading: true,
-    posts: POSTS,
+    posts: [],
   };
 
   componentDidMount() {
@@ -72,6 +44,11 @@ class HallOfFame extends React.Component {
     const { i } = getParams(this.props);
     const influencer = await actions.fetchDocInfluencerByField('username', i);
     return influencer;
+  };
+
+  fetchPosts = async influencerID => {
+    const posts = await actions.fetchCollPosts(influencerID);
+    return posts;
   };
 
   getWinners = comments => {
@@ -100,6 +77,8 @@ class HallOfFame extends React.Component {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
     mixpanel.track('Visited Hall of Fame', { influencer: influencer.username });
+    const posts = await this.fetchPosts(influencer.id);
+    this.setState({ posts });
     this.setState({ isLoading: false });
   };
 
