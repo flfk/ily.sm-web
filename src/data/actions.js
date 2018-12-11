@@ -2,8 +2,9 @@ import { db } from './firebase';
 // import { storage } from './firebase';
 
 // Collection and document Names
-const COLL_GIFT_OPTIONS = 'giftOptions';
 const COLL_COMMENTERS = 'commenters';
+const COLL_GEM_PACKS = 'gemPacks';
+const COLL_GIFT_OPTIONS = 'giftOptions';
 const COLL_INFLUENCERS = 'influencers';
 const COLL_POSTS = 'posts';
 const COLL_ORDERS = 'orders';
@@ -163,6 +164,23 @@ const fetchDocPostByField = async (field, value) => {
   return post;
 };
 
+const fetchDocsGemPacks = async () => {
+  const gemPacks = [];
+  try {
+    const gemPacksRef = db.collection(COLL_GEM_PACKS);
+    const snapshot = await gemPacksRef.get();
+    snapshot.forEach(doc => {
+      const pack = doc.data();
+      const { id } = doc;
+      pack.id = id;
+      gemPacks.push(pack);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsGemPacks', error);
+  }
+  return gemPacks;
+};
+
 const fetchDocsInfluencers = async () => {
   const influencers = [];
   try {
@@ -248,6 +266,7 @@ actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
 // actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
+actions.fetchDocsGemPacks = fetchDocsGemPacks;
 actions.fetchDocsInfluencers = fetchDocsInfluencers;
 // actions.fetchDocsOrders = fetchDocsOrders;
 // actions.fetchDocsTxns = fetchDocsTxns;

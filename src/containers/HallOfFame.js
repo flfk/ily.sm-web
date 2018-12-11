@@ -82,14 +82,16 @@ class HallOfFame extends React.Component {
 
     if (isLoading) return <Spinner />;
 
-    const postsDiv = posts.map((post, index) => (
-      <HallOfFameRow
-        key={post.code}
-        dateFinished={index === 0 ? null : posts[index - 1].timestamp}
-        imgURL={post.imgURL}
-        winners={this.getWinners(post.commenters)}
-      />
-    ));
+    const postsDiv = posts
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map((post, index) => (
+        <HallOfFameRow
+          key={post.code}
+          dateFinished={index === 0 ? null : posts[index - 1].timestamp}
+          imgURL={post.imgURL}
+          winners={this.getWinners(post.commenters)}
+        />
+      ));
 
     return (
       <Content>

@@ -29,6 +29,8 @@ const defaultProps = {
 const CommentCountRow = ({ count, isNarrow, profilePicURL, rank, username }) => {
   const commentLabel = count > 1 ? 'comments' : 'comment';
 
+  const commentText = count === 0 ? '-' : `${getFormattedNumber(count)} ${commentLabel}`;
+
   return (
     <Container key={username} alignCenter>
       <UserLink href={INSTAGRAM_URL_BASE + username} target="_blank">
@@ -38,9 +40,7 @@ const CommentCountRow = ({ count, isNarrow, profilePicURL, rank, username }) => 
         </Wrapper.ProfilePic>
         <Stats>
           <Username isNarrow={isNarrow}>{username}</Username>
-          <Fonts.P isSecondary>
-            {getFormattedNumber(count)} {commentLabel}
-          </Fonts.P>
+          <Fonts.P isSecondary>{commentText}</Fonts.P>
         </Stats>
       </UserLink>
     </Container>

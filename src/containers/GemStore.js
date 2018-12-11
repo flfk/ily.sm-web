@@ -33,7 +33,8 @@ class GemStore extends React.Component {
   };
 
   componentDidMount() {
-    this.setGiftOptions();
+    // this.setGiftOptions();
+    this.setData();
   }
 
   handleClose = () => this.props.history.goBack();
@@ -68,30 +69,32 @@ class GemStore extends React.Component {
     );
   };
 
-  setGiftOptions = async () => {
+  setData = async () => {
     const influencerID = this.getInfluencerID();
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    const giftOptions = await actions.fetchDocsGiftOptions(influencerID);
-    const giftOptionsActive = giftOptions.filter(option => option.isActive);
-    this.setState({ giftOptions: giftOptionsActive, influencer, isLoading: false });
+    const gemPacks = await actions.fetchDocsGemPacks();
+    const gemPacksActive = gemPacks.filter(pack => pack.isActive);
+    this.setState({ gemPacks: gemPacksActive, influencer, isLoading: false });
     mixpanel.track('Visited Gem Store', { influencer: influencer.username });
   };
 
   render() {
-    const { influencer, isLoading, toCheckout, selectedGemPackID } = this.state;
+    const { gemPacks, influencer, isLoading, toCheckout, selectedGemPackID } = this.state;
 
     if (toCheckout && selectedGemPackID) return this.goToCheckout();
 
-    const purchaseOptions = GEM_PACKS.sort((a, b) => a.price - b.price).map(pack => (
-      <GemPackRow
-        key={pack.id}
-        gemPackID={pack.id}
-        handleClick={this.handleSelectGemPack}
-        imgURL={pack.imgURL}
-        name={`${pack.gems} gems`}
-        price={pack.price}
-      />
-    ));
+    const purchaseOptions = gemPacks
+      .sort((a, b) => a.price - b.price)
+      .map(pack => (
+        <GemPackRow
+          key={pack.id}
+          gemPackID={pack.id}
+          handleClick={this.handleSelectGemPack}
+          imgURL={pack.imgURL}
+          name={`${pack.gems} gems`}
+          price={pack.price}
+        />
+      ));
 
     if (isLoading) return <Spinner />;
 
