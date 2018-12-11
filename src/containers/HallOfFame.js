@@ -51,25 +51,20 @@ class HallOfFame extends React.Component {
     return posts;
   };
 
-  getWinners = comments => {
-    const usernames = comments.map(comment => comment.username);
-    const commentsAggregated = _.chain(usernames)
-      .uniq()
-      .map(username => ({
-        username,
-        count: usernames.filter(name => name === username).length,
-      }))
+  getWinners = commenters => {
+    const { influencer } = this.state;
+    const winners = commenters
+      .filter(commenter => commenter.username !== influencer.username)
       .sort((a, b) => b.count - a.count)
       .slice(0, 3)
       .map((fan, index) => ({ ...fan, rank: index + 1 }))
-      .value();
-    const winners = commentsAggregated.map(fan => {
-      const userExisting = USERS.find(user => user.username === fan.username);
-      if (userExisting) {
-        return { ...fan, profilePicURL: userExisting.profilePicURL };
-      }
-      return fan;
-    });
+      .map(fan => {
+        const userExisting = USERS.find(user => user.username === fan.username);
+        if (userExisting) {
+          return { ...fan, profilePicURL: userExisting.profilePicURL };
+        }
+        return fan;
+      });
     return winners;
   };
 
@@ -92,7 +87,7 @@ class HallOfFame extends React.Component {
         key={post.code}
         dateFinished={index === 0 ? null : posts[index - 1].timestamp}
         imgURL={post.imgURL}
-        winners={this.getWinners(post.comments)}
+        winners={this.getWinners(post.commenters)}
       />
     ));
 
@@ -105,6 +100,7 @@ class HallOfFame extends React.Component {
           username={influencer.username}
         />
         {postsDiv}
+        <Content.Spacing />
       </Content>
     );
   }

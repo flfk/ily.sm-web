@@ -76,24 +76,19 @@ class CurrentPost extends React.Component {
     return post;
   };
 
-  getFans = comments => {
-    const usernames = comments.map(comment => comment.username);
-    const commentsAggregated = _.chain(usernames)
-      .uniq()
-      .map(username => ({
-        username,
-        count: usernames.filter(name => name === username).length,
-      }))
+  getFans = commenters => {
+    const { influencer } = this.state;
+    const fans = commenters
+      .filter(commenter => commenter.username !== influencer.username)
       .sort((a, b) => b.count - a.count)
       .map((fan, index) => ({ ...fan, rank: index + 1 }))
-      .value();
-    const fans = commentsAggregated.map(fan => {
-      const userExisting = USERS.find(user => user.username === fan.username);
-      if (userExisting) {
-        return { ...fan, profilePicURL: userExisting.profilePicURL };
-      }
-      return fan;
-    });
+      .map(fan => {
+        const userExisting = USERS.find(user => user.username === fan.username);
+        if (userExisting) {
+          return { ...fan, profilePicURL: userExisting.profilePicURL };
+        }
+        return fan;
+      });
     return fans;
   };
 
@@ -114,14 +109,14 @@ class CurrentPost extends React.Component {
     } else {
       mixpanel.track('Visited Current Post', { influencer: influencer.username });
     }
-    const mostRecent = await this.fetchPost(influencer.codeMostRecent);
-    const fans = this.getFans(mostRecent.comments);
-    this.setState({ fans, mostRecent });
+    const postMostRecent = await this.fetchPost(influencer.codeMostRecent);
+    const fans = this.getFans(postMostRecent.commenters);
+    this.setState({ fans, postMostRecent });
     this.setState({ isLoading: false });
   };
 
   render() {
-    const { fans, influencer, isLoading, mostRecent, toHome } = this.state;
+    const { fans, influencer, isLoading, postMostRecent, toHome } = this.state;
 
     if (toHome) return this.goToHome();
 
@@ -153,7 +148,7 @@ class CurrentPost extends React.Component {
         <Content.Spacing8px />
         <Content.Row justifyCenter>
           <Wrapper.Post isLarge>
-            <img src={mostRecent.imgURL} alt="Most recent post" />
+            <img src={postMostRecent.imgURL} alt="Most recent post" />
           </Wrapper.Post>
         </Content.Row>
         <Content.Spacing8px />

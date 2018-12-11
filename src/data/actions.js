@@ -3,7 +3,7 @@ import { db } from './firebase';
 
 // Collection and document Names
 const COLL_GIFT_OPTIONS = 'giftOptions';
-const COLL_COMMENTS = 'comments';
+const COLL_COMMENTERS = 'commenters';
 const COLL_INFLUENCERS = 'influencers';
 const COLL_POSTS = 'posts';
 const COLL_ORDERS = 'orders';
@@ -22,24 +22,24 @@ const addDocOrder = async order => {
 //   return newTxn;
 // };
 
-const fetchDocsComments = async postID => {
-  const comments = [];
+const fetchDocsCommenters = async postID => {
+  const commenters = [];
   try {
-    const commentsRef = db
+    const commentersRef = db
       .collection(COLL_POSTS)
       .doc(postID)
-      .collection(COLL_COMMENTS);
-    const snapshot = await commentsRef.get();
+      .collection(COLL_COMMENTERS);
+    const snapshot = await commentersRef.get();
     snapshot.forEach(doc => {
-      const comment = doc.data();
+      const commenter = doc.data();
       const { id } = doc;
-      comment.id = id;
-      comments.push(comment);
+      commenter.id = id;
+      commenters.push(commenter);
     });
   } catch (error) {
-    console.error('Error actions, fetchDocsComments', error);
+    console.error('Error actions, fetchDocsCommenters', error);
   }
-  return comments;
+  return commenters;
 };
 
 const fetchCollPosts = async influencerID => {
@@ -47,17 +47,17 @@ const fetchCollPosts = async influencerID => {
   try {
     const postsRef = db.collection(COLL_POSTS);
     const snapshot = await postsRef.where('influencerID', '==', influencerID).get();
-    const postsWOComments = [];
+    const postsWOCommenters = [];
     snapshot.forEach(doc => {
       const post = doc.data();
       const { id } = doc;
       post.id = id;
-      postsWOComments.push(post);
+      postsWOCommenters.push(post);
     });
     await Promise.all(
-      postsWOComments.map(async postWOComments => {
-        const comments = await fetchDocsComments(postWOComments.id);
-        posts.push({ ...postWOComments, comments });
+      postsWOCommenters.map(async postWOCommenters => {
+        const commenters = await fetchDocsCommenters(postWOCommenters.id);
+        posts.push({ ...postWOCommenters, commenters });
       })
     );
   } catch (error) {
@@ -149,14 +149,14 @@ const fetchDocPostByField = async (field, value) => {
       .where(field, '==', value)
       .limit(1)
       .get();
-    let postWOComments = {};
+    let postWOCommenters = {};
     snapshot.forEach(doc => {
-      postWOComments = doc.data();
+      postWOCommenters = doc.data();
       const { id } = doc;
-      postWOComments.id = id;
+      postWOCommenters.id = id;
     });
-    const comments = await fetchDocsComments(postWOComments.id);
-    post = { ...postWOComments, comments };
+    const commenters = await fetchDocsCommenters(postWOCommenters.id);
+    post = { ...postWOCommenters, commenters };
   } catch (error) {
     console.error('Error actions, fetchDocPostByField', error);
   }
