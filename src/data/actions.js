@@ -22,7 +22,7 @@ const addDocOrder = async order => {
 //   return newTxn;
 // };
 
-const fetchCollComments = async postID => {
+const fetchDocsComments = async postID => {
   const comments = [];
   try {
     const commentsRef = db
@@ -37,7 +37,7 @@ const fetchCollComments = async postID => {
       comments.push(comment);
     });
   } catch (error) {
-    console.error('Error actions, fetchCollComments', error);
+    console.error('Error actions, fetchDocsComments', error);
   }
   return comments;
 };
@@ -56,7 +56,7 @@ const fetchCollPosts = async influencerID => {
     });
     await Promise.all(
       postsWOComments.map(async postWOComments => {
-        const comments = await fetchCollComments(postWOComments.id);
+        const comments = await fetchDocsComments(postWOComments.id);
         posts.push({ ...postWOComments, comments });
       })
     );
@@ -155,7 +155,7 @@ const fetchDocPostByField = async (field, value) => {
       const { id } = doc;
       postWOComments.id = id;
     });
-    const comments = await fetchCollComments(postWOComments.id);
+    const comments = await fetchDocsComments(postWOComments.id);
     post = { ...postWOComments, comments };
   } catch (error) {
     console.error('Error actions, fetchDocPostByField', error);

@@ -68,7 +68,7 @@ const HallOfFameRow = ({ dateFinished, imgURL, winners }) => {
     <Container>
       <Fonts.P>
         {moment(dateFinished)
-          .format('do MMM YYYY')
+          .format('Do MMM YYYY')
           .toUpperCase()}
       </Fonts.P>
       <Content.Spacing8px />

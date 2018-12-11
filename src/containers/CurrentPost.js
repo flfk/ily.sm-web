@@ -39,6 +39,8 @@ const USERS = [
   },
 ];
 
+const MAX_ROWS = 100;
+
 class CurrentPost extends React.Component {
   state = {
     fans: [],
@@ -125,15 +127,17 @@ class CurrentPost extends React.Component {
 
     if (isLoading) return <Spinner />;
 
-    const rows = fans.map(fan => (
-      <CommentCountRow
-        key={fan.username}
-        count={fan.count}
-        profilePicURL={fan.profilePicURL}
-        rank={fan.rank}
-        username={fan.username}
-      />
-    ));
+    const rows = fans
+      .slice(0, MAX_ROWS)
+      .map(fan => (
+        <CommentCountRow
+          key={fan.username}
+          count={fan.count}
+          profilePicURL={fan.profilePicURL}
+          rank={fan.rank}
+          username={fan.username}
+        />
+      ));
 
     return (
       <Content>
