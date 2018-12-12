@@ -1,8 +1,9 @@
 export const COMMISSION = 0.15;
 
 export const ITEM_TYPE = {
-  message: 'message',
+  gemPack: 'gemPack',
   gift: 'gift',
+  message: 'message',
 };
 
 export const POINTS_BY_TYPE = {

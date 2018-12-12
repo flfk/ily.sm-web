@@ -88,7 +88,7 @@ class Prizes extends React.Component {
     if (type === ITEM_TYPE.gift) {
       this.setState({ toStoreGifts: true });
     }
-    if (type === 'gems') {
+    if (type === ITEM_TYPE.gemPack) {
       this.setState({ toStoreGems: true });
     }
   };
@@ -129,7 +129,9 @@ class Prizes extends React.Component {
             13 <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
-        <Btn.Tertiary onClick={this.handleSelectStore('gems')}>Get More Gems</Btn.Tertiary>
+        <Btn.Tertiary onClick={this.handleSelectStore(ITEM_TYPE.gemPack)}>
+          Get More Gems
+        </Btn.Tertiary>
       </Content.Row>
     );
 

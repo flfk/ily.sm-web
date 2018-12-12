@@ -68,6 +68,19 @@ const fetchCollPosts = async influencerID => {
   return posts;
 };
 
+const fetchDocGemPack = async gemPackID => {
+  let gemPack = {};
+  try {
+    const gemPackRef = db.collection(COLL_GEM_PACKS).doc(gemPackID);
+    const snapshot = await gemPackRef.get();
+    gemPack = snapshot.data();
+    gemPack.id = snapshot.id;
+  } catch (error) {
+    console.error('Error actions, fetchDocGemPack', error);
+  }
+  return gemPack;
+};
+
 const fetchDocGift = async giftID => {
   let gift = {};
   try {
@@ -292,6 +305,7 @@ const actions = {};
 
 actions.addDocOrder = addDocOrder;
 // actions.addDocTxn = addDocTxn;
+actions.fetchDocGemPack = fetchDocGemPack;
 actions.fetchDocGift = fetchDocGift;
 actions.fetchDocItem = fetchDocItem;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;

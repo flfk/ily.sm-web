@@ -14,25 +14,14 @@ import { getParams } from '../utils/Helpers';
 
 class OrderConfirmation extends React.Component {
   state = {
-    gift: {
-      imgURL: '',
-      id: '',
-      name: '',
-      prefix: '',
-      price: '-',
-    },
+    gemPack: {},
+    gift: {},
     item: {},
     influencer: {
       displayName: '',
     },
     isLoading: true,
-    order: {
-      influencerID: '',
-      itemID: '',
-      orderNum: '-',
-      message: '',
-      type: '',
-    },
+    order: {},
   };
 
   componentDidMount() {
@@ -43,11 +32,20 @@ class OrderConfirmation extends React.Component {
   setData = async () => {
     const { orderID } = getParams(this.props);
     const order = await actions.fetchDocOrder(orderID);
-    const influencer = await actions.fetchDocInfluencerByID(order.influencerID);
+    let influencer = {};
+    if (order.type === ITEM_TYPE.gemPack) {
+      const { i } = getParams(this.props);
+      influencer = await actions.fetchDocInfluencerByID(i);
+      const gemPack = await actions.fetchDocGemPack(order.gemPackID);
+      this.setState({ gemPack });
+    } else {
+      influencer = await actions.fetchDocInfluencerByID(order.influencerID);
+    }
     if (order.type === ITEM_TYPE.gift) {
       const gift = await actions.fetchDocGift(order.giftID);
       this.setState({ gift });
-    } else {
+    }
+    if (order.type === ITEM_TYPE.message) {
       const item = await actions.fetchDocItem(order.itemID);
       this.setState({ item });
     }
@@ -55,23 +53,28 @@ class OrderConfirmation extends React.Component {
   };
 
   render() {
-    const { gift, influencer, item, isLoading, order } = this.state;
+    const { gemPack, gift, influencer, item, isLoading, order } = this.state;
 
     if (isLoading) return <Spinner />;
 
-    const title =
-      order.type === ITEM_TYPE.gift
-        ? `You sent ${influencer.displayName} ${gift.prefix} ${gift.name}!`
-        : `Message sent to ${influencer.displayName}!`;
+    let title = null;
+    if (order.type === ITEM_TYPE.gift)
+      title = `You sent ${influencer.displayName} ${gift.prefix} ${gift.name}!`;
+    if (order.type === ITEM_TYPE.message) title = `Message sent to ${influencer.displayName}!`;
+    if (order.type === ITEM_TYPE.gemPack) title = `You got ${gemPack.gems} gems.`;
 
-    const subtitle =
-      order.type === ITEM_TYPE.gift
-        ? `${gift.description}`
-        : `We'll DM you on Instagram with a link to your reply from ${
-            influencer.displayName
-          } within one week.`;
+    let subtitle = null;
+    if (order.type === ITEM_TYPE.gift) subtitle = gift.description;
+    if (order.type === ITEM_TYPE.message)
+      subtitle = `We'll DM you on Instagram with a link to your reply from ${
+        influencer.displayName
+      } within one week.`;
+    if (order.type === ITEM_TYPE.gemPack) subtitle = `Spend your gems on any prize.`;
 
-    const imgSrc = order.type === ITEM_TYPE.gift ? gift.imgURL : item.imgURL;
+    let imgSrc = null;
+    if (order.type === ITEM_TYPE.gift) imgSrc = gift.imgURL;
+    if (order.type === ITEM_TYPE.message) imgSrc = item.imgURL;
+    if (order.type === ITEM_TYPE.gemPack) imgSrc = gemPack.imgURL;
 
     return (
       <Content>
@@ -83,15 +86,23 @@ class OrderConfirmation extends React.Component {
         <Fonts.P centered>If you have any questions please contact us:</Fonts.P>
         <Content.Row justifyCenter>
           <Fonts.P centered>Message us on Instagram </Fonts.P> <Content.Gap />
-          <Fonts.Link>@ilydotsm</Fonts.Link>
+          <Fonts.Link href="https://www.instagram.com/ilydotsm/" target="_blank">
+            @ilydotsm
+          </Fonts.Link>
         </Content.Row>
         <Content.Row justifyCenter>
           <Fonts.P centered>Email us</Fonts.P>
-          <Content.Gap /> <Fonts.Link>ilydotsm@gmail.com</Fonts.Link>
+          <Content.Gap />
+          <Fonts.Link href="mailto:ilydotsm@gmail.com" target="_blank">
+            ilydotsm@gmail.com
+          </Fonts.Link>
         </Content.Row>
         <Content.Row justifyCenter>
           <Fonts.P centered>Call us on</Fonts.P>
-          <Content.Gap /> <Fonts.Link>+1 (213) 249-4523</Fonts.Link>
+          <Content.Gap />
+          <Fonts.Link href="tel:+1 (213) 249-4523" target="_blank">
+            +1 (213) 249-4523
+          </Fonts.Link>
         </Content.Row>
         <Content.Spacing />
         <Link to={`/prizes?i=${influencer.username}`}>

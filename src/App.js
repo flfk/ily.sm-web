@@ -11,7 +11,6 @@ import Gift from './containers/Gift';
 import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
 import LandingPage from './containers/LandingPage';
-import Leaderboard from './containers/Leaderboard';
 import NavBar from './containers/NavBar';
 import MessageStore from './containers/MessageStore';
 import OrderConfirmation from './containers/OrderConfirmation';
@@ -61,7 +60,6 @@ class App extends Component {
             <Route path="/home" component={LandingPage} />
             <Route path="/prizes" component={Prizes} />
             <Route path="/message" component={MessageStore} />
-            <Route path="/top" component={Leaderboard} />
             <Route path="/termsConditions" component={PolicyTermsConditions} />
             <Route path="/privacyPolicy" component={PolicyPrivacy} />
             <Route path="/signup" component={SignUp} />

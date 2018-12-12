@@ -1,19 +1,17 @@
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
-// import validator from 'validator';
 
-import actions from '../data/actions';
-import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
-import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
-import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
-import InputText from '../components/InputText';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 import PayPalCheckout from '../components/PayPalCheckout';
+import actions from '../data/actions';
+import Fonts from '../utils/Fonts';
+import { getParams, getTimestamp } from '../utils/Helpers';
+import { ITEM_TYPE } from '../utils/Constants';
 
 const CLIENT = {
   sandbox: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX,
@@ -25,22 +23,10 @@ const CURRENCY = 'USD';
 const PAYPAL_VARIABLE_FEE = 0.036;
 const PAYPAL_FIXED_FEE = 0.3;
 
-const GEM_PACK = {
-  gems: 10,
-  id: 'abc123',
-  imgURL:
-    'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/gemPacks%2FGem3.png?alt=media&token=599883f4-1870-463e-a1c1-e2e136fb01c2',
-  price: 9.99,
-};
-
 class Checkout extends React.Component {
   state = {
     gemPack: {},
-    influencer: {
-      displayName: '',
-      username: '',
-      id: '',
-    },
+    influencer: {},
     isLoading: true,
     orderID: '',
     paypalErrorMsg: '',
@@ -52,53 +38,49 @@ class Checkout extends React.Component {
     mixpanel.track('Visited Checkout');
   }
 
-  addGiftOrder = async paypalPaymentID => {
-    const { customName, customURL, gift, influencer, note, username } = this.state;
-    const usernameFormatted = formatUsername(username);
-    const txn = await actions.addDocTxn({
-      changePointsComments: 0,
-      changePointsPaid: gift.gemsEarned,
-      influencerID: influencer.id,
-      timestamp: getTimestamp(),
-      username: usernameFormatted,
-    });
+  addOrderGemPack = async paypalPaymentID => {
+    const { gemPack, influencer } = this.state;
+    // const txn = await actions.addDocTxn({
+    //   changePointsComments: 0,
+    //   changePointsPaid: gift.gemsEarned,
+    //   influencerID: influencer.id,
+    //   timestamp: getTimestamp(),
+    //   username: usernameFormatted,
+    // });
     const orderNum = await actions.fetchOrderNum();
-    let order = {
-      note,
-      giftID: gift.id,
-      influencerID: influencer.id,
-      paypalFee: this.getPaypalFee(gift.price),
-      total: gift.price,
-      txnID: txn.id,
+    const order = {
+      gemPackID: gemPack.id,
+      paypalFee: this.getPaypalFee(gemPack.price),
+      total: gemPack.price,
+      // TODO
+      // txnID: txn.id,
       orderNum,
       paypalPaymentID,
-      purchaseDate: getTimestamp(),
-      username: usernameFormatted,
-      wasOpened: false,
+      type: ITEM_TYPE.gemPack,
+      timestamp: getTimestamp(),
+      // TODO
+      // userID: 'XXTODO'
     };
-    if (gift.isCustom) order = { ...order, customName, customURL, isCustom: true };
     const orderAdded = await actions.addDocOrder(order);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
-    mixpanel.people.set({ $name: usernameFormatted });
-    mixpanel.track('Purchased Gift', { influencer: influencer.username, gift: gift.name });
-    mixpanel.people.track_charge(gift.price);
-  };
-
-  getGiftID = () => {
-    const { gift } = getParams(this.props);
-    return gift;
+    mixpanel.track('Purchased Gem Pack', {
+      gemPack: gemPack.gems,
+      influencer: influencer.username,
+      price: gemPack.price,
+    });
+    mixpanel.people.track_charge(gemPack.price);
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
 
   goToConfirmation = () => {
-    const { orderID } = this.state;
+    const { influencer, orderID } = this.state;
     return (
       <Redirect
         push
         to={{
           pathname: '/confirmation',
-          search: `?id=${orderID}`,
+          search: `?orderID=${orderID}&i=${influencer.id}`,
         }}
       />
     );
@@ -108,7 +90,7 @@ class Checkout extends React.Component {
 
   onSuccess = async payment => {
     // XX TODO
-    // await this.addGiftOrder(payment.paymentID);
+    await this.addOrderGemPack(payment.paymentID);
   };
 
   onError = error => {
@@ -126,18 +108,16 @@ class Checkout extends React.Component {
   };
 
   setData = async () => {
-    const gemPackID = getParams(this.props).gempack;
-    // const gemPack = await actions.fetchDocGift(gemPackID);
-    const gemPack = GEM_PACK;
-    const influencerID = getParams(this.props).i;
-    const influencer = await actions.fetchDocInfluencerByID(influencerID);
+    const { gemPackID, i } = getParams(this.props);
+    const gemPack = await actions.fetchDocGemPack(gemPackID);
+    const influencer = await actions.fetchDocInfluencerByID(i);
     this.setState({ gemPack, influencer, isLoading: false });
   };
 
   setInfluencer = async () => {};
 
   render() {
-    const { gemPack, influencer, isLoading, paypalErrorMsg, toConfirmation } = this.state;
+    const { gemPack, isLoading, paypalErrorMsg, toConfirmation } = this.state;
 
     if (isLoading) return <Spinner />;
 
@@ -149,7 +129,7 @@ class Checkout extends React.Component {
         commit
         currency={CURRENCY}
         env={ENV}
-        description={`Gem pack of ${gemPack.gems} gift for ${influencer.displayName}`}
+        description={`ily.sm gem pack: ${gemPack.gems} gems`}
         onSuccess={this.onSuccess}
         onError={this.onError}
         onCancel={this.onCancel}
@@ -198,7 +178,7 @@ class Checkout extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>Get a Gem Pack to spend on {influencer.displayName}'s prizes</Fonts.H1>
+        <Fonts.H1 centered>Get Gem Pack</Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gemPack.imgURL} />
         </Content.Row>

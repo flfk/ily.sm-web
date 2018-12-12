@@ -10,16 +10,6 @@ import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 
-const GEM_PACKS = [
-  {
-    gems: 10,
-    id: 'abc123',
-    imgURL:
-      'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/gemPacks%2FGem3.png?alt=media&token=599883f4-1870-463e-a1c1-e2e136fb01c2',
-    price: 9.99,
-  },
-];
-
 class GemStore extends React.Component {
   state = {
     gemPacks: [],
@@ -33,17 +23,16 @@ class GemStore extends React.Component {
   };
 
   componentDidMount() {
-    // this.setGiftOptions();
     this.setData();
   }
 
   handleClose = () => this.props.history.goBack();
 
   handleSelectGemPack = event => {
-    const { influencer } = this.state;
-    const gemPackID = event.target.value;
-    this.setState({ selectedGemPackID: gemPackID, toCheckout: true });
-    const gemPackSelected = GEM_PACKS.find(option => option.id === gemPackID);
+    const { influencer, gemPacks } = this.state;
+    const gemPackSelectedID = event.target.value;
+    this.setState({ selectedGemPackID: gemPackSelectedID, toCheckout: true });
+    const gemPackSelected = gemPacks.find(pack => pack.id === gemPackSelectedID);
     mixpanel.track('Selected Gem Pack', {
       influencer: influencer.username,
       gemPack: gemPackSelected.gems,
@@ -63,7 +52,7 @@ class GemStore extends React.Component {
         push
         to={{
           pathname: '/checkout',
-          search: `?gempack=${selectedGemPackID}&i=${influencer.id}`,
+          search: `?gemPackID=${selectedGemPackID}&i=${influencer.id}`,
         }}
       />
     );

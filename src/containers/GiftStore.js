@@ -28,7 +28,7 @@ class GiftStore extends React.Component {
     this.setGiftOptions();
   }
 
-  addOrder = async selectedGiftID => {
+  addOrderGift = async selectedGiftID => {
     const { giftOptions, influencer } = this.state;
     const gift = giftOptions.find(option => option.id === selectedGiftID);
     // XX TODO
@@ -57,7 +57,7 @@ class GiftStore extends React.Component {
 
   handleGiftSelect = event => {
     const selectedGiftID = event.target.value;
-    this.addOrder(selectedGiftID);
+    this.addOrderGift(selectedGiftID);
   };
 
   getInfluencerID = () => {

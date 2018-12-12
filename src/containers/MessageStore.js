@@ -32,7 +32,7 @@ class MessageStore extends React.Component {
     this.setGiftOptions();
   }
 
-  addOrder = async () => {
+  addOrderMessage = async () => {
     const { influencer, item, message } = this.state;
     // XX TODO
     const orderNum = await actions.fetchOrderNum();
@@ -84,7 +84,7 @@ class MessageStore extends React.Component {
 
   handleSendMessage = () => {
     if (this.isMessageValid()) {
-      this.addOrder();
+      this.addOrderMessage();
     }
   };
 
