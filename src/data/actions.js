@@ -6,6 +6,7 @@ const COLL_COMMENTERS = 'commenters';
 const COLL_GEM_PACKS = 'gemPacks';
 const COLL_GIFT_OPTIONS = 'giftOptions';
 const COLL_INFLUENCERS = 'influencers';
+const COLL_ITEMS = 'items';
 const COLL_POSTS = 'posts';
 const COLL_ORDERS = 'orders';
 // const COLL_TXNS = 'txns';
@@ -198,6 +199,23 @@ const fetchDocsInfluencers = async () => {
   return influencers;
 };
 
+const fetchDocsItems = async influencerID => {
+  const items = [];
+  try {
+    const itemsRef = db.collection(COLL_ITEMS);
+    const snapshot = await itemsRef.where('influencerID', '==', influencerID).get();
+    snapshot.forEach(doc => {
+      const item = doc.data();
+      const { id } = doc;
+      item.id = id;
+      items.push(item);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsItems', error);
+  }
+  return items;
+};
+
 const fetchDocsOrders = async influencerID => {
   const orders = [];
   try {
@@ -268,6 +286,7 @@ actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 actions.fetchDocsGemPacks = fetchDocsGemPacks;
 actions.fetchDocsInfluencers = fetchDocsInfluencers;
+actions.fetchDocsItems = fetchDocsItems;
 // actions.fetchDocsOrders = fetchDocsOrders;
 // actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchOrderNum = fetchOrderNum;

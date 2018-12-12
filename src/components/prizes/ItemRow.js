@@ -11,15 +11,13 @@ import ItemImg from './ItemImg';
 const propTypes = {
   handleClick: PropTypes.func.isRequired,
   imgURL: PropTypes.string.isRequired,
-  itemID: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-
   name: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const ItemRow = ({ handleClick, imgURL, itemID, price, name }) => {
+const ItemRow = ({ handleClick, imgURL, price, name }) => {
   return (
     <Container>
       <ItemImg src={imgURL} />
@@ -28,10 +26,11 @@ const ItemRow = ({ handleClick, imgURL, itemID, price, name }) => {
       <Content.Spacing8px />
       <Content.Row justifyCenter>
         <Fonts.H3 noMargin>{price.toFixed(0)}</Fonts.H3>
+        <Content.Gap />
         <Currency.GemsSingle small />
       </Content.Row>
       <Content.Spacing8px />
-      <Btn primary short onClick={handleClick} value={itemID} fill="true">
+      <Btn primary short onClick={handleClick} fill="true">
         Get This
       </Btn>
       <Content.Spacing />

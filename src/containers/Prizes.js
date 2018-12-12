@@ -7,36 +7,15 @@ import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Header from '../components/Header';
+import { ITEM_TYPE } from '../utils/Constants';
 import { getParams } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
 import { Footer, ItemRow } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
-const ITEMS = [
-  {
-    id: 'abc123',
-    influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-    imgURL:
-      'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/giftOptions%2FJonGift_macncheese.png?alt=media&token=ff3d4c30-83a4-43cb-ad3d-16cb4df32f52',
-    name: 'Message from Freo',
-    type: 'Message',
-    price: 45,
-    isAvailable: true,
-  },
-  {
-    id: 'xyz987',
-    influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-    imgURL:
-      'https://firebasestorage.googleapis.com/v0/b/ilysm-15824.appspot.com/o/giftOptions%2FJonGift_macncheese.png?alt=media&token=ff3d4c30-83a4-43cb-ad3d-16cb4df32f52',
-    name: 'Send Freo a gift',
-    type: 'Gifts',
-    price: 45,
-    isAvailable: true,
-  },
-];
-
 class Prizes extends React.Component {
   state = {
+    giftOptions: [],
     influencer: {
       dateUpdateLast: 0,
       displayName: '',
@@ -45,7 +24,7 @@ class Prizes extends React.Component {
       mostRecentImgURL: '',
       username: '',
     },
-    items: ITEMS,
+    items: [],
     isLoading: true,
     toStoreGems: false,
     toStoreGifts: false,
@@ -101,17 +80,39 @@ class Prizes extends React.Component {
     );
   };
 
-  handleSelectStore = type => () => this.setState({ [`toStore${type}`]: true });
+  handleSelectStore = type => () => {
+    if (type === ITEM_TYPE.message) {
+      this.setState({ toStoreMessage: true });
+    }
+    if (type === ITEM_TYPE.gift) {
+      this.setState({ toStoreGifts: true });
+    }
+    if (type === 'gems') {
+      this.setState({ toStoreGems: true });
+    }
+  };
 
   setData = async () => {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
+    const giftOptions = await actions.fetchDocsGiftOptions(influencer.id);
+    const giftOptionsActive = giftOptions.filter(option => option.isActive);
+    const items = await actions.fetchDocsItems(influencer.id);
+    const itemsActive = items.filter(item => item.isActive);
+    this.setState({ giftOptions: giftOptionsActive, items: itemsActive, isLoading: false });
     mixpanel.track('Visited Leaderboard', { influencer: influencer.username });
-    this.setState({ isLoading: false });
   };
 
   render() {
-    const { influencer, items, isLoading, toStoreGems, toStoreGifts, toStoreMessage } = this.state;
+    const {
+      giftOptions,
+      influencer,
+      items,
+      isLoading,
+      toStoreGems,
+      toStoreGifts,
+      toStoreMessage,
+    } = this.state;
 
     if (toStoreGems) return this.goToStoreGems();
     if (toStoreGifts) return this.goToStoreGifts();
@@ -127,22 +128,31 @@ class Prizes extends React.Component {
             13 <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
-        <Btn.Tertiary onClick={this.handleSelectStore('Gems')}>Get More Gems</Btn.Tertiary>
+        <Btn.Tertiary onClick={this.handleSelectStore('gems')}>Get More Gems</Btn.Tertiary>
       </Content.Row>
     );
 
-    const itemRows = items.map(item => {
-      return (
+    const messageRow = items
+      .filter(item => item.type === ITEM_TYPE.message)
+      .map(item => (
         <ItemRow
           key={item.id}
           imgURL={item.imgURL}
           handleClick={this.handleSelectStore(item.type)}
-          itemID={item.id}
           name={item.name}
           price={item.price}
         />
-      );
-    });
+      ));
+
+    const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0];
+    const giftRow = (
+      <ItemRow
+        imgURL={cheapestGift.imgURL}
+        handleClick={this.handleSelectStore(ITEM_TYPE.gift)}
+        name={`Send ${influencer.displayName} a gift`}
+        price={cheapestGift.price}
+      />
+    );
 
     const footer = (
       <div>
@@ -161,11 +171,12 @@ class Prizes extends React.Component {
           <Header
             fandom={influencer.fandom}
             profilePicURL={influencer.profilePicURL}
-            selectedScreen={'Prizes'}
+            selectedScreen="Prizes"
             username={influencer.username}
           />
           {wallet}
-          {itemRows}
+          {messageRow}
+          {giftRow}
           <Content.Spacing />
         </Content>
       </div>

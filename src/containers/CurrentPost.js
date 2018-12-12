@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 import React from 'react';
