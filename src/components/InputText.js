@@ -9,6 +9,7 @@ import Media from '../utils/Media';
 const propTypes = {
   errMsg: PropTypes.string,
   isValid: PropTypes.bool,
+  isPassword: PropTypes.bool,
   label: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func,
@@ -20,13 +21,24 @@ const propTypes = {
 const defaultProps = {
   errMsg: '',
   isValid: null,
+  isPassword: false,
   label: '',
   onBlur: null,
   noMargin: false,
   placeholder: '',
 };
 
-const InputText = ({ errMsg, label, isValid, onChange, onBlur, noMargin, placeholder, value }) => {
+const InputText = ({
+  errMsg,
+  label,
+  isValid,
+  isPassword,
+  onChange,
+  onBlur,
+  noMargin,
+  placeholder,
+  value,
+}) => {
   const errLabel = errMsg ? <ErrLabel>{errMsg}</ErrLabel> : null;
 
   const hasError = errMsg.length > 0;
@@ -40,7 +52,7 @@ const InputText = ({ errMsg, label, isValid, onChange, onBlur, noMargin, placeho
         onChange={onChange}
         onBlur={onBlur}
         noMargin={noMargin}
-        type="text"
+        type={isPassword ? 'password' : 'text'}
         placeholder={placeholder}
         value={value}
       />

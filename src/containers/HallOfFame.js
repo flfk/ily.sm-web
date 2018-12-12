@@ -1,13 +1,12 @@
-import _ from 'lodash';
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 
-import actions from '../data/actions';
 import Content from '../components/Content';
 import HallOfFameRow from '../components/HallOfFameRow';
 import Header from '../components/Header';
-import { getParams } from '../utils/Helpers';
 import Spinner from '../components/Spinner';
+import actions from '../data/actions';
+import { getParams } from '../utils/Helpers';
 
 const USERS = [
   {
@@ -47,7 +46,7 @@ class HallOfFame extends React.Component {
   };
 
   fetchPosts = async influencerID => {
-    const posts = await actions.fetchCollPosts(influencerID);
+    const posts = await actions.fetchDocsPosts(influencerID);
     return posts;
   };
 

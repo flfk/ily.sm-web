@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { auth, db } from './firebase';
 // import { storage } from './firebase';
 
 // Collection and document Names
@@ -44,7 +44,7 @@ const fetchDocsCommenters = async postID => {
   return commenters;
 };
 
-const fetchCollPosts = async influencerID => {
+const fetchDocsPosts = async influencerID => {
   const posts = [];
   try {
     const postsRef = db.collection(COLL_POSTS);
@@ -63,7 +63,7 @@ const fetchCollPosts = async influencerID => {
       })
     );
   } catch (error) {
-    console.error('Error actions, fetchCollPosts', error);
+    console.error('Error actions, fetchDocsPosts', error);
   }
   return posts;
 };
@@ -299,8 +299,29 @@ const updateDocOrder = async (orderID, order) => {
   return {};
 };
 
-// EXPORTS
+// AUTHENTICATION
+const createUserWithEmailAndPassword = async (email, password) => {
+  let errorCode = null;
+  try {
+    await auth.createUserWithEmailAndPassword(email, password);
+  } catch (error) {
+    console.error('Error actions, createUserWithEmailAndPassword ', error);
+    errorCode = error.code;
+  }
+  return errorCode;
+};
 
+const fetchUser = async () => {
+  let user = {};
+  try {
+    user = auth.currentUser;
+  } catch (error) {
+    console.error('Error actions, fetchUser ', error);
+  }
+  return user;
+};
+
+// EXPORTS
 const actions = {};
 
 actions.addDocOrder = addDocOrder;
@@ -310,17 +331,19 @@ actions.fetchDocGift = fetchDocGift;
 actions.fetchDocItem = fetchDocItem;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
+actions.fetchDocPostByField = fetchDocPostByField;
 actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 actions.fetchDocsGemPacks = fetchDocsGemPacks;
 actions.fetchDocsInfluencers = fetchDocsInfluencers;
 actions.fetchDocsItems = fetchDocsItems;
+actions.fetchDocsPosts = fetchDocsPosts;
 actions.fetchDocsOrders = fetchDocsOrders;
 // actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchOrderNum = fetchOrderNum;
 actions.updateDocOrder = updateDocOrder;
 
-actions.fetchCollPosts = fetchCollPosts;
-actions.fetchDocPostByField = fetchDocPostByField;
+actions.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+actions.fetchUser = fetchUser;
 
 export default actions;
