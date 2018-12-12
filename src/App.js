@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactGA from 'react-ga';
+import { Provider } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
@@ -20,6 +21,8 @@ import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
 import Prizes from './containers/Prizes';
 import SignUp from './containers/SignUp';
+
+import store from './data/redux/Store';
 
 class App extends Component {
   constructor(props) {
@@ -44,31 +47,34 @@ class App extends Component {
   };
 
   render() {
+    console.log('store', store.getState());
     return (
-      <BrowserRouter>
-        <div>
-          <NavBar />
-          <Switch>
-            <Route path="/admin-admin-1" component={Admin} />
-            <Route path="/checkout" component={Checkout} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/confirmation" component={OrderConfirmation} />
-            <Route path="/gems" component={GemStore} />
-            <Route path="/gift" component={Gift} />
-            <Route path="/gifts" component={GiftStore} />
-            <Route path="/halloffame" component={HallOfFame} />
-            <Route path="/home" component={LandingPage} />
-            <Route path="/prizes" component={Prizes} />
-            <Route path="/message" component={MessageStore} />
-            <Route path="/termsConditions" component={PolicyTermsConditions} />
-            <Route path="/privacyPolicy" component={PolicyPrivacy} />
-            <Route path="/signup" component={SignUp} />
-            <Route path="/cookiesPolicy" component={PolicyCookies} />
+      <Provider store={store}>
+        <BrowserRouter>
+          <div>
+            <NavBar />
+            <Switch>
+              <Route path="/admin-admin-1" component={Admin} />
+              <Route path="/checkout" component={Checkout} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/confirmation" component={OrderConfirmation} />
+              <Route path="/gems" component={GemStore} />
+              <Route path="/gift" component={Gift} />
+              <Route path="/gifts" component={GiftStore} />
+              <Route path="/halloffame" component={HallOfFame} />
+              <Route path="/home" component={LandingPage} />
+              <Route path="/prizes" component={Prizes} />
+              <Route path="/message" component={MessageStore} />
+              <Route path="/termsConditions" component={PolicyTermsConditions} />
+              <Route path="/privacyPolicy" component={PolicyPrivacy} />
+              <Route path="/signup" component={SignUp} />
+              <Route path="/cookiesPolicy" component={PolicyCookies} />
 
-            <Route path="/" component={CurrentPost} />
-          </Switch>
-        </div>
-      </BrowserRouter>
+              <Route path="/" component={CurrentPost} />
+            </Switch>
+          </div>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }

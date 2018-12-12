@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import { connect } from 'react-redux';
 
 import Icon from '../assets/icon.png';
 import Btn from '../components/Btn';
@@ -9,11 +10,21 @@ import NavBarList from '../components/NavBarList';
 import Wrapper from '../components/Wrapper';
 import actions from '../data/actions';
 
-class NavBar extends React.Component {
-  state = {
-    user: {},
-  };
+const propTypes = {
+  user: PropTypes.object,
+};
 
+const defaultProps = {
+  user: {},
+};
+
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+class NavBar extends React.Component {
   componentDidMount() {
     this.setUser();
   }
@@ -24,7 +35,8 @@ class NavBar extends React.Component {
   };
 
   render() {
-    const { user } = this.state;
+    const { user } = this.props;
+    console.log(user);
     return (
       <div>
         <NavBarWrapper>
@@ -50,6 +62,12 @@ class NavBar extends React.Component {
   }
 }
 
+NavBar.propTypes = propTypes;
+NavBar.defaultProps = defaultProps;
+
 // const NavBar = () => <div />;
 
-export default NavBar;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NavBar);

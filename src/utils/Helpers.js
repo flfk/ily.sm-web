@@ -1,6 +1,13 @@
 import moment from 'moment-timezone';
 import qs from 'qs';
 
+export const createActionSet = actionName => ({
+  PENDING: `${actionName}_PENDING`,
+  SUCCESS: `${actionName}_SUCCESS`,
+  ERROR: `${actionName}_ERROR`,
+  actionName,
+});
+
 export const formatUsername = username =>
   username
     .toLowerCase()
