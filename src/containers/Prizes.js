@@ -26,6 +26,7 @@ class Prizes extends React.Component {
     },
     items: [],
     isLoading: true,
+    selectedItemID: '',
     toStoreGems: false,
     toStoreGifts: false,
     toStoreMessage: false,
@@ -55,13 +56,13 @@ class Prizes extends React.Component {
   };
 
   goToStoreMessage = () => {
-    const { influencer } = this.state;
+    const { influencer, selectedItemID } = this.state;
     return (
       <Redirect
         push
         to={{
           pathname: '/message',
-          search: `?i=${influencer.id}`,
+          search: `?i=${influencer.id}&itemID=${selectedItemID}`,
         }}
       />
     );
@@ -80,9 +81,9 @@ class Prizes extends React.Component {
     );
   };
 
-  handleSelectStore = type => () => {
+  handleSelectStore = type => event => {
     if (type === ITEM_TYPE.message) {
-      this.setState({ toStoreMessage: true });
+      this.setState({ toStoreMessage: true, selectedItemID: event.target.value });
     }
     if (type === ITEM_TYPE.gift) {
       this.setState({ toStoreGifts: true });
@@ -141,6 +142,7 @@ class Prizes extends React.Component {
           handleClick={this.handleSelectStore(item.type)}
           name={item.name}
           price={item.price}
+          value={item.id}
         />
       ));
 
@@ -151,6 +153,7 @@ class Prizes extends React.Component {
         handleClick={this.handleSelectStore(ITEM_TYPE.gift)}
         name={`Send ${influencer.displayName} a gift`}
         price={cheapestGift.price}
+        value={cheapestGift.id}
       />
     );
 

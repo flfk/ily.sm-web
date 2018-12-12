@@ -2,37 +2,36 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 
-import actions from '../data/actions';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
-import Fonts from '../utils/Fonts';
-import { getDateAddDays, getParams } from '../utils/Helpers';
 import GiftImg from '../components/GiftImg';
 import Spinner from '../components/Spinner';
+import actions from '../data/actions';
+import { ITEM_TYPE } from '../utils/Constants';
+import Fonts from '../utils/Fonts';
+import { getParams } from '../utils/Helpers';
 
 class OrderConfirmation extends React.Component {
   state = {
-    influencer: {
-      dateUpdateLast: 0,
-      displayName: '',
-      fandom: '',
-      pathname: '',
-    },
     gift: {
-      gemsEarned: '-',
       imgURL: '',
-      influencerID: '',
       id: '',
-      isCustom: false,
       name: '',
       prefix: '',
       price: '-',
     },
+    item: {},
+    influencer: {
+      displayName: '',
+    },
     isLoading: true,
     order: {
+      influencerID: '',
+      itemID: '',
       orderNum: '-',
-      giftID: '',
+      message: '',
+      type: '',
     },
   };
 
@@ -41,38 +40,59 @@ class OrderConfirmation extends React.Component {
     mixpanel.track('Visited Order Confirmation');
   }
 
-  getOrderID = () => {
-    const { id } = getParams(this.props);
-    return id;
-  };
-
   setData = async () => {
-    const orderID = this.getOrderID();
+    const { orderID } = getParams(this.props);
     const order = await actions.fetchDocOrder(orderID);
-    const gift = await actions.fetchDocGift(order.giftID);
-    const influencer = await actions.fetchDocInfluencerByID(gift.influencerID);
-    this.setState({ gift, influencer, order, isLoading: false });
+    const influencer = await actions.fetchDocInfluencerByID(order.influencerID);
+    if (order.type === ITEM_TYPE.gift) {
+      const gift = await actions.fetchDocGift(order.giftID);
+      this.setState({ gift });
+    } else {
+      const item = await actions.fetchDocItem(order.itemID);
+      this.setState({ item });
+    }
+    this.setState({ influencer, order, isLoading: false });
   };
 
   render() {
-    const { gift, influencer, isLoading, order, toPrizes } = this.state;
-
-    if (toPrizes) return this.goToLeaderboard();
+    const { gift, influencer, item, isLoading, order } = this.state;
 
     if (isLoading) return <Spinner />;
 
+    const title =
+      order.type === ITEM_TYPE.gift
+        ? `You sent ${influencer.displayName} ${gift.prefix} ${gift.name}!`
+        : `Message sent to ${influencer.displayName}!`;
+
+    const subtitle =
+      order.type === ITEM_TYPE.gift
+        ? `${gift.description}`
+        : `We'll DM you on Instagram with a link to your reply from ${
+            influencer.displayName
+          } within one week.`;
+
+    const imgSrc = order.type === ITEM_TYPE.gift ? gift.imgURL : item.imgURL;
+
     return (
       <Content>
-        <Fonts.H1 centered>Thanks for your gift!</Fonts.H1>
-        <Fonts.H3 centered>
-          You sent {influencer.displayName} {gift.prefix} {gift.name}
-        </Fonts.H3>
+        <Fonts.H1 centered>{title}</Fonts.H1>
         <Content.Row justifyCenter>
-          <GiftImg src={gift.imgURL} />
+          <GiftImg src={imgSrc} />
         </Content.Row>
-        <Fonts.H3 centered noMarginBottom>
-          <strong>{order.username}</strong> received <Currency.GemsSingle small /> {gift.gemsEarned}
-        </Fonts.H3>
+        <Fonts.H3 centered>{subtitle}</Fonts.H3>
+        <Fonts.P centered>If you have any questions please contact us:</Fonts.P>
+        <Content.Row justifyCenter>
+          <Fonts.P centered>Message us on Instagram </Fonts.P> <Content.Gap />
+          <Fonts.Link>@ilydotsm</Fonts.Link>
+        </Content.Row>
+        <Content.Row justifyCenter>
+          <Fonts.P centered>Email us</Fonts.P>
+          <Content.Gap /> <Fonts.Link>ilydotsm@gmail.com</Fonts.Link>
+        </Content.Row>
+        <Content.Row justifyCenter>
+          <Fonts.P centered>Call us on</Fonts.P>
+          <Content.Gap /> <Fonts.Link>+1 (213) 249-4523</Fonts.Link>
+        </Content.Row>
         <Content.Spacing />
         <Link to={`/prizes?i=${influencer.username}`}>
           <Btn primary short fill="true">

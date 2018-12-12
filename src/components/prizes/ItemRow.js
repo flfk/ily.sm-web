@@ -13,11 +13,12 @@ const propTypes = {
   imgURL: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const ItemRow = ({ handleClick, imgURL, price, name }) => {
+const ItemRow = ({ handleClick, imgURL, price, name, value }) => {
   return (
     <Container>
       <ItemImg src={imgURL} />
@@ -30,7 +31,7 @@ const ItemRow = ({ handleClick, imgURL, price, name }) => {
         <Currency.GemsSingle small />
       </Content.Row>
       <Content.Spacing8px />
-      <Btn primary short onClick={handleClick} fill="true">
+      <Btn primary short onClick={handleClick} fill="true" value={value}>
         Get This
       </Btn>
       <Content.Spacing />

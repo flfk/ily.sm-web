@@ -4,12 +4,13 @@ import mixpanel from 'mixpanel-browser';
 
 import actions from '../data/actions';
 import Content from '../components/Content';
-import Fonts from '../utils/Fonts';
 import GiftRow from '../components/GiftRow';
 import GiftImg from '../components/GiftImg';
-import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
+import { ITEM_TYPE } from '../utils/Constants';
+import Fonts from '../utils/Fonts';
+import { getParams, getTimestamp } from '../utils/Helpers';
 
 class GiftStore extends React.Component {
   state = {
@@ -20,7 +21,6 @@ class GiftStore extends React.Component {
     },
     isLoading: true,
     toConfirmation: false,
-    selectedGiftID: '',
     orderID: '',
   };
 
@@ -28,14 +28,36 @@ class GiftStore extends React.Component {
     this.setGiftOptions();
   }
 
+  addOrder = async selectedGiftID => {
+    const { giftOptions, influencer } = this.state;
+    const gift = giftOptions.find(option => option.id === selectedGiftID);
+    // XX TODO
+    const orderNum = await actions.fetchOrderNum();
+    const order = {
+      giftID: selectedGiftID,
+      influencerID: influencer.id,
+      total: gift.price,
+      // XX TODO
+      // txnID: txn.id,
+      // creditsEarned:
+      // creditsPurchased:
+      orderNum,
+      timestamp: getTimestamp(),
+      type: ITEM_TYPE.gift,
+      // XX TODO
+      // userID: 'TODO',
+      wasOpened: false,
+    };
+    const orderAdded = await actions.addDocOrder(order);
+    this.setState({ orderID: orderAdded.id, toConfirmation: true });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
+  };
+
   handleClose = () => this.props.history.goBack();
 
-  handleGiftCheckout = event => {
-    const { influencer, giftOptions } = this.state;
-    const giftID = event.target.value;
-    this.setState({ selectedGiftID: giftID, toConfirmation: true });
-    const giftSelected = giftOptions.find(option => option.id === giftID);
-    mixpanel.track('Selected Gift', { influencer: influencer.username, gift: giftSelected.name });
+  handleGiftSelect = event => {
+    const selectedGiftID = event.target.value;
+    this.addOrder(selectedGiftID);
   };
 
   getInfluencerID = () => {
@@ -50,7 +72,7 @@ class GiftStore extends React.Component {
         push
         to={{
           pathname: '/confirmation',
-          search: `?id=${orderID}`,
+          search: `?orderID=${orderID}`,
         }}
       />
     );
@@ -66,16 +88,16 @@ class GiftStore extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, toConfirmation, selectedGiftID } = this.state;
+    const { giftOptions, influencer, isLoading, toConfirmation, orderID } = this.state;
 
-    if (toConfirmation && selectedGiftID) return this.goToConfirmation();
+    if (toConfirmation && orderID) return this.goToConfirmation();
 
     const giftsDiv = giftOptions
       .sort((a, b) => a.price - b.price)
       .map(option => (
         <GiftRow
           key={option.id}
-          handleClick={this.handleGiftCheckout}
+          handleClick={this.handleGiftSelect}
           imgURL={option.imgURL}
           price={option.price}
           gemsEarned={option.gemsEarned}

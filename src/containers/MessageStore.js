@@ -2,15 +2,16 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 
-import actions from '../data/actions';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
-import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
 import InputText from '../components/InputText';
-import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
+import actions from '../data/actions';
+import { ITEM_TYPE } from '../utils/Constants';
+import Fonts from '../utils/Fonts';
+import { getParams, getTimestamp } from '../utils/Helpers';
 
 class MessageStore extends React.Component {
   state = {
@@ -18,12 +19,12 @@ class MessageStore extends React.Component {
       id: '',
       storeImgURL: '',
     },
+    item: {},
     message: '',
     messageErrMsg: '',
     messageIsValid: false,
     isLoading: true,
     toConfirmation: false,
-    selectedGiftID: '',
     orderID: '',
   };
 
@@ -31,20 +32,33 @@ class MessageStore extends React.Component {
     this.setGiftOptions();
   }
 
+  addOrder = async () => {
+    const { influencer, item, message } = this.state;
+    // XX TODO
+    const orderNum = await actions.fetchOrderNum();
+    const order = {
+      itemID: item.id,
+      influencerID: influencer.id,
+      total: item.price,
+      // XX TODO
+      // txnID: txn.id,
+      // creditsEarned:
+      // creditsPurchased:
+      message,
+      orderNum,
+      reply: '',
+      timestamp: getTimestamp(),
+      type: ITEM_TYPE.message,
+      // XX TODO
+      // userID: 'TODO',
+      wasOpened: false,
+    };
+    const orderAdded = await actions.addDocOrder(order);
+    this.setState({ orderID: orderAdded.id, toConfirmation: true });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
+  };
+
   handleClose = () => this.props.history.goBack();
-
-  handleGiftCheckout = event => {
-    const { influencer, giftOptions } = this.state;
-    const giftID = event.target.value;
-    this.setState({ selectedGiftID: giftID, toConfirmation: true });
-    const giftSelected = giftOptions.find(option => option.id === giftID);
-    mixpanel.track('Selected Gift', { influencer: influencer.username, gift: giftSelected.name });
-  };
-
-  getInfluencerID = () => {
-    const { i } = getParams(this.props);
-    return i;
-  };
 
   goToConfirmation = () => {
     const { orderID } = this.state;
@@ -53,7 +67,7 @@ class MessageStore extends React.Component {
         push
         to={{
           pathname: '/confirmation',
-          search: `?id=${orderID}`,
+          search: `?orderID=${orderID}`,
         }}
       />
     );
@@ -69,9 +83,8 @@ class MessageStore extends React.Component {
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
   handleSendMessage = () => {
-    console.log('Sending Message, need to enable');
     if (this.isMessageValid()) {
-      this.setState({ toConfirmation: true });
+      this.addOrder();
     }
   };
 
@@ -86,12 +99,11 @@ class MessageStore extends React.Component {
   };
 
   setGiftOptions = async () => {
-    const influencerID = this.getInfluencerID();
-    const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    const giftOptions = await actions.fetchDocsGiftOptions(influencerID);
-    const giftOptionsActive = giftOptions.filter(option => option.isActive);
-    this.setState({ giftOptions: giftOptionsActive, influencer, isLoading: false });
-    mixpanel.track('Visited Gem Store', { influencer: influencer.username });
+    const { i, itemID } = getParams(this.props);
+    const influencer = await actions.fetchDocInfluencerByID(i);
+    const item = await actions.fetchDocItem(itemID);
+    this.setState({ item, influencer, isLoading: false });
+    mixpanel.track('Visited Message Store', { influencer: influencer.username });
   };
 
   render() {
@@ -102,10 +114,10 @@ class MessageStore extends React.Component {
       messageErrMsg,
       messageIsValid,
       toConfirmation,
-      selectedGiftID,
+      orderID,
     } = this.state;
 
-    if (toConfirmation && message) return this.goToConfirmation();
+    if (toConfirmation && orderID) return this.goToConfirmation();
 
     if (isLoading) return <Spinner />;
 

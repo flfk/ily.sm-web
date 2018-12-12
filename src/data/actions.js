@@ -81,6 +81,19 @@ const fetchDocGift = async giftID => {
   return gift;
 };
 
+const fetchDocItem = async itemID => {
+  let item = {};
+  try {
+    const itemRef = db.collection(COLL_ITEMS).doc(itemID);
+    const snapshot = await itemRef.get();
+    item = snapshot.data();
+    item.id = snapshot.id;
+  } catch (error) {
+    console.error('Error actions, fetchDocItem', error);
+  }
+  return item;
+};
+
 const fetchDocInfluencerByID = async influencerID => {
   let influencer = {};
   try {
@@ -280,17 +293,18 @@ const actions = {};
 actions.addDocOrder = addDocOrder;
 // actions.addDocTxn = addDocTxn;
 actions.fetchDocGift = fetchDocGift;
+actions.fetchDocItem = fetchDocItem;
 actions.fetchDocInfluencerByID = fetchDocInfluencerByID;
 actions.fetchDocInfluencerByField = fetchDocInfluencerByField;
-// actions.fetchDocOrder = fetchDocOrder;
+actions.fetchDocOrder = fetchDocOrder;
 actions.fetchDocsGiftOptions = fetchDocsGiftOptions;
 actions.fetchDocsGemPacks = fetchDocsGemPacks;
 actions.fetchDocsInfluencers = fetchDocsInfluencers;
 actions.fetchDocsItems = fetchDocsItems;
-// actions.fetchDocsOrders = fetchDocsOrders;
+actions.fetchDocsOrders = fetchDocsOrders;
 // actions.fetchDocsTxns = fetchDocsTxns;
 actions.fetchOrderNum = fetchOrderNum;
-// actions.updateDocOrder = updateDocOrder;
+actions.updateDocOrder = updateDocOrder;
 
 actions.fetchCollPosts = fetchCollPosts;
 actions.fetchDocPostByField = fetchDocPostByField;
