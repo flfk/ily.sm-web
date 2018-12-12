@@ -1,15 +1,34 @@
-import { createUserWithEmailAndPassword, fetchUser, signOutUser } from './user.api';
-import { CREATE_USER, LOGIN_USER, GET_LOGGED_IN_USER, SIGNOUT_USER } from './user.types';
+import {
+  createUserWithEmailAndPassword,
+  fetchDocUser,
+  setDocUser,
+  signInUser,
+  signOutUser,
+  updateDocUser,
+} from './user.api';
+import {
+  CREATE_USER,
+  LOGIN_USER,
+  GET_LOGGED_IN_USER,
+  SIGNOUT_USER,
+  UPDATE_USER,
+} from './user.types';
 
-export const createUser = (email, password) => dispatch => {
-  dispatch({
-    type: CREATE_USER.PENDING,
-  });
+export const createUser = (email, password, username) => dispatch => {
   createUserWithEmailAndPassword(email, password)
     .then(user => {
+      const userID = user.uid;
+      const userDoc = {
+        email,
+        isVerified: false,
+        profilePicURL: '',
+        username,
+      };
+      setDocUser(userDoc, userID);
+      console.log('user created', userDoc);
       dispatch({
         type: CREATE_USER.SUCCESS,
-        payload: user,
+        payload: { ...userDoc, id: userID },
       });
     })
     .catch(error => {
@@ -21,15 +40,18 @@ export const createUser = (email, password) => dispatch => {
     });
 };
 
-export const login = (email, password) => dispatch => {
+export const logIn = (email, password) => dispatch => {
   dispatch({
     type: LOGIN_USER.PENDING,
   });
-  fetchUser(email, password)
+  signInUser(email, password)
     .then(user => {
-      dispatch({
-        type: LOGIN_USER.SUCCESS,
-        payload: user,
+      const userID = user.uid;
+      fetchDocUser(userID).then(userDoc => {
+        dispatch({
+          type: LOGIN_USER.SUCCESS,
+          payload: { ...userDoc, id: userID },
+        });
       });
     })
     .catch(error => {
@@ -69,5 +91,16 @@ export const signOut = () => dispatch => {
       console.log('Error actions sign out, ', error);
       const errorCode = error.code;
       console.log('Error code is, ', errorCode);
+    });
+};
+
+export const updateUser = fieldsToUpdate => dispatch => {
+  updateDocUser(fieldsToUpdate)
+    .then(() => {
+      console.log('user.actions updating fields', fieldsToUpdate);
+      dispatch({ type: UPDATE_USER.SUCCESS, payload: fieldsToUpdate });
+    })
+    .catch(error => {
+      console.error('Error actions user updateDisplayName, ', error);
     });
 };

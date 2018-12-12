@@ -24,43 +24,54 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({});
 
-class NavBar extends React.Component {
-  componentDidMount() {
-    this.setUser();
-  }
+const NavBar = ({ user }) => {
+  const profileBtn = user.username ? (
+    <li>
+      <Link to="/profile">
+        <Btn.Tertiary>{user.username}</Btn.Tertiary>
+      </Link>
+    </li>
+  ) : null;
 
-  setUser = async () => {
-    const user = await actions.fetchUser();
-    this.setState({ user });
-  };
+  const logInBtn = user.username ? null : (
+    <li>
+      <Link to="/login">
+        <Btn.Tertiary narrow short primary>
+          Log In
+        </Btn.Tertiary>
+      </Link>
+    </li>
+  );
 
-  render() {
-    const { user } = this.props;
-    console.log(user);
-    return (
-      <div>
-        <NavBarWrapper>
-          <NavBarList>
-            <li>
-              <Link to="/home">
-                <Wrapper.Logo>
-                  <img src={Icon} alt="" />
-                </Wrapper.Logo>
-              </Link>
-            </li>
-            <li>
-              <Link to="/signup">
-                <Btn narrow short primary>
-                  Sign Up
-                </Btn>
-              </Link>
-            </li>
-          </NavBarList>
-        </NavBarWrapper>
-      </div>
-    );
-  }
-}
+  const signUpBtn = user.username ? null : (
+    <li>
+      <Link to="/signup">
+        <Btn narrow short primary>
+          Sign Up
+        </Btn>
+      </Link>
+    </li>
+  );
+
+  return (
+    <div>
+      <NavBarWrapper>
+        <NavBarList>
+          <li>
+            <Link to="/home">
+              <Wrapper.Logo>
+                <img src={Icon} alt="" />
+              </Wrapper.Logo>
+            </Link>
+          </li>
+          {profileBtn}
+          {logInBtn}
+          {signUpBtn}
+        </NavBarList>
+      </NavBarWrapper>
+    </div>
+  );
+};
 
 NavBar.propTypes = propTypes;
 NavBar.defaultProps = defaultProps;

@@ -23,7 +23,6 @@ const NavBar = styled.ul`
   li:not(:first-child) {
 
     a {
-      padding: 14px 16px;
       height: 100%;
       color: ${COLORS.greys.primary};
       font-weight: bold;

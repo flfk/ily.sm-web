@@ -7,3 +7,4 @@ export const GET_LOGGED_IN_USER = createActionSet('RETRIEVE_LOGGED_IN_USER');
 export const SIGNOUT_USER = createActionSet('SIGNOUT_USER');
 export const UPDATE_DISPLAY_NAME = createActionSet('UPDATE_DISPLAY_NAME');
 export const UPDATE_EMAIL = createActionSet('UPDATE_EMAIL');
+export const UPDATE_USER = createActionSet('UPDATE_USER');

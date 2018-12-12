@@ -1,78 +1,25 @@
 import { CREATE_USER, GET_LOGGED_IN_USER, LOGIN_USER, SIGNOUT_USER } from './user.types';
 
-const initialState = {
-  email: 'initialEmail',
-  firebaseUser: {},
-  isVerified: false,
-  profilePicURL: '',
-  uid: 'initial uid',
-  username: '',
-};
+const initialState = {};
 
 const reducerUser = (state = initialState, action) => {
   switch (action.type) {
-    case CREATE_USER.PENDING:
-      return {
-        ...state,
-        isPendingUser: true,
-      };
     case CREATE_USER.SUCCESS:
+      console.log('create user success', action.payload);
       return {
-        ...state,
-        displayName: action.payload.displayName,
-        email: action.payload.email,
-        firebaseUser: action.payload,
-        isPendingUser: false,
-        uid: action.payload.uid,
-      };
-    case CREATE_USER.ERROR:
-      return {
-        ...state,
-        error: action.payload,
-        isPendingUser: false,
+        ...action.payload,
       };
     case GET_LOGGED_IN_USER.SUCCESS:
       return {
-        ...state,
-        displayName: action.payload.displayName,
-        email: action.payload.email,
-        firebaseUser: action.payload,
-        isPendingUser: false,
-        uid: action.payload.uid,
-      };
-    case LOGIN_USER.PENDING:
-      return {
-        ...state,
-        isPendingUser: true,
+        ...action.payload,
       };
     case LOGIN_USER.SUCCESS:
       return {
-        ...state,
-        user: action.payload,
-        isPendingUser: false,
-      };
-    case LOGIN_USER.ERROR:
-      return {
-        ...state,
-        error: action.payload,
-        isPendingUser: false,
-      };
-    case SIGNOUT_USER.PENDING:
-      return {
-        ...state,
-        isPendingUser: true,
+        ...action.payload,
       };
     case SIGNOUT_USER.SUCCESS:
       return {
-        ...state,
-        user: action.payload,
-        isPendingUser: false,
-      };
-    case SIGNOUT_USER.ERROR:
-      return {
-        ...state,
-        error: action.payload,
-        isPendingUser: false,
+        ...action.payload,
       };
     default:
       return state;

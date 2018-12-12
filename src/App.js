@@ -12,6 +12,7 @@ import Gift from './containers/Gift';
 import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
 import LandingPage from './containers/LandingPage';
+import LogIn from './containers/LogIn';
 import NavBar from './containers/NavBar';
 import MessageStore from './containers/MessageStore';
 import OrderConfirmation from './containers/OrderConfirmation';
@@ -20,6 +21,7 @@ import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
 import Prizes from './containers/Prizes';
+import Profile from './containers/Profile';
 import SignUp from './containers/SignUp';
 
 import store from './data/redux/Store';
@@ -63,10 +65,12 @@ class App extends Component {
               <Route path="/gifts" component={GiftStore} />
               <Route path="/halloffame" component={HallOfFame} />
               <Route path="/home" component={LandingPage} />
-              <Route path="/prizes" component={Prizes} />
+              <Route path="/login" component={LogIn} />
               <Route path="/message" component={MessageStore} />
-              <Route path="/termsConditions" component={PolicyTermsConditions} />
+              <Route path="/prizes" component={Prizes} />
               <Route path="/privacyPolicy" component={PolicyPrivacy} />
+              <Route path="/profile" component={Profile} />
+              <Route path="/termsConditions" component={PolicyTermsConditions} />
               <Route path="/signup" component={SignUp} />
               <Route path="/cookiesPolicy" component={PolicyCookies} />
 

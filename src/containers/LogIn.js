@@ -9,10 +9,10 @@ import InputText from '../components/InputText';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 
-import { createUser } from '../data/redux/user/user.actions';
+import { logIn } from '../data/redux/user/user.actions';
 
 const propTypes = {
-  actionSignUp: PropTypes.func.isRequired,
+  actionLogIn: PropTypes.func.isRequired,
 };
 
 const defaultProps = {};
@@ -22,10 +22,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionSignUp: (email, password, username) => dispatch(createUser(email, password, username)),
+  actionLogIn: (email, password, username) => dispatch(logIn(email, password)),
 });
 
-class SignUp extends React.Component {
+class LogIn extends React.Component {
   state = {
     email: '',
     emailErrMsg: '',
@@ -34,10 +34,6 @@ class SignUp extends React.Component {
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
-    showConfirmation: false,
-    username: '',
-    usernameErrMsg: '',
-    usernameIsValid: false,
   };
 
   handleBlur = field => () => {
@@ -56,16 +52,16 @@ class SignUp extends React.Component {
   handleSignUp = () => {
     this.setState({ isLoading: true });
     if (this.isFormValid()) {
-      const { email, password, username } = this.state;
-      const { actionSignUp } = this.props;
-      actionSignUp(email, password, username);
-      this.setState({ showConfirmation: true });
+      const { email, password } = this.state;
+      const { actionLogIn } = this.props;
+      actionLogIn(email, password);
+      this.handleDone();
     }
     this.setState({ isLoading: false });
   };
 
   isFormValid = () => {
-    if (this.isEmailValid() && this.isPasswordValid() && this.isUsernameValid()) {
+    if (this.isEmailValid() && this.isPasswordValid()) {
       return true;
     }
     return false;
@@ -83,21 +79,11 @@ class SignUp extends React.Component {
 
   isPasswordValid = () => {
     const { password } = this.state;
-    if (password.length < 6) {
-      this.setState({ passwordErrMsg: 'Your password needs to be at least 6 characters.' });
+    if (password === '') {
+      this.setState({ passwordErrMsg: "Don't forget to type in your password." });
       return false;
     }
     this.setState({ passwordErrMsg: '' });
-    return true;
-  };
-
-  isUsernameValid = () => {
-    const { username } = this.state;
-    if (username === '') {
-      this.setState({ usernameErrMsg: 'Instagram username required.' });
-      return false;
-    }
-    this.setState({ usernameErrMsg: '' });
     return true;
   };
 
@@ -110,58 +96,23 @@ class SignUp extends React.Component {
       password,
       passwordErrMsg,
       passwordIsValid,
-      showConfirmation,
-      username,
-      usernameErrMsg,
-      usernameIsValid,
     } = this.state;
 
     if (isLoading) return <Spinner />;
 
-    if (showConfirmation) {
-      return (
-        <Content>
-          <Fonts.H1 centered> Welcome {username}!</Fonts.H1>
-          <Fonts.H3 centered>
-            To verify your Instagram username we will message you on Instagram within 48 hours.
-          </Fonts.H3>
-          <Fonts.P centered>
-            You won't be able to get or spend gems until your account is verified. We apologize for
-            any inconvenience.
-          </Fonts.P>
-          <Content.Spacing />
-          <Btn primary short onClick={this.handleDone}>
-            Done
-          </Btn>
-        </Content>
-      );
-    }
-
     return (
       <Content>
-        <Fonts.H1 centered>Sign up to claim your gems and get prizes.</Fonts.H1>
-        <Content.Spacing />
+        <Fonts.H1 centered>Log into your ily.sm account</Fonts.H1>
         <InputText
           errMsg={emailErrMsg}
-          label="Tell us your email"
-          placeholder="example@email.com"
+          placeholder="Email"
           onBlur={this.handleBlur('email')}
           onChange={this.handleChangeInput('email')}
           value={email}
           isValid={emailIsValid}
         />
         <InputText
-          errMsg={usernameErrMsg}
-          label="What's your Instagram username?"
-          placeholder="@myInstaAccount"
-          onBlur={this.handleBlur('username')}
-          onChange={this.handleChangeInput('username')}
-          value={username}
-          isValid={usernameIsValid}
-        />
-        <InputText
           errMsg={passwordErrMsg}
-          label="Create a Password"
           placeholder="Password"
           onBlur={this.handleBlur('password')}
           onChange={this.handleChangeInput('password')}
@@ -171,17 +122,17 @@ class SignUp extends React.Component {
         />
         <Content.Spacing8px />
         <Btn primary short onClick={this.handleSignUp}>
-          Sign Up
+          Log In
         </Btn>
       </Content>
     );
   }
 }
 
-SignUp.propTypes = propTypes;
-SignUp.defaultProps = defaultProps;
+LogIn.propTypes = propTypes;
+LogIn.defaultProps = defaultProps;
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SignUp);
+)(LogIn);
