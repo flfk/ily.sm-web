@@ -101,7 +101,7 @@ const ERROR = styled.p`
   font-size: ${FONT_SIZES.p};
   font-family: ${FONT_FAMILY.body};
   font-weight: bold;
-  color: red;
+  color: ${Colors.error.primary};
   margin: 8px 0;
   margin: ${props => (props.noMargin ? '0px' : '')};
   text-align: ${props => (props.centered ? 'center' : '')};

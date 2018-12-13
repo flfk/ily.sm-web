@@ -13,16 +13,25 @@ import { logIn } from '../data/redux/user/user.actions';
 
 const propTypes = {
   actionLogIn: PropTypes.func.isRequired,
+  errorCode: PropTypes.string,
+  isPending: PropTypes.bool,
+  username: PropTypes.string,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  errorCode: '',
+  isPending: false,
+  username: '',
+};
 
 const mapStateToProps = state => ({
-  user: state.user,
+  errorCode: state.user.errorCode,
+  isPending: state.user.isPending,
+  username: state.user.username,
 });
 
 const mapDispatchToProps = dispatch => ({
-  actionLogIn: (email, password, username) => dispatch(logIn(email, password)),
+  actionLogIn: (email, password) => dispatch(logIn(email, password)),
 });
 
 class LogIn extends React.Component {
@@ -34,6 +43,23 @@ class LogIn extends React.Component {
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
+  };
+
+  componentDidUpdate() {
+    const { errorCode, isPending, username } = this.props;
+    if (username && !isPending && !errorCode) {
+      this.handleDone();
+    }
+  }
+
+  getErrorText = errorCode => {
+    if (errorCode === 'auth/wrong-password') {
+      return "The email and password don't match. Please try again or contact us at ilydotsm@gmail.com for help.";
+    }
+    if (errorCode === 'auth/user-not-found') {
+      return "Looks like you don't have an account yet. You'll need to sign up first.";
+    }
+    return "Oops, something wen't wrong. Please try again or contact us at ilydotsm@gmail.com for help.";
   };
 
   handleBlur = field => () => {
@@ -55,7 +81,6 @@ class LogIn extends React.Component {
       const { email, password } = this.state;
       const { actionLogIn } = this.props;
       actionLogIn(email, password);
-      this.handleDone();
     }
     this.setState({ isLoading: false });
   };
@@ -98,7 +123,13 @@ class LogIn extends React.Component {
       passwordIsValid,
     } = this.state;
 
-    if (isLoading) return <Spinner />;
+    const { errorCode, isPending } = this.props;
+
+    if (isLoading || isPending) return <Spinner />;
+
+    const logInErrMsg = errorCode ? (
+      <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
+    ) : null;
 
     return (
       <Content>
@@ -121,6 +152,7 @@ class LogIn extends React.Component {
           isValid={passwordIsValid}
         />
         <Content.Spacing8px />
+        {logInErrMsg}
         <Btn primary short onClick={this.handleSignUp}>
           Log In
         </Btn>

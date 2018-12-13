@@ -14,55 +14,47 @@ import {
   UPDATE_USER,
 } from './user.types';
 
-export const createUser = (email, password, username) => dispatch => {
-  createUserWithEmailAndPassword(email, password)
-    .then(user => {
-      const userID = user.uid;
+export const createUser = (email, password, username) => async dispatch => {
+  dispatch({
+    type: CREATE_USER.PENDING,
+  });
+  try {
+    const user = await createUserWithEmailAndPassword(email, password);
+    if (user) {
       const userDoc = {
         email,
         isVerified: false,
         profilePicURL: '',
         username,
       };
-      setDocUser(userDoc, userID);
-      console.log('user created', userDoc);
+      const userAdded = await setDocUser(userDoc, user.uid);
       dispatch({
         type: CREATE_USER.SUCCESS,
-        payload: { ...userDoc, id: userID },
+        payload: { ...userAdded, id: user.uid },
       });
-    })
-    .catch(error => {
-      dispatch({
-        type: CREATE_USER.ERROR,
-        payload: error.message,
-      });
-      const errorCode = error.code;
+    }
+  } catch (error) {
+    dispatch({
+      type: CREATE_USER.ERROR,
+      payload: error.code,
     });
+  }
 };
 
-export const logIn = (email, password) => dispatch => {
-  dispatch({
-    type: LOGIN_USER.PENDING,
-  });
-  signInUser(email, password)
-    .then(user => {
-      const userID = user.uid;
-      fetchDocUser(userID).then(userDoc => {
-        dispatch({
-          type: LOGIN_USER.SUCCESS,
-          payload: { ...userDoc, id: userID },
-        });
-      });
-    })
-    .catch(error => {
-      dispatch({
-        type: LOGIN_USER.ERROR,
-        payload: error.message,
-      });
-      console.log('Error actions user login, ', error);
-      const errorCode = error.code;
-      console.log('Error code is, ', errorCode);
+export const logIn = (email, password) => async dispatch => {
+  try {
+    const user = await signInUser(email, password);
+    const userDoc = await fetchDocUser(user.uid);
+    dispatch({
+      type: LOGIN_USER.SUCCESS,
+      payload: { ...userDoc, id: user.uid },
     });
+  } catch (error) {
+    dispatch({
+      type: LOGIN_USER.ERROR,
+      payload: error.code,
+    });
+  }
 };
 
 export const getLoggedInUser = user => dispatch => {
@@ -72,35 +64,31 @@ export const getLoggedInUser = user => dispatch => {
   });
 };
 
-export const signOut = () => dispatch => {
+export const signOut = () => async dispatch => {
   dispatch({
     type: SIGNOUT_USER.PENDING,
   });
-  signOutUser()
-    .then(() => {
-      dispatch({
-        type: SIGNOUT_USER.SUCCESS,
-        payload: {},
-      });
-    })
-    .catch(error => {
-      dispatch({
-        type: SIGNOUT_USER.ERROR,
-        payload: error.message,
-      });
-      console.log('Error actions sign out, ', error);
-      const errorCode = error.code;
-      console.log('Error code is, ', errorCode);
+  try {
+    await signOutUser();
+    dispatch({
+      type: SIGNOUT_USER.SUCCESS,
+      payload: {},
     });
+  } catch (error) {
+    dispatch({
+      type: SIGNOUT_USER.ERROR,
+      payload: error.code,
+    });
+  }
 };
 
-export const updateUser = fieldsToUpdate => dispatch => {
-  updateDocUser(fieldsToUpdate)
-    .then(() => {
-      console.log('user.actions updating fields', fieldsToUpdate);
-      dispatch({ type: UPDATE_USER.SUCCESS, payload: fieldsToUpdate });
-    })
-    .catch(error => {
-      console.error('Error actions user updateDisplayName, ', error);
-    });
+export const updateUser = fieldsToUpdate => async dispatch => {
+  try {
+    console.log('NEED TO CONNECT UPDATEUSER TO FIRESTORE');
+    console.log('user.actions updating fields', fieldsToUpdate);
+    const userDocUpdated = await updateDocUser(fieldsToUpdate);
+    dispatch({ type: UPDATE_USER.SUCCESS, payload: { ...userDocUpdated } });
+  } catch (error) {
+    console.error('Error actions user updateUser, ', error);
+  }
 };

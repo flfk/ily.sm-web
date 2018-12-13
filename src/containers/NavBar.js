@@ -8,7 +8,6 @@ import Btn from '../components/Btn';
 import NavBarWrapper from '../components/NavBarWrapper';
 import NavBarList from '../components/NavBarList';
 import Wrapper from '../components/Wrapper';
-import actions from '../data/actions';
 
 const propTypes = {
   user: PropTypes.object,

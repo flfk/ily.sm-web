@@ -3,14 +3,8 @@ import { auth, db } from '../../firebase';
 const COLL_USERS = 'users';
 
 export const createUserWithEmailAndPassword = async (email, password) => {
-  let user = {};
-  try {
-    const data = await auth.createUserWithEmailAndPassword(email, password);
-    user = data.user;
-  } catch (error) {
-    console.error('Error actions, createUserWithEmailAndPassword ', error);
-  }
-  return user;
+  const data = await auth.createUserWithEmailAndPassword(email, password);
+  return data.user;
 };
 
 export const fetchDisplayName = async () => {
@@ -19,15 +13,10 @@ export const fetchDisplayName = async () => {
 };
 
 export const fetchDocUser = async userID => {
-  let user = {};
-  try {
-    const userRef = db.collection(COLL_USERS).doc(userID);
-    const snapshot = await userRef.get();
-    user = snapshot.data();
-    user.id = snapshot.id;
-  } catch (error) {
-    console.error('Error actions, fetchDocUser', error);
-  }
+  const userRef = db.collection(COLL_USERS).doc(userID);
+  const snapshot = await userRef.get();
+  const user = snapshot.data();
+  user.id = snapshot.id;
   return user;
 };
 
@@ -41,27 +30,17 @@ export const signOutUser = async () => {
 };
 
 export const setDocUser = async (user, userID) => {
-  let setUser = {};
-  try {
-    setUser = await db
-      .collection(COLL_USERS)
-      .doc(userID)
-      .set(user);
-  } catch (error) {
-    console.error('Error actions, setDocUser ', error);
-  }
+  const setUser = await db
+    .collection(COLL_USERS)
+    .doc(userID)
+    .set(user);
   return setUser;
 };
 
 export const updateDocUser = async fieldsToUpdate => {
-  let updatedUser = {};
-  try {
-    const { currentUser } = auth;
-    console.log('user.api, current user is', currentUser);
-    const userRef = db.collection(COLL_USERS).doc(currentUser.uid);
-    updatedUser = userRef.update(fieldsToUpdate);
-  } catch (error) {
-    console.error('Error actions, updateDocUser ', error);
-  }
+  const { currentUser } = auth;
+  console.log('user.api, current user is', currentUser);
+  const userRef = db.collection(COLL_USERS).doc(currentUser.uid);
+  const updatedUser = userRef.update(fieldsToUpdate);
   return updatedUser;
 };

@@ -13,12 +13,21 @@ import { createUser } from '../data/redux/user/user.actions';
 
 const propTypes = {
   actionSignUp: PropTypes.func.isRequired,
+  errorCode: PropTypes.string,
+  isPending: PropTypes.bool,
+  usernameRedux: PropTypes.string,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  errorCode: '',
+  isPending: false,
+  usernameRedux: '',
+};
 
 const mapStateToProps = state => ({
-  user: state.user,
+  errorCode: state.user.errorCode,
+  isPending: state.user.isPending,
+  usernameRedux: state.user.username,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -38,6 +47,13 @@ class SignUp extends React.Component {
     username: '',
     usernameErrMsg: '',
     usernameIsValid: false,
+  };
+
+  getErrorText = errorCode => {
+    if (errorCode === 'auth/email-already-in-use') {
+      return 'You already have an account with this email. Try logging in.';
+    }
+    return "Oops, something wen't wrong. Please try again or contact us at ilydotsm@gmail.com for help.";
   };
 
   handleBlur = field => () => {
@@ -116,12 +132,14 @@ class SignUp extends React.Component {
       usernameIsValid,
     } = this.state;
 
-    if (isLoading) return <Spinner />;
+    const { errorCode, isPending, usernameRedux } = this.props;
 
-    if (showConfirmation) {
+    if (isLoading || isPending) return <Spinner />;
+
+    if (showConfirmation && usernameRedux && !errorCode) {
       return (
         <Content>
-          <Fonts.H1 centered> Welcome {username}!</Fonts.H1>
+          <Fonts.H1 centered> Welcome {usernameRedux}!</Fonts.H1>
           <Fonts.H3 centered>
             To verify your Instagram username we will message you on Instagram within 48 hours.
           </Fonts.H3>
@@ -136,6 +154,10 @@ class SignUp extends React.Component {
         </Content>
       );
     }
+
+    const signUpErrMsg = errorCode ? (
+      <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
+    ) : null;
 
     return (
       <Content>
@@ -170,6 +192,7 @@ class SignUp extends React.Component {
           isValid={passwordIsValid}
         />
         <Content.Spacing8px />
+        {signUpErrMsg}
         <Btn primary short onClick={this.handleSignUp}>
           Sign Up
         </Btn>
