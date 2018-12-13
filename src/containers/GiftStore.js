@@ -1,6 +1,8 @@
+import mixpanel from 'mixpanel-browser';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
+import { connect } from 'react-redux';
 
 import actions from '../data/actions';
 import Content from '../components/Content';
@@ -12,6 +14,25 @@ import { ITEM_TYPE } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getParams, getTimestamp } from '../utils/Helpers';
 
+import { getLoggedInUser } from '../data/redux/user/user.actions';
+
+const propTypes = {
+  actionGetLoggedInUser: PropTypes.func.isRequired,
+  gemBalance: PropTypes.number,
+  userID: PropTypes.string,
+};
+
+const defaultProps = {
+  gemBalance: 0,
+  userID: '',
+};
+
+const mapStateToProps = state => ({ gemBalance: state.user.gemBalance, userID: state.user.id });
+
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
+
 class GiftStore extends React.Component {
   state = {
     giftOptions: [],
@@ -20,8 +41,10 @@ class GiftStore extends React.Component {
       storeImgURL: '',
     },
     isLoading: true,
-    toConfirmation: false,
     orderID: '',
+    toConfirmation: false,
+    toInsufficientGems: false,
+    selectedGiftID: '',
   };
 
   componentDidMount() {
@@ -30,22 +53,18 @@ class GiftStore extends React.Component {
 
   addOrderGift = async selectedGiftID => {
     const { giftOptions, influencer } = this.state;
+    const { userID } = this.props;
     const gift = giftOptions.find(option => option.id === selectedGiftID);
     // XX TODO
     const orderNum = await actions.fetchOrderNum();
     const order = {
+      gemBalanceChange: -1 * gift.price,
       giftID: selectedGiftID,
       influencerID: influencer.id,
-      total: gift.price,
-      // XX TODO
-      // txnID: txn.id,
-      // creditsEarned:
-      // creditsPurchased:
       orderNum,
       timestamp: getTimestamp(),
       type: ITEM_TYPE.gift,
-      // XX TODO
-      // userID: 'TODO',
+      userID,
       wasOpened: false,
     };
     const orderAdded = await actions.addDocOrder(order);
@@ -55,9 +74,22 @@ class GiftStore extends React.Component {
 
   handleClose = () => this.props.history.goBack();
 
-  handleGiftSelect = event => {
+  handleGiftSelect = async event => {
     const selectedGiftID = event.target.value;
-    this.addOrderGift(selectedGiftID);
+    this.setState({ selectedGiftID });
+    const { giftOptions } = this.state;
+    const { actionGetLoggedInUser, gemBalance, userID } = this.props;
+
+    const gift = giftOptions.find(option => option.id === selectedGiftID);
+    if (!userID) {
+      this.setState({ toSignUp: true });
+    }
+    if (gemBalance < gift.price) {
+      this.setState({ toInsufficientGems: true });
+    } else if (this.isMessageValid() && userID) {
+      await this.addOrderGift(selectedGiftID);
+      actionGetLoggedInUser();
+    }
   };
 
   getInfluencerID = () => {
@@ -78,6 +110,28 @@ class GiftStore extends React.Component {
     );
   };
 
+  goToInsufficientGems = () => {
+    const { influencer, selectedGiftID } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/insufficient',
+          search: `?i=${influencer.id}&giftID=${selectedGiftID}`,
+        }}
+      />
+    );
+  };
+
+  goToSignUp = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/signup',
+      }}
+    />
+  );
+
   setGiftOptions = async () => {
     const influencerID = this.getInfluencerID();
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
@@ -88,9 +142,20 @@ class GiftStore extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, toConfirmation, orderID } = this.state;
+    const {
+      giftOptions,
+      influencer,
+      isLoading,
+      orderID,
+      toConfirmation,
+      toInsufficientGems,
+      toSignUp,
+      selectedGiftID,
+    } = this.state;
 
     if (toConfirmation && orderID) return this.goToConfirmation();
+    if (toSignUp) return this.goToSignUp();
+    if (toInsufficientGems && selectedGiftID) return this.goToInsufficientGems();
 
     const giftsDiv = giftOptions
       .sort((a, b) => a.price - b.price)
@@ -123,4 +188,10 @@ class GiftStore extends React.Component {
   }
 }
 
-export default GiftStore;
+GiftStore.propTypes = propTypes;
+GiftStore.defaultProps = defaultProps;
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GiftStore);

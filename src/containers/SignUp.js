@@ -144,8 +144,7 @@ class SignUp extends React.Component {
             To verify your Instagram username we will message you on Instagram within 48 hours.
           </Fonts.H3>
           <Fonts.P centered>
-            You won't be able to get or spend gems until your account is verified. We apologize for
-            any inconvenience.
+            You won't be able claim gems earn't from comments until your account is verified.
           </Fonts.P>
           <Content.Spacing />
           <Btn primary short onClick={this.handleDone}>

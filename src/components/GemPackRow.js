@@ -3,7 +3,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Btn from './Btn';
-import Currency from './Currency';
 import Content from './Content';
 import Fonts from '../utils/Fonts';
 import GiftImg from './GiftImg';

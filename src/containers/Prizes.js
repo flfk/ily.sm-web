@@ -10,20 +10,23 @@ import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Header from '../components/Header';
 import { ITEM_TYPE } from '../utils/Constants';
-import { getParams } from '../utils/Helpers';
+import { getParams, getFormattedNumber } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
 import { Footer, ItemRow } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
 const propTypes = {
+  gemBalance: PropTypes.number,
   username: PropTypes.string,
 };
 
 const defaultProps = {
+  gemBalance: 0,
   username: '',
 };
 
 const mapStateToProps = state => ({
+  gemBalance: state.user.gemBalance,
   username: state.user.username,
 });
 
@@ -131,7 +134,7 @@ class Prizes extends React.Component {
       toStoreMessage,
     } = this.state;
 
-    const { username } = this.props;
+    const { gemBalance, username } = this.props;
 
     if (toStoreGems) return this.goToStoreGems();
     if (toStoreGifts) return this.goToStoreGifts();
@@ -144,7 +147,7 @@ class Prizes extends React.Component {
         <div>
           <Fonts.P isSupporting>YOUR BALANCE</Fonts.P>
           <Fonts.H3 noMarginTop>
-            13 <Currency.GemsSingle small />
+            {getFormattedNumber(gemBalance.toFixed(0))} <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
         <Btn.Tertiary onClick={this.handleSelectStore(ITEM_TYPE.gemPack)}>

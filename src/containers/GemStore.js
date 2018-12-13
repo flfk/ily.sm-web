@@ -1,6 +1,6 @@
+import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
 
 import Content from '../components/Content';
 import Fonts from '../utils/Fonts';

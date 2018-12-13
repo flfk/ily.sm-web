@@ -4,7 +4,6 @@ import mixpanel from 'mixpanel-browser';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
-import Currency from '../components/Currency';
 import GiftImg from '../components/GiftImg';
 import Spinner from '../components/Spinner';
 import actions from '../data/actions';

@@ -1,6 +1,8 @@
+import mixpanel from 'mixpanel-browser';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
+import { connect } from 'react-redux';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
@@ -13,6 +15,25 @@ import { ITEM_TYPE } from '../utils/Constants';
 import Fonts from '../utils/Fonts';
 import { getParams, getTimestamp } from '../utils/Helpers';
 
+import { getLoggedInUser } from '../data/redux/user/user.actions';
+
+const propTypes = {
+  actionGetLoggedInUser: PropTypes.func.isRequired,
+  gemBalance: PropTypes.number,
+  userID: PropTypes.string,
+};
+
+const defaultProps = {
+  gemBalance: 0,
+  userID: '',
+};
+
+const mapStateToProps = state => ({ gemBalance: state.user.gemBalance, userID: state.user.id });
+
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
+
 class MessageStore extends React.Component {
   state = {
     influencer: {
@@ -24,33 +45,30 @@ class MessageStore extends React.Component {
     messageErrMsg: '',
     messageIsValid: false,
     isLoading: true,
+    toInsufficientGems: false,
     toConfirmation: false,
+    toSignUp: false,
     orderID: '',
   };
 
   componentDidMount() {
-    this.setGiftOptions();
+    this.setData();
   }
 
   addOrderMessage = async () => {
     const { influencer, item, message } = this.state;
-    // XX TODO
+    const { userID } = this.props;
     const orderNum = await actions.fetchOrderNum();
     const order = {
+      gemBalanceChange: -1 * item.price,
       itemID: item.id,
       influencerID: influencer.id,
-      total: item.price,
-      // XX TODO
-      // txnID: txn.id,
-      // creditsEarned:
-      // creditsPurchased:
       message,
       orderNum,
       reply: '',
       timestamp: getTimestamp(),
       type: ITEM_TYPE.message,
-      // XX TODO
-      // userID: 'TODO',
+      userID,
       wasOpened: false,
     };
     const orderAdded = await actions.addDocOrder(order);
@@ -73,6 +91,28 @@ class MessageStore extends React.Component {
     );
   };
 
+  goToSignUp = () => (
+    <Redirect
+      push
+      to={{
+        pathname: '/signup',
+      }}
+    />
+  );
+
+  goToInsufficientGems = () => {
+    const { influencer, item } = this.state;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/insufficient',
+          search: `?i=${influencer.id}&itemID=${item.id}`,
+        }}
+      />
+    );
+  };
+
   handleBlur = field => () => {
     let isValid = false;
     if (field === 'message') isValid = this.isMessageValid();
@@ -82,9 +122,17 @@ class MessageStore extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleSendMessage = () => {
-    if (this.isMessageValid()) {
-      this.addOrderMessage();
+  handleSendMessage = async () => {
+    const { item } = this.state;
+    const { actionGetLoggedInUser, gemBalance, userID } = this.props;
+    if (!userID) {
+      this.setState({ toSignUp: true });
+    }
+    if (gemBalance < item.price) {
+      this.setState({ toInsufficientGems: true });
+    } else if (this.isMessageValid() && userID) {
+      await this.addOrderMessage();
+      actionGetLoggedInUser();
     }
   };
 
@@ -98,7 +146,7 @@ class MessageStore extends React.Component {
     return true;
   };
 
-  setGiftOptions = async () => {
+  setData = async () => {
     const { i, itemID } = getParams(this.props);
     const influencer = await actions.fetchDocInfluencerByID(i);
     const item = await actions.fetchDocItem(itemID);
@@ -114,10 +162,14 @@ class MessageStore extends React.Component {
       messageErrMsg,
       messageIsValid,
       toConfirmation,
+      toInsufficientGems,
+      toSignUp,
       orderID,
     } = this.state;
 
     if (toConfirmation && orderID) return this.goToConfirmation();
+    if (toSignUp) return this.goToSignUp();
+    if (toInsufficientGems) return this.goToInsufficientGems();
 
     if (isLoading) return <Spinner />;
 
@@ -147,4 +199,10 @@ class MessageStore extends React.Component {
   }
 }
 
-export default MessageStore;
+MessageStore.propTypes = propTypes;
+MessageStore.defaultProps = defaultProps;
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MessageStore);

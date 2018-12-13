@@ -11,6 +11,7 @@ import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
 import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
+import InsufficientGems from './containers/InsufficientGems';
 import LandingPage from './containers/LandingPage';
 import LogIn from './containers/LogIn';
 import NavBar from './containers/NavBar';
@@ -63,6 +64,7 @@ class App extends Component {
               <Route path="/gift" component={Gift} />
               <Route path="/gifts" component={GiftStore} />
               <Route path="/halloffame" component={HallOfFame} />
+              <Route path="/insufficient" component={InsufficientGems} />
               <Route path="/home" component={LandingPage} />
               <Route path="/login" component={LogIn} />
               <Route path="/message" component={MessageStore} />

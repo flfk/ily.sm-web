@@ -24,47 +24,6 @@ const addDocOrder = async order => {
 //   return newTxn;
 // };
 
-const fetchDocsCommenters = async postID => {
-  const commenters = [];
-  try {
-    const commentersRef = db.collection(COLL_COMMENTERS).where('postID', '==', postID);
-    const snapshot = await commentersRef.get();
-    snapshot.forEach(doc => {
-      const commenter = doc.data();
-      const { id } = doc;
-      commenter.id = id;
-      commenters.push(commenter);
-    });
-  } catch (error) {
-    console.error('Error actions, fetchDocsCommenters', error);
-  }
-  return commenters;
-};
-
-const fetchDocsPosts = async influencerID => {
-  const posts = [];
-  try {
-    const postsRef = db.collection(COLL_POSTS);
-    const snapshot = await postsRef.where('influencerID', '==', influencerID).get();
-    const postsWOCommenters = [];
-    snapshot.forEach(doc => {
-      const post = doc.data();
-      const { id } = doc;
-      post.id = id;
-      postsWOCommenters.push(post);
-    });
-    await Promise.all(
-      postsWOCommenters.map(async postWOCommenters => {
-        const commenters = await fetchDocsCommenters(postWOCommenters.id);
-        posts.push({ ...postWOCommenters, commenters });
-      })
-    );
-  } catch (error) {
-    console.error('Error actions, fetchDocsPosts', error);
-  }
-  return posts;
-};
-
 const fetchDocGemPack = async gemPackID => {
   let gemPack = {};
   try {
@@ -147,6 +106,47 @@ const fetchDocOrder = async orderID => {
     console.error('Error actions, fetchDocOrder', error);
   }
   return order;
+};
+
+const fetchDocsCommenters = async postID => {
+  const commenters = [];
+  try {
+    const commentersRef = db.collection(COLL_COMMENTERS).where('postID', '==', postID);
+    const snapshot = await commentersRef.get();
+    snapshot.forEach(doc => {
+      const commenter = doc.data();
+      const { id } = doc;
+      commenter.id = id;
+      commenters.push(commenter);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsCommenters', error);
+  }
+  return commenters;
+};
+
+const fetchDocsPosts = async influencerID => {
+  const posts = [];
+  try {
+    const postsRef = db.collection(COLL_POSTS);
+    const snapshot = await postsRef.where('influencerID', '==', influencerID).get();
+    const postsWOCommenters = [];
+    snapshot.forEach(doc => {
+      const post = doc.data();
+      const { id } = doc;
+      post.id = id;
+      postsWOCommenters.push(post);
+    });
+    await Promise.all(
+      postsWOCommenters.map(async postWOCommenters => {
+        const commenters = await fetchDocsCommenters(postWOCommenters.id);
+        posts.push({ ...postWOCommenters, commenters });
+      })
+    );
+  } catch (error) {
+    console.error('Error actions, fetchDocsPosts', error);
+  }
+  return posts;
 };
 
 const fetchDocsGiftOptions = async influencerID => {

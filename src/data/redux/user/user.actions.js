@@ -1,6 +1,9 @@
 import {
   createUserWithEmailAndPassword,
   fetchDocUser,
+  fetchDocsOrders,
+  fetchTotalComments,
+  getCurrentUserID,
   setDocUser,
   signInUser,
   signOutUser,
@@ -13,6 +16,21 @@ import {
   SIGNOUT_USER,
   UPDATE_USER,
 } from './user.types';
+
+import { GEMS_PER_COMMENT } from '../../../utils/Constants';
+
+const getFullUser = async userID => {
+  const userDoc = await fetchDocUser(userID);
+
+  const orders = await fetchDocsOrders(userID);
+  const totalComments = userDoc.isVerified ? await fetchTotalComments(userDoc.username) : 0;
+
+  const gemBalanceChangeComments = totalComments * GEMS_PER_COMMENT;
+  const gemBalanceChangeOrders = orders.reduce((aggr, order) => aggr + order.gemBalanceChange, 0);
+  const gemBalance = gemBalanceChangeComments + gemBalanceChangeOrders;
+
+  return { ...userDoc, gemBalance, id: userID, totalComments };
+};
 
 export const createUser = (email, password, username) => async dispatch => {
   dispatch({
@@ -44,10 +62,10 @@ export const createUser = (email, password, username) => async dispatch => {
 export const logIn = (email, password) => async dispatch => {
   try {
     const user = await signInUser(email, password);
-    const userDoc = await fetchDocUser(user.uid);
+    const userFull = await getFullUser(user.uid);
     dispatch({
       type: LOGIN_USER.SUCCESS,
-      payload: { ...userDoc, id: user.uid },
+      payload: { ...userFull },
     });
   } catch (error) {
     dispatch({
@@ -57,12 +75,13 @@ export const logIn = (email, password) => async dispatch => {
   }
 };
 
-export const getLoggedInUser = user => async dispatch => {
+export const getLoggedInUser = () => async dispatch => {
   try {
-    const userDoc = await fetchDocUser(user.uid);
+    const userID = getCurrentUserID();
+    const userFull = await getFullUser(userID);
     dispatch({
       type: GET_LOGGED_IN_USER.SUCCESS,
-      payload: { ...userDoc, id: user.uid },
+      payload: { ...userFull },
     });
   } catch (error) {
     console.log('Actions, user, getLoggedInUser');

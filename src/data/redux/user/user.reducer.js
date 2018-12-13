@@ -2,7 +2,9 @@ import { CREATE_USER, GET_LOGGED_IN_USER, LOGIN_USER, SIGNOUT_USER } from './use
 
 const initialState = {
   errorCode: '',
+  gemBalance: 0,
   isPending: false,
+  totalComments: 0,
 };
 
 const reducerUser = (state = initialState, action) => {

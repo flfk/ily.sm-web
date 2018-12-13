@@ -1,5 +1,7 @@
 export const COMMISSION = 0.15;
 
+export const GEMS_PER_COMMENT = 0.01;
+
 export const ITEM_TYPE = {
   gemPack: 'gemPack',
   gift: 'gift',

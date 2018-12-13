@@ -1,6 +1,8 @@
+import mixpanel from 'mixpanel-browser';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
+import { connect } from 'react-redux';
 
 import Content from '../components/Content';
 import Currency from '../components/Currency';
@@ -13,6 +15,8 @@ import Fonts from '../utils/Fonts';
 import { getParams, getTimestamp } from '../utils/Helpers';
 import { ITEM_TYPE } from '../utils/Constants';
 
+import { getLoggedInUser } from '../data/redux/user/user.actions';
+
 const CLIENT = {
   sandbox: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX,
   production: process.env.REACT_APP_PAYPAL_CLIENT_ID_PRODUCTION,
@@ -22,6 +26,21 @@ const CURRENCY = 'USD';
 
 const PAYPAL_VARIABLE_FEE = 0.036;
 const PAYPAL_FIXED_FEE = 0.3;
+
+const propTypes = {
+  actionGetLoggedInUser: PropTypes.func.isRequired,
+  userID: PropTypes.string,
+};
+
+const defaultProps = {
+  userID: '',
+};
+
+const mapStateToProps = state => ({ userID: state.user.id });
+
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
 
 class Checkout extends React.Component {
   state = {
@@ -40,26 +59,18 @@ class Checkout extends React.Component {
 
   addOrderGemPack = async paypalPaymentID => {
     const { gemPack, influencer } = this.state;
-    // const txn = await actions.addDocTxn({
-    //   changePointsComments: 0,
-    //   changePointsPaid: gift.gemsEarned,
-    //   influencerID: influencer.id,
-    //   timestamp: getTimestamp(),
-    //   username: usernameFormatted,
-    // });
+    const { userID } = this.props;
     const orderNum = await actions.fetchOrderNum();
     const order = {
+      gemBalanceChange: gemPack.gems,
       gemPackID: gemPack.id,
       paypalFee: this.getPaypalFee(gemPack.price),
       total: gemPack.price,
-      // TODO
-      // txnID: txn.id,
       orderNum,
       paypalPaymentID,
       type: ITEM_TYPE.gemPack,
       timestamp: getTimestamp(),
-      // TODO
-      // userID: 'XXTODO'
+      userID,
     };
     const orderAdded = await actions.addDocOrder(order);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
@@ -89,8 +100,9 @@ class Checkout extends React.Component {
   handleClose = () => this.props.history.goBack();
 
   onSuccess = async payment => {
-    // XX TODO
+    const { actionGetLoggedInUser } = this.props;
     await this.addOrderGemPack(payment.paymentID);
+    actionGetLoggedInUser();
   };
 
   onError = error => {
@@ -189,4 +201,10 @@ class Checkout extends React.Component {
   }
 }
 
-export default Checkout;
+Checkout.propTypes = propTypes;
+Checkout.defaultProps = defaultProps;
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Checkout);
