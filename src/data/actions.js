@@ -27,10 +27,7 @@ const addDocOrder = async order => {
 const fetchDocsCommenters = async postID => {
   const commenters = [];
   try {
-    const commentersRef = db
-      .collection(COLL_POSTS)
-      .doc(postID)
-      .collection(COLL_COMMENTERS);
+    const commentersRef = db.collection(COLL_COMMENTERS).where('postID', '==', postID);
     const snapshot = await commentersRef.get();
     snapshot.forEach(doc => {
       const commenter = doc.data();
