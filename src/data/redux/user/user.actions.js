@@ -57,11 +57,19 @@ export const logIn = (email, password) => async dispatch => {
   }
 };
 
-export const getLoggedInUser = user => dispatch => {
-  dispatch({
-    type: GET_LOGGED_IN_USER.SUCCESS,
-    payload: user,
-  });
+export const getLoggedInUser = user => async dispatch => {
+  try {
+    const userDoc = await fetchDocUser(user.uid);
+    dispatch({
+      type: GET_LOGGED_IN_USER.SUCCESS,
+      payload: { ...userDoc, id: user.uid },
+    });
+  } catch (error) {
+    console.log('Actions, user, getLoggedInUser');
+    dispatch({
+      type: GET_LOGGED_IN_USER.ERROR,
+    });
+  }
 };
 
 export const signOut = () => async dispatch => {

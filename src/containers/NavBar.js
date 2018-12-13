@@ -9,68 +9,89 @@ import NavBarWrapper from '../components/NavBarWrapper';
 import NavBarList from '../components/NavBarList';
 import Wrapper from '../components/Wrapper';
 
+import { auth } from '../data/firebase';
+import { getLoggedInUser } from '../data/redux/user/user.actions';
+
 const propTypes = {
-  user: PropTypes.object,
+  actionGetLoggedInUser: PropTypes.func.isRequired,
+  username: PropTypes.string,
 };
 
 const defaultProps = {
-  user: {},
+  username: '',
 };
 
 const mapStateToProps = state => ({
-  user: state.user,
+  username: state.user.username,
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
 
-const NavBar = ({ user }) => {
-  const profileBtn = user.username ? (
-    <li>
-      <Link to="/profile">
-        <Btn.Tertiary>{user.username}</Btn.Tertiary>
-      </Link>
-    </li>
-  ) : null;
+class NavBar extends React.Component {
+  componentDidMount() {
+    this.getSignedInUser();
+  }
 
-  const logInBtn = user.username ? null : (
-    <li>
-      <Link to="/login">
-        <Btn.Tertiary narrow short primary>
-          Log In
-        </Btn.Tertiary>
-      </Link>
-    </li>
-  );
+  getSignedInUser = async () => {
+    const { actionGetLoggedInUser } = this.props;
+    await auth.onAuthStateChanged(user => {
+      if (user) actionGetLoggedInUser(user);
+    });
+  };
 
-  const signUpBtn = user.username ? null : (
-    <li>
-      <Link to="/signup">
-        <Btn narrow short primary>
-          Sign Up
-        </Btn>
-      </Link>
-    </li>
-  );
+  render() {
+    const { username } = this.props;
 
-  return (
-    <div>
-      <NavBarWrapper>
-        <NavBarList>
-          <li>
-            <Link to="/home">
-              <Wrapper.Logo>
-                <img src={Icon} alt="" />
-              </Wrapper.Logo>
-            </Link>
-          </li>
-          {profileBtn}
-          {logInBtn}
-          {signUpBtn}
-        </NavBarList>
-      </NavBarWrapper>
-    </div>
-  );
-};
+    const profileBtn = username ? (
+      <li>
+        <Link to="/profile">
+          <Btn.Tertiary>{username}</Btn.Tertiary>
+        </Link>
+      </li>
+    ) : null;
+
+    const logInBtn = username ? null : (
+      <li>
+        <Link to="/login">
+          <Btn.Tertiary narrow short primary>
+            Log In
+          </Btn.Tertiary>
+        </Link>
+      </li>
+    );
+
+    const signUpBtn = username ? null : (
+      <li>
+        <Link to="/signup">
+          <Btn narrow short primary>
+            Sign Up
+          </Btn>
+        </Link>
+      </li>
+    );
+
+    return (
+      <div>
+        <NavBarWrapper>
+          <NavBarList>
+            <li>
+              <Link to="/home">
+                <Wrapper.Logo>
+                  <img src={Icon} alt="" />
+                </Wrapper.Logo>
+              </Link>
+            </li>
+            {profileBtn}
+            {logInBtn}
+            {signUpBtn}
+          </NavBarList>
+        </NavBarWrapper>
+      </div>
+    );
+  }
+}
 
 NavBar.propTypes = propTypes;
 NavBar.defaultProps = defaultProps;
