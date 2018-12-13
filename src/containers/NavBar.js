@@ -44,6 +44,9 @@ class NavBar extends React.Component {
   render() {
     const { username } = this.props;
 
+    const pathname = this.props.history;
+    console.log('pathname', pathname);
+
     const profileBtn = username ? (
       <li>
         <Link to="/profile">

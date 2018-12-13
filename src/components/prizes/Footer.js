@@ -11,11 +11,12 @@ import Fonts from '../../utils/Fonts';
 
 const propTypes = {
   influencerName: PropTypes.string.isRequired,
+  redirectPathname: PropTypes.string.isRequired,
 };
 
 // const defaultProps = {};
 
-const LeaderboardFooter = ({ influencerName }) => {
+const LeaderboardFooter = ({ influencerName, redirectPathname }) => {
   return (
     <Footer>
       <Content>
@@ -26,7 +27,7 @@ const LeaderboardFooter = ({ influencerName }) => {
         <Content.Spacing8px />
         <Fonts.P centered>For every 100 comments on {influencerName}'s most recent</Fonts.P>
         <Content.Spacing8px />
-        <Link to={`/socookiecutters`}>
+        <Link to={`/${redirectPathname}`}>
           <Btn short fill="true">
             Claim your Gems
           </Btn>

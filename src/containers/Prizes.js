@@ -1,5 +1,7 @@
 import mixpanel from 'mixpanel-browser';
+import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import actions from '../data/actions';
@@ -12,6 +14,20 @@ import { getParams } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
 import { Footer, ItemRow } from '../components/prizes';
 import Spinner from '../components/Spinner';
+
+const propTypes = {
+  username: PropTypes.string,
+};
+
+const defaultProps = {
+  username: '',
+};
+
+const mapStateToProps = state => ({
+  username: state.user.username,
+});
+
+const mapDispatchToProps = dispatch => ({});
 
 class Prizes extends React.Component {
   state = {
@@ -115,13 +131,15 @@ class Prizes extends React.Component {
       toStoreMessage,
     } = this.state;
 
+    const { username } = this.props;
+
     if (toStoreGems) return this.goToStoreGems();
     if (toStoreGifts) return this.goToStoreGifts();
     if (toStoreMessage) return this.goToStoreMessage();
 
     if (isLoading) return <Spinner />;
 
-    const wallet = (
+    const wallet = username ? (
       <Content.Row alignTop>
         <div>
           <Fonts.P isSupporting>YOUR BALANCE</Fonts.P>
@@ -133,7 +151,7 @@ class Prizes extends React.Component {
           Get More Gems
         </Btn.Tertiary>
       </Content.Row>
-    );
+    ) : null;
 
     const messageRow = items
       .filter(item => item.type === ITEM_TYPE.message)
@@ -159,12 +177,12 @@ class Prizes extends React.Component {
       />
     );
 
-    const footer = (
+    const footer = username ? null : (
       <div>
         <Content.Spacing />
         <Content.Spacing />
         <Content.Spacing />
-        <Footer influencerName={influencer.displayName} handleClaim={this.handleClaim}>
+        <Footer influencerName={influencer.displayName} redirectPathname="signup">
           Footer
         </Footer>
       </div>
@@ -184,9 +202,16 @@ class Prizes extends React.Component {
           {giftRow}
           <Content.Spacing />
         </Content>
+        {footer}
       </div>
     );
   }
 }
 
-export default Prizes;
+Prizes.propTypes = propTypes;
+Prizes.defaultProps = defaultProps;
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Prizes);
