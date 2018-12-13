@@ -39,7 +39,19 @@ const Profile = ({ actionSignOut, history, isVerified, username }) => {
     handleClose();
   };
 
-  const verifiedStatus = isVerified ? null : (
+  console.log('isVerified', isVerified);
+  const verifiedStatus = isVerified ? (
+    <div>
+      <Fonts.H3 centered>
+        <span role="img" aria-label="check">
+          ✅
+        </span>{' '}
+        Instagram verified
+      </Fonts.H3>
+      <Content.Spacing8px />
+      <Content.Seperator />
+    </div>
+  ) : (
     <div>
       <Fonts.H3 centered>Awaiting Verification</Fonts.H3>
       <Fonts.P centered>
