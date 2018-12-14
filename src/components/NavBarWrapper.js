@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import COLORS from '../utils/Colors';
+import Colors from '../utils/Colors';
 
 const NavBarWrapper = styled.div`
   display: flex;
@@ -7,8 +7,8 @@ const NavBarWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 48px;
-  background-color: white;
-  border-bottom: 1px solid ${COLORS.greys.light};
+  background-color: #fafafa;
+  border-bottom: 1px solid ${Colors.greys.light};
 `;
 
 export default NavBarWrapper;

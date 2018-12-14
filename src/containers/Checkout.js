@@ -1,19 +1,21 @@
+import mixpanel from 'mixpanel-browser';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Link } from 'react-router-dom';
-import mixpanel from 'mixpanel-browser';
-// import validator from 'validator';
+import { connect } from 'react-redux';
 
-import actions from '../data/actions';
-import Btn from '../components/Btn';
 import Content from '../components/Content';
 import Currency from '../components/Currency';
-import Fonts from '../utils/Fonts';
 import GiftImg from '../components/GiftImg';
-import { formatUsername, getParams, getTimestamp } from '../utils/Helpers';
-import InputText from '../components/InputText';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 import PayPalCheckout from '../components/PayPalCheckout';
+import actions from '../data/actions';
+import Fonts from '../utils/Fonts';
+import { getParams, getTimestamp } from '../utils/Helpers';
+import { ITEM_TYPE } from '../utils/Constants';
+
+import { getLoggedInUser } from '../data/redux/user/user.actions';
 
 const CLIENT = {
   sandbox: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX,
@@ -25,42 +27,29 @@ const CURRENCY = 'USD';
 const PAYPAL_VARIABLE_FEE = 0.036;
 const PAYPAL_FIXED_FEE = 0.3;
 
+const propTypes = {
+  actionGetLoggedInUser: PropTypes.func.isRequired,
+  userID: PropTypes.string,
+};
+
+const defaultProps = {
+  userID: '',
+};
+
+const mapStateToProps = state => ({ userID: state.user.id });
+
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
+
 class Checkout extends React.Component {
   state = {
-    checkoutStep: 0,
-    customName: '',
-    customNameErrMsg: '',
-    customNameIsValid: '',
-    customURL: '',
-    customURLErrMsg: '',
-    customURLIsValid: '',
-    gift: {
-      description: '',
-      gemsEarned: '-',
-      isActive: false,
-      isCustom: false,
-      imgURL: '',
-      influencerID: '',
-      id: '',
-      name: '',
-      prefix: '',
-      price: '-',
-    },
-    influencer: {
-      displayName: '',
-      username: '',
-      id: '',
-    },
+    gemPack: {},
+    influencer: {},
     isLoading: true,
-    note: '',
-    noteErrMsg: '',
-    noteIsValid: false,
     orderID: '',
     paypalErrorMsg: '',
     toConfirmation: false,
-    username: '',
-    usernameErrMsg: '',
-    usernameIsValid: false,
   };
 
   componentDidMount() {
@@ -68,119 +57,52 @@ class Checkout extends React.Component {
     mixpanel.track('Visited Checkout');
   }
 
-  addGiftOrder = async paypalPaymentID => {
-    const { customName, customURL, gift, influencer, note, username } = this.state;
-    const usernameFormatted = formatUsername(username);
-    const txn = await actions.addDocTxn({
-      changePointsComments: 0,
-      changePointsPaid: gift.gemsEarned,
-      influencerID: influencer.id,
-      timestamp: getTimestamp(),
-      username: usernameFormatted,
-    });
+  addOrderGemPack = async paypalPaymentID => {
+    const { gemPack, influencer } = this.state;
+    const { userID } = this.props;
     const orderNum = await actions.fetchOrderNum();
-    let order = {
-      note,
-      giftID: gift.id,
-      influencerID: influencer.id,
-      paypalFee: this.getPaypalFee(gift.price),
-      total: gift.price,
-      txnID: txn.id,
+    const order = {
+      gemBalanceChange: gemPack.gems,
+      gemPackID: gemPack.id,
+      paypalFee: this.getPaypalFee(gemPack.price),
+      total: gemPack.price,
       orderNum,
       paypalPaymentID,
-      purchaseDate: getTimestamp(),
-      username: usernameFormatted,
-      wasOpened: false,
+      type: ITEM_TYPE.gemPack,
+      timestamp: getTimestamp(),
+      userID,
     };
-    if (gift.isCustom) order = { ...order, customName, customURL, isCustom: true };
     const orderAdded = await actions.addDocOrder(order);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
-    mixpanel.people.set({ $name: usernameFormatted });
-    mixpanel.track('Purchased Gift', { influencer: influencer.username, gift: gift.name });
-    mixpanel.people.track_charge(gift.price);
-  };
-
-  getGiftID = () => {
-    const { gift } = getParams(this.props);
-    return gift;
+    mixpanel.track('Purchased Gem Pack', {
+      gemPack: gemPack.gems,
+      influencer: influencer.username,
+      price: gemPack.price,
+    });
+    mixpanel.people.track_charge(gemPack.price);
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
 
   goToConfirmation = () => {
-    const { orderID } = this.state;
+    const { influencer, orderID } = this.state;
     return (
       <Redirect
         push
         to={{
           pathname: '/confirmation',
-          search: `?id=${orderID}`,
+          search: `?orderID=${orderID}&i=${influencer.id}`,
         }}
       />
     );
   };
 
-  handleBlur = field => () => {
-    let isValid = false;
-    if (field === 'customName') isValid = this.isCustomNameValid();
-    if (field === 'customURL') isValid = this.isCustomURLValid();
-    if (field === 'note') isValid = this.isNoteValid();
-    if (field === 'username') isValid = this.isUsernameValid();
-
-    const validFieldID = `${field}IsValid`;
-    this.setState({ [validFieldID]: isValid });
-  };
-
-  handleChangeInput = field => event => this.setState({ [field]: event.target.value });
-
   handleClose = () => this.props.history.goBack();
 
-  handleNext = () => {
-    if (this.isUsernameValid()) {
-      const { influencer, username } = this.state;
-      this.setState({ checkoutStep: 1 });
-      mixpanel.track('Completed Checkout Info', { influencer: influencer.username, username });
-    }
-  };
-
-  handlePrev = () => this.setState({ checkoutStep: 0 });
-
-  isCustomNameValid = () => {
-    const { customName } = this.state;
-    if (customName === '') {
-      this.setState({ customNameErrMsg: "Don't forget to name your gift." });
-      return false;
-    }
-    this.setState({ customNameErrMsg: '' });
-    return true;
-  };
-
-  isCustomURLValid = () => {
-    const { customURL, influencer } = this.state;
-    if (customURL === '') {
-      this.setState({
-        customURLErrMsg: `Don't forget to attach a link for ${influencer.displayName}`,
-      });
-      return false;
-    }
-    this.setState({ customURLErrMsg: '' });
-    return true;
-  };
-
-  isNoteValid = () => true;
-
-  isUsernameValid = () => {
-    const { username } = this.state;
-    if (username === '') {
-      this.setState({ usernameErrMsg: 'Instagram username required.' });
-      return false;
-    }
-    this.setState({ usernameErrMsg: '' });
-    return true;
-  };
-
   onSuccess = async payment => {
-    await this.addGiftOrder(payment.paymentID);
+    const { actionGetLoggedInUser } = this.props;
+    await this.addOrderGemPack(payment.paymentID);
+    actionGetLoggedInUser();
   };
 
   onError = error => {
@@ -198,36 +120,18 @@ class Checkout extends React.Component {
   };
 
   setData = async () => {
-    const giftID = this.getGiftID();
-    const gift = await actions.fetchDocGift(giftID);
-    const { influencerID } = gift;
-    const influencer = await actions.fetchDocInfluencerByID(influencerID);
-    this.setState({ gift, influencer, isLoading: false });
+    const { gemPackID, i } = getParams(this.props);
+    const gemPack = await actions.fetchDocGemPack(gemPackID);
+    const influencer = await actions.fetchDocInfluencerByID(i);
+    this.setState({ gemPack, influencer, isLoading: false });
   };
 
   setInfluencer = async () => {};
 
   render() {
-    const {
-      checkoutStep,
-      customName,
-      customNameErrMsg,
-      customNameIsValid,
-      customURL,
-      customURLErrMsg,
-      customURLIsValid,
-      note,
-      noteErrMsg,
-      noteIsValid,
-      gift,
-      influencer,
-      isLoading,
-      paypalErrorMsg,
-      toConfirmation,
-      username,
-      usernameErrMsg,
-      usernameIsValid,
-    } = this.state;
+    const { gemPack, isLoading, paypalErrorMsg, toConfirmation } = this.state;
+
+    if (isLoading) return <Spinner />;
 
     if (toConfirmation) return this.goToConfirmation();
 
@@ -237,29 +141,29 @@ class Checkout extends React.Component {
         commit
         currency={CURRENCY}
         env={ENV}
-        description={`Virtual ${gift.name} gift for ${influencer.displayName}`}
+        description={`ily.sm gem pack: ${gemPack.gems} gems`}
         onSuccess={this.onSuccess}
         onError={this.onError}
         onCancel={this.onCancel}
-        total={gift.price}
+        total={gemPack.price}
       />
     );
 
     const paypalError = paypalErrorMsg ? <Fonts.ERROR>{paypalErrorMsg}</Fonts.ERROR> : null;
 
-    const paymentForm = usernameIsValid ? (
+    const paymentForm = (
       <div>
         <Content.Row>
           <Fonts.P centered>You'll receive</Fonts.P>
           <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> {gift.gemsEarned}
+            <Currency.GemsSingle small /> {gemPack.gems}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing8px />
         <Content.Row>
           <Fonts.P centered>Total price</Fonts.P>
           <Fonts.H3 centered noMargin>
-            $ {gift.price}
+            $ {gemPack.price}
           </Fonts.H3>
         </Content.Row>
         <Content.Spacing />
@@ -279,84 +183,28 @@ class Checkout extends React.Component {
           </Fonts.FinePrint>
         </Content>
         <Content.Spacing8px />
-        <Content.Row justifyStart>
-          <Btn.Tertiary onClick={this.handlePrev}>Back</Btn.Tertiary>
-        </Content.Row>
-      </div>
-    ) : null;
-
-    const customInput = gift.isCustom ? (
-      <div>
-        <InputText
-          errMsg={customNameErrMsg}
-          label="What do you want to name your gift?"
-          placeholder="My Special Gift"
-          onBlur={this.handleBlur('customName')}
-          onChange={this.handleChangeInput('customName')}
-          value={customName}
-          isValid={customNameIsValid}
-        />
-        <InputText
-          errMsg={customURLErrMsg}
-          label="Copy the link to an image or video you want to send"
-          placeholder="www.images.com/keyboard-cat/"
-          onBlur={this.handleBlur('customURL')}
-          onChange={this.handleChangeInput('customURL')}
-          value={customURL}
-          isValid={customURLIsValid}
-        />
-      </div>
-    ) : null;
-
-    const infoForm = (
-      <div>
-        <InputText
-          errMsg={usernameErrMsg}
-          label="Instagram username to receive gems"
-          placeholder="@myInstaAccount"
-          onBlur={this.handleBlur('username')}
-          onChange={this.handleChangeInput('username')}
-          value={username}
-          isValid={usernameIsValid}
-        />
-        {customInput}
-        <InputText.Area
-          errMsg={noteErrMsg}
-          label={`Want to say something to ${influencer.displayName}? (Optional)`}
-          placeholder="Your message"
-          onBlur={this.handleBlur('note')}
-          onChange={this.handleChangeInput('note')}
-          value={note}
-          isValid={noteIsValid}
-        />
-        <Content.Row justifyEnd>
-          <Btn primary short narrow onClick={this.handleNext}>
-            Next
-          </Btn>
-        </Content.Row>
       </div>
     );
-
-    const checkoutContent = checkoutStep === 0 ? infoForm : paymentForm;
-
-    if (isLoading) return <Spinner />;
 
     return (
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>
-          Send {influencer.displayName} {gift.prefix} {gift.name}
-        </Fonts.H1>
+        <Fonts.H1 centered>Get Gem Pack</Fonts.H1>
         <Content.Row justifyCenter>
-          <GiftImg src={gift.imgURL} />
+          <GiftImg src={gemPack.imgURL} />
         </Content.Row>
-        <Fonts.H3 centered>{gift.description}</Fonts.H3>
         <Content.Seperator />
-        {checkoutContent}
+        {paymentForm}
       </Content>
     );
   }
 }
 
-export default Checkout;
+Checkout.propTypes = propTypes;
+Checkout.defaultProps = defaultProps;
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Checkout);

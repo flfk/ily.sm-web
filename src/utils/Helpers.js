@@ -1,6 +1,13 @@
 import moment from 'moment-timezone';
 import qs from 'qs';
 
+export const createActionSet = actionName => ({
+  PENDING: `${actionName}_PENDING`,
+  SUCCESS: `${actionName}_SUCCESS`,
+  ERROR: `${actionName}_ERROR`,
+  actionName,
+});
+
 export const formatUsername = username =>
   username
     .toLowerCase()
@@ -15,7 +22,12 @@ export const getDateAddDays = (date, days) =>
     .add(days, 'days')
     .valueOf();
 
-export const getFormattedNumber = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const getFormattedNumber = num => {
+  if (num < 1) {
+    return '-';
+  }
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
 
 export const getParams = props => {
   return qs.parse(props.location.search, { ignoreQueryPrefix: true });

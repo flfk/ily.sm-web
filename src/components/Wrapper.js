@@ -1,23 +1,26 @@
 import styled from 'styled-components';
 
-// import Media from '../utils/Media';
+const Logo = styled.div`
+  height: 32px;
+  width: 32px;
 
-// const EventImage = styled.div`
-//   height: 300px;
-//   width: 500px;
-//   // margin-bottom: 24px;
+  img {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+  }
+`;
 
-//   img {
-//     height: 100%;
-//     width: 100%;
-//     border-radius: 5px;
-//   }
+const Post = styled.div`
+  height: ${props => (props.isLarge ? '144px' : '106px')};
+  width: ${props => (props.isLarge ? '144px' : '106px')};
 
-//   ${Media.tablet} {
-//     width: auto;
-//     height: auto;
-//   }
-// `;
+  img {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+  }
+`;
 
 const ProfileImage = styled.div`
   height: 40px;
@@ -32,12 +35,10 @@ const ProfileImage = styled.div`
   }
 `;
 
-const ProfileImgLarge = styled.div`
-  height: 80px;
-  width: 80px;
+const ProfilePic = styled.div`
+  height: ${props => (props.isLarge ? '80px' : '32px')};
+  width: ${props => (props.isLarge ? '80px' : '32px')};
   align-self: center;
-
-  margin: 16px;
 
   img {
     height: 100%;
@@ -47,8 +48,9 @@ const ProfileImgLarge = styled.div`
 `;
 
 const Wrapper = {};
-// Wrapper.EventImage = EventImage;
+Wrapper.Logo = Logo;
+Wrapper.Post = Post;
 Wrapper.ProfileImage = ProfileImage;
-Wrapper.ProfileImgLarge = ProfileImgLarge;
+Wrapper.ProfilePic = ProfilePic;
 
 export default Wrapper;

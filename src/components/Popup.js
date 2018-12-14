@@ -59,10 +59,12 @@ const Emoji = styled.div`
 `;
 
 const propTypes = {
-  handleClose: PropTypes.func.isRequired,
+  handleClose: PropTypes.func,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  handleClose: null,
+};
 
 const BtnClose = ({ handleClose }) => {
   return (

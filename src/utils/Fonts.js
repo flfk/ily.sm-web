@@ -16,7 +16,7 @@ const FONT_SIZES = {
   h1: '32px',
   h2: '24px',
   h3: '20px',
-  p: '16px',
+  p: '14px',
   finePrint: '12px',
 };
 
@@ -65,7 +65,9 @@ const P = styled.p`
   font-size: ${FONT_SIZES.p};
   font-family: ${FONT_FAMILY.body};
   font-weight: 300;
-  color: ${props => (props.supporting ? Colors.greys.supporting : Colors.greys.primary)}
+  color: ${Colors.greys.primary};
+  ${props => (props.isSupporting ? `color: ${Colors.greys.supporting};` : '')}
+  ${props => (props.isSecondary ? `color: ${Colors.greys.secondary};` : '')}
   margin: 0;
   text-align: ${props => (props.centered ? 'center' : '')};
 
@@ -74,9 +76,11 @@ const P = styled.p`
   }
 `;
 
-const Link = styled(P)`
+const Link = styled.a`
   color: ${Colors.primary.red};
-  text-decoration-color: ${Colors.primary.red};
+  text-decoration: none;
+  // text-decoration-color: ${Colors.primary.red};
+  font-size: ${FONT_SIZES.p};
   font-weight: bold;
   cursor: pointer;
   :hover {
@@ -97,7 +101,7 @@ const ERROR = styled.p`
   font-size: ${FONT_SIZES.p};
   font-family: ${FONT_FAMILY.body};
   font-weight: bold;
-  color: red;
+  color: ${Colors.error.primary};
   margin: 8px 0;
   margin: ${props => (props.noMargin ? '0px' : '')};
   text-align: ${props => (props.centered ? 'center' : '')};
