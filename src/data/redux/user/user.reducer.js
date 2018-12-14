@@ -15,7 +15,6 @@ const reducerUser = (state = initialState, action) => {
         isPending: true,
       };
     case CREATE_USER.SUCCESS:
-      console.log('create user success', action.payload);
       return {
         ...state,
         ...action.payload,
@@ -35,7 +34,6 @@ const reducerUser = (state = initialState, action) => {
         errorCode: '',
       };
     case LOGIN_USER.PENDING:
-      console.log('log in user pending', action.payload);
       return {
         ...state,
         errorCode: '',
