@@ -69,7 +69,7 @@ class GiftStore extends React.Component {
     };
     const orderAdded = await actions.addDocOrder(order);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
-    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.gift });
   };
 
   handleClose = () => this.props.history.goBack();

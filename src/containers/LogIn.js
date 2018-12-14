@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -50,6 +51,7 @@ class LogIn extends React.Component {
     if (username && !isPending && !errorCode) {
       this.handleDone();
     }
+    mixpanel.track('Visited Log In Page');
   }
 
   getErrorText = errorCode => {
@@ -81,6 +83,8 @@ class LogIn extends React.Component {
       const { email, password } = this.state;
       const { actionLogIn } = this.props;
       actionLogIn(email, password);
+      mixpanel.identify(email);
+      mixpanel.track('Logged In');
     }
     this.setState({ isLoading: false });
   };
