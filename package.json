@@ -16,9 +16,12 @@
     "react-dom": "^16.6.3",
     "react-ga": "^2.5.3",
     "react-icons": "^3.2.2",
+    "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
     "react-spinners": "^0.4.7",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "styled-components": "^4.1.1",
     "typeface-roboto": "0.0.54",
     "validator": "^10.9.0"
@@ -32,7 +35,12 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^3.3.0",

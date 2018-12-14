@@ -6,6 +6,7 @@ import Media from '../utils/Media';
 const Content = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   width: 600px;
   margin: auto;
   padding-left: 16px;
@@ -35,6 +36,7 @@ const CenteredBothAxis = styled(Content)`
 const Row = styled.div`
   display: flex;
   justify-content: space-between;
+  justify-content: ${props => (props.justifySpaceAround ? 'space-around' : '')};
   justify-content: ${props => (props.justifyCenter ? 'center' : '')};
   justify-content: ${props => (props.justifyEnd ? 'flex-end' : '')};
   justify-content: ${props => (props.justifyStart ? 'flex-start' : '')};
