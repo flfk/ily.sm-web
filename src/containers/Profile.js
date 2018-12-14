@@ -47,7 +47,6 @@ const Profile = ({ actionSignOut, gemBalance, history, isVerified, totalComments
     handleClose();
   };
 
-  console.log('isVerified', isVerified);
   const verifiedStatus = isVerified ? (
     <div>
       <Fonts.H3 centered>

@@ -12,32 +12,6 @@ import Fonts from '../utils/Fonts';
 import Spinner from '../components/Spinner';
 import Wrapper from '../components/Wrapper';
 
-// const POST = {
-//   code: 'BrJu1c0AbIz',
-//   comments: [
-//     { username: 'testing2', text: 'hello world' },
-//     { username: 'testing', text: 'hello world' },
-//     { username: 'testing', text: 'hello world' },
-//   ],
-//   imgURL:
-//     'https://instagram.faep4-1.fna.fbcdn.net/vp/44646ad8bcb6b6ec554de5eebf7ffc8a/5CADE2CE/t51.2885-15/sh0.08/e35/s640x640/45454528_2147871442121795_3610633011215142597_n.jpg?_nc_ht=instagram.faep4-1.fna.fbcdn.net',
-//   influencerID: '3iZ4jV8gUfmEEdNSz6NE',
-//   timestamp: '',
-// };
-
-const USERS = [
-  {
-    profilePicURL:
-      'https://instagram.faep4-1.fna.fbcdn.net/vp/85bf51f7effe5895dbbb38c149a31447/5CB1296B/t51.2885-19/s320x320/44698462_311872806084029_988073122118762496_n.jpg',
-    username: 'testing',
-  },
-  {
-    profilePicURL:
-      'https://instagram.faep4-1.fna.fbcdn.net/vp/85bf51f7effe5895dbbb38c149a31447/5CB1296B/t51.2885-19/s320x320/44698462_311872806084029_988073122118762496_n.jpg',
-    username: 'testing2',
-  },
-];
-
 const MAX_ROWS = 100;
 
 class CurrentPost extends React.Component {
@@ -80,14 +54,14 @@ class CurrentPost extends React.Component {
     const fans = commenters
       .filter(commenter => commenter.username !== influencer.username)
       .sort((a, b) => b.count - a.count)
-      .map((fan, index) => ({ ...fan, rank: index + 1 }))
-      .map(fan => {
-        const userExisting = USERS.find(user => user.username === fan.username);
-        if (userExisting) {
-          return { ...fan, profilePicURL: userExisting.profilePicURL };
-        }
-        return fan;
-      });
+      .map((fan, index) => ({ ...fan, rank: index + 1 }));
+    // .map(fan => {
+    //   const userExisting = USERS.find(user => user.username === fan.username);
+    //   if (userExisting) {
+    //     return { ...fan, profilePicURL: userExisting.profilePicURL };
+    //   }
+    //   return fan;
+    // });
     return fans;
   };
 
@@ -109,7 +83,12 @@ class CurrentPost extends React.Component {
       mixpanel.track('Visited Current Post', { influencer: influencer.username });
     }
     const postMostRecent = await this.fetchPost(influencer.codeMostRecent);
-    const fans = this.getFans(postMostRecent.commenters);
+    let fans = [];
+    if (postMostRecent.commenters) {
+      fans = this.getFans(postMostRecent.commenters);
+    } else {
+      this.setState({ toHome: true });
+    }
     this.setState({ fans, postMostRecent });
     this.setState({ isLoading: false });
   };

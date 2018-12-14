@@ -8,6 +8,7 @@ import Content from '../components/Content';
 import InputText from '../components/InputText';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
+import { formatUsername } from '../utils/Helpers';
 
 import { createUser } from '../data/redux/user/user.actions';
 
@@ -73,8 +74,9 @@ class SignUp extends React.Component {
     this.setState({ isLoading: true });
     if (this.isFormValid()) {
       const { email, password, username } = this.state;
+      const usernameFormatted = formatUsername(username);
       const { actionSignUp } = this.props;
-      actionSignUp(email, password, username);
+      actionSignUp(email, password, usernameFormatted);
       this.setState({ showConfirmation: true });
     }
     this.setState({ isLoading: false });

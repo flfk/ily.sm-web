@@ -75,7 +75,7 @@ class LogIn extends React.Component {
 
   handleDone = () => this.props.history.goBack();
 
-  handleSignUp = () => {
+  handleLogIn = () => {
     this.setState({ isLoading: true });
     if (this.isFormValid()) {
       const { email, password } = this.state;
@@ -153,7 +153,7 @@ class LogIn extends React.Component {
         />
         <Content.Spacing8px />
         {logInErrMsg}
-        <Btn primary short onClick={this.handleSignUp}>
+        <Btn primary short onClick={this.handleLogIn}>
           Log In
         </Btn>
       </Content>

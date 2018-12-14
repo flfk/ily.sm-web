@@ -86,7 +86,7 @@ class GiftStore extends React.Component {
     }
     if (gemBalance < gift.price) {
       this.setState({ toInsufficientGems: true });
-    } else if (this.isMessageValid() && userID) {
+    } else if (userID) {
       await this.addOrderGift(selectedGiftID);
       actionGetLoggedInUser();
     }
