@@ -4,20 +4,35 @@ import { connect } from 'react-redux';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
+import Spinner from '../components/Spinner';
+import actions from '../data/actions';
 import Fonts from '../utils/Fonts';
 
-const propTypes = {};
+const ADMIN_ACCOUNT = 'ilydotsm';
 
-const defaultProps = {};
+const propTypes = {
+  username: PropTypes.string,
+};
 
-const mapStateToProps = state => ({});
+const defaultProps = {
+  username: '',
+};
+
+const mapStateToProps = state => ({
+  username: state.user.username,
+});
 
 const mapDispatchToProps = dispatch => ({});
 
 class Verification extends React.Component {
   state = {
-    users: [{ username: 'test', id: 'abc', isVerified: false }],
+    isLoading: true,
+    users: [],
   };
+
+  componentDidMount() {
+    this.setData();
+  }
 
   handleVerify = event => {
     const { users } = this.state;
@@ -25,15 +40,26 @@ class Verification extends React.Component {
     const usersUpdated = users.slice();
     const userIndex = users.map(user => user.id).indexOf(userID);
     const userPrev = usersUpdated[userIndex];
+    actions.updateDocUser(userID, { isVerified: !userPrev.isVerified });
     usersUpdated[userIndex] = { ...userPrev, isVerified: !userPrev.isVerified };
     this.setState({ users: usersUpdated });
   };
 
-  render() {
-    const { users } = this.state;
+  setData = async () => {
+    const users = await actions.fetchDocsUsers();
+    this.setState({ isLoading: false, users });
+  };
 
-    const verificationRows = users.map(user => {
-      const { id, isVerified } = user;
+  render() {
+    const { isLoading, users } = this.state;
+    const { username } = this.props;
+
+    if (isLoading) return <Spinner />;
+
+    const rowData = username === ADMIN_ACCOUNT ? users : [];
+
+    const verificationRows = rowData.map(user => {
+      const { email, id, isVerified, username } = user;
       const btn = isVerified ? (
         <Btn.Tertiary value={id} onClick={this.handleVerify}>
           Verified
@@ -44,15 +70,18 @@ class Verification extends React.Component {
         </Btn>
       );
       return (
-        <Content.Row alignCenter key={id}>
-          <div>
-            <Fonts.P>
-              <strong>username</strong>
-            </Fonts.P>
-            <Fonts.P>email</Fonts.P>
-          </div>
-          {btn}
-        </Content.Row>
+        <div key={id}>
+          <Content.Row alignCenter>
+            <div>
+              <Fonts.P>
+                <strong>{username}</strong>
+              </Fonts.P>
+              <Fonts.P>{email}</Fonts.P>
+            </div>
+            {btn}
+          </Content.Row>
+          <Content.Spacing16px />
+        </div>
       );
     });
 
