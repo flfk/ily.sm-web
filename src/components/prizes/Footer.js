@@ -7,6 +7,7 @@ import Btn from '../Btn';
 import Content from '../Content';
 import Currency from '../Currency';
 import Footer from '../Footer';
+import { GEMS_PER_COMMENT } from '../../utils/Constants';
 import Fonts from '../../utils/Fonts';
 
 const propTypes = {
@@ -17,6 +18,8 @@ const propTypes = {
 // const defaultProps = {};
 
 const LeaderboardFooter = ({ influencerName, redirectPathname }) => {
+  const commentsPerGem = 1 / GEMS_PER_COMMENT;
+
   return (
     <Footer>
       <Content>
@@ -25,7 +28,9 @@ const LeaderboardFooter = ({ influencerName, redirectPathname }) => {
           Collect your free gems <Currency.GemsSingle small />
         </Fonts.H3>
         <Content.Spacing8px />
-        <Fonts.P centered>For every 100 comments on {influencerName}'s most recent</Fonts.P>
+        <Fonts.P centered>
+          For every {commentsPerGem} comments on {influencerName}'s most recent
+        </Fonts.P>
         <Content.Spacing8px />
         <Link to={`/${redirectPathname}`}>
           <Btn short fill="true">
