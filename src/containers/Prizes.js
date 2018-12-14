@@ -120,7 +120,7 @@ class Prizes extends React.Component {
     const items = await actions.fetchDocsItems(influencer.id);
     const itemsActive = items.filter(item => item.isActive);
     this.setState({ giftOptions: giftOptionsActive, items: itemsActive, isLoading: false });
-    mixpanel.track('Visited Leaderboard', { influencer: influencer.username });
+    mixpanel.track('Visited Prizes', { influencer: influencer.username });
   };
 
   render() {

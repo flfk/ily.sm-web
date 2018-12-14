@@ -9,6 +9,7 @@ import Checkout from './containers/Checkout';
 import CurrentPost from './containers/CurrentPost';
 import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
+import GiftStore from './containers/GiftStore';
 import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
 import InsufficientGems from './containers/InsufficientGems';
@@ -17,13 +18,13 @@ import LogIn from './containers/LogIn';
 import NavBar from './containers/NavBar';
 import MessageStore from './containers/MessageStore';
 import OrderConfirmation from './containers/OrderConfirmation';
-import GiftStore from './containers/GiftStore';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
 import PolicyPrivacy from './containers/PolicyPrivacy';
 import Prizes from './containers/Prizes';
 import Profile from './containers/Profile';
 import SignUp from './containers/SignUp';
+import Verification from './containers/Verification';
 
 import store from './data/redux/Store';
 
@@ -57,6 +58,7 @@ class App extends Component {
             <NavBar />
             <Switch>
               <Route path="/admin-admin-1" component={Admin} />
+              <Route path="/admin-verification" component={Verification} />
               <Route path="/checkout" component={Checkout} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/confirmation" component={OrderConfirmation} />

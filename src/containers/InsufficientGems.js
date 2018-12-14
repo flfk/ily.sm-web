@@ -66,7 +66,10 @@ class InsufficientGems extends React.Component {
     const influencer = await actions.fetchDocInfluencerByID(i);
     const item = giftID ? await actions.fetchDocGift(giftID) : await actions.fetchDocItem(itemID);
     this.setState({ gemPacks: gemPacksActive, influencer, item, isLoading: false });
-    mixpanel.track('Insufficient Gems Page', { influencer: influencer.username, item: item.name });
+    mixpanel.track('Visited Insufficient Gems Page', {
+      influencer: influencer.username,
+      item: item.name,
+    });
   };
 
   render() {

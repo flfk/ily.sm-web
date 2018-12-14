@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -50,6 +51,10 @@ class SignUp extends React.Component {
     usernameIsValid: false,
   };
 
+  componentDidMount() {
+    mixpanel.track('Visited Sign Up Page');
+  }
+
   getErrorText = errorCode => {
     if (errorCode === 'auth/email-already-in-use') {
       return 'You already have an account with this email. Try logging in.';
@@ -77,6 +82,9 @@ class SignUp extends React.Component {
       const usernameFormatted = formatUsername(username);
       const { actionSignUp } = this.props;
       actionSignUp(email, password, usernameFormatted);
+      mixpanel.alias(email);
+      mixpanel.people.set({ username: usernameFormatted });
+      mixpanel.track('Signed Up');
       this.setState({ showConfirmation: true });
     }
     this.setState({ isLoading: false });

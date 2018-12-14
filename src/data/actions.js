@@ -1,4 +1,4 @@
-import { auth, db } from './firebase';
+import { db } from './firebase';
 // import { storage } from './firebase';
 
 // Collection and document Names
@@ -9,7 +9,7 @@ const COLL_INFLUENCERS = 'influencers';
 const COLL_ITEMS = 'items';
 const COLL_POSTS = 'posts';
 const COLL_ORDERS = 'orders';
-// const COLL_TXNS = 'txns';
+const COLL_USERS = 'users';
 const COLL_UTILS = 'utils';
 
 const DOC_LAST_ORDER = 'lastOrder';
@@ -256,25 +256,22 @@ const fetchDocsOrders = async influencerID => {
   return orders;
 };
 
-// const fetchDocsTxns = async (dateMin, influencerID) => {
-//   const txns = [];
-//   try {
-//     const txnsRef = db.collection(COLL_TXNS);
-//     const snapshot = await txnsRef
-//       .where('influencerID', '==', influencerID)
-//       .where('timestamp', '>', dateMin)
-//       .get();
-//     snapshot.forEach(doc => {
-//       const txn = doc.data();
-//       const { id } = doc;
-//       txn.id = id;
-//       txns.push(txn);
-//     });
-//   } catch (error) {
-//     console.error('Error actions, fetchDocsTxns', error);
-//   }
-//   return txns;
-// };
+const fetchDocsUsers = async () => {
+  const users = [];
+  try {
+    const usersRef = db.collection(COLL_USERS);
+    const snapshot = await usersRef.get();
+    snapshot.forEach(doc => {
+      const user = doc.data();
+      const { id } = doc;
+      user.id = id;
+      users.push(user);
+    });
+  } catch (error) {
+    console.error('Error actions, fetchDocsUsers', error);
+  }
+  return users;
+};
 
 const fetchOrderNum = async () => {
   const lastOrderRef = db.collection(COLL_UTILS).doc(DOC_LAST_ORDER);
@@ -296,26 +293,15 @@ const updateDocOrder = async (orderID, order) => {
   return {};
 };
 
-// AUTHENTICATION
-const createUserWithEmailAndPassword = async (email, password) => {
-  let errorCode = null;
+const updateDocUser = async (userID, fieldsToUpdate) => {
   try {
-    await auth.createUserWithEmailAndPassword(email, password);
+    const userRef = db.collection(COLL_USERS).doc(userID);
+    const updatedDocUser = userRef.update({ ...fieldsToUpdate });
+    return updatedDocUser;
   } catch (error) {
-    console.error('Error actions, createUserWithEmailAndPassword ', error);
-    errorCode = error.code;
+    console.error('Error actions, updateDocUser ', error);
   }
-  return errorCode;
-};
-
-const fetchUser = async () => {
-  let user = {};
-  try {
-    user = auth.currentUser;
-  } catch (error) {
-    console.error('Error actions, fetchUser ', error);
-  }
-  return user;
+  return {};
 };
 
 // EXPORTS
@@ -336,11 +322,9 @@ actions.fetchDocsInfluencers = fetchDocsInfluencers;
 actions.fetchDocsItems = fetchDocsItems;
 actions.fetchDocsPosts = fetchDocsPosts;
 actions.fetchDocsOrders = fetchDocsOrders;
-// actions.fetchDocsTxns = fetchDocsTxns;
+actions.fetchDocsUsers = fetchDocsUsers;
 actions.fetchOrderNum = fetchOrderNum;
 actions.updateDocOrder = updateDocOrder;
-
-actions.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-actions.fetchUser = fetchUser;
+actions.updateDocUser = updateDocUser;
 
 export default actions;
