@@ -12,7 +12,7 @@ import Header from '../components/Header';
 import { ITEM_TYPE } from '../utils/Constants';
 import { getParams, getFormattedNumber } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
-import { Footer, ItemRow } from '../components/prizes';
+import { Footer, Row } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
 const propTypes = {
@@ -159,7 +159,7 @@ class Prizes extends React.Component {
     const messageRow = items
       .filter(item => item.type === ITEM_TYPE.message)
       .map(item => (
-        <ItemRow
+        <Row
           key={item.id}
           imgURL={item.imgURL}
           handleClick={this.handleSelectStore(item.type)}
@@ -171,7 +171,7 @@ class Prizes extends React.Component {
 
     const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0];
     const giftRow = (
-      <ItemRow
+      <Row
         imgURL={cheapestGift.imgURL}
         handleClick={this.handleSelectStore(ITEM_TYPE.gift)}
         name={`Send ${influencer.displayName} a gift`}

@@ -1,2 +1,2 @@
 export { default as Footer } from './Footer';
-export { default as ItemRow } from './ItemRow';
+export { default as Row } from './Row';
