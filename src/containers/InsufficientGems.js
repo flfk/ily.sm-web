@@ -106,7 +106,7 @@ class InsufficientGems extends React.Component {
         <Link to={`/prizes?i=${influencer.username}`}>
           <Popup.BtnClose handleClose={this.handleClose} />
         </Link>
-        <Fonts.H1 centered>You need more gems.</Fonts.H1>
+        <Fonts.H1 centered>You need more gems to get a {item.name}.</Fonts.H1>
         <Content.Centered>
           <GiftImg src={item.imgURL} large />
         </Content.Centered>

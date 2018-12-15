@@ -49,7 +49,7 @@ class Checkout extends React.Component {
     isLoading: true,
     orderID: '',
     paypalErrorMsg: '',
-    toConfirmation: false,
+    toPrizes: false,
   };
 
   componentDidMount() {
@@ -73,7 +73,7 @@ class Checkout extends React.Component {
       userID,
     };
     const orderAdded = await actions.addDocOrder(order);
-    this.setState({ orderID: orderAdded.id, toConfirmation: true });
+    this.setState({ orderID: orderAdded.id, toPrizes: true });
     mixpanel.track('Purchased Gem Pack', {
       gemPack: gemPack.gems,
       influencer: influencer.username,
@@ -84,14 +84,27 @@ class Checkout extends React.Component {
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
 
-  goToConfirmation = () => {
-    const { influencer, orderID } = this.state;
+  // goToConfirmation = () => {
+  //   const { influencer, orderID } = this.state;
+  //   return (
+  //     <Redirect
+  //       push
+  //       to={{
+  //         pathname: '/confirmation',
+  //         search: `?orderID=${orderID}&i=${influencer.id}`,
+  //       }}
+  //     />
+  //   );
+  // };
+
+  goToPrizes = () => {
+    const { influencer } = this.state;
     return (
       <Redirect
         push
         to={{
-          pathname: '/confirmation',
-          search: `?orderID=${orderID}&i=${influencer.id}`,
+          pathname: '/prizes',
+          search: `?i=${influencer.id}`,
         }}
       />
     );
@@ -129,11 +142,11 @@ class Checkout extends React.Component {
   setInfluencer = async () => {};
 
   render() {
-    const { gemPack, isLoading, paypalErrorMsg, toConfirmation } = this.state;
+    const { gemPack, isLoading, paypalErrorMsg, toPrizes } = this.state;
 
     if (isLoading) return <Spinner />;
 
-    if (toConfirmation) return this.goToConfirmation();
+    if (toPrizes) return this.goToPrizes();
 
     const btnPayPal = (
       <PayPalCheckout
@@ -153,15 +166,8 @@ class Checkout extends React.Component {
 
     const paymentForm = (
       <div>
-        <Content.Row>
-          <Fonts.P centered>You'll receive</Fonts.P>
-          <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> {gemPack.gems}
-          </Fonts.H3>
-        </Content.Row>
         <Content.Spacing8px />
-        <Content.Row>
-          <Fonts.P centered>Total price</Fonts.P>
+        <Content.Row justifyCenter>
           <Fonts.H3 centered noMargin>
             $ {gemPack.price}
           </Fonts.H3>
@@ -177,11 +183,10 @@ class Checkout extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>Get gem pack</Fonts.H1>
+        <Fonts.H1 centered>Get {gemPack.gems} Gems</Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gemPack.imgURL} />
         </Content.Row>
-        <Content.Seperator />
         {paymentForm}
       </Content>
     );

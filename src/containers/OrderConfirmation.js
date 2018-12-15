@@ -85,7 +85,7 @@ class OrderConfirmation extends React.Component {
       <Content>
         <Fonts.H1 centered>{title}</Fonts.H1>
         <Content.Row justifyCenter>
-          <GiftImg src={item.imgURL} />
+          <GiftImg src={item.imgURL || gemPack.imgURL} />
         </Content.Row>
         <Fonts.H3 centered>{subtitle}</Fonts.H3>
         {additionalInfo}

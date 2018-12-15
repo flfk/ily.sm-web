@@ -98,7 +98,6 @@ class GemStore extends React.Component {
         </Fonts.P>
         <Content.Seperator />
         <Fonts.H1 centered>Buy Gems</Fonts.H1>
-        <Content.Spacing />
         {purchaseOptions}
       </Content>
     );

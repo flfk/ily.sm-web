@@ -213,11 +213,11 @@ class SignUp extends React.Component {
           <Fonts.FinePrint>
             By clicking on Sign Up, you agree with the{' '}
             <Link to="/termsConditions" target="_blank">
-              Terms and Conditions of Use
+              <Fonts.A>Terms and Conditions of Use</Fonts.A>
             </Link>{' '}
             and{' '}
             <Link to="/privacyPolicy" target="_blank">
-              Privacy Policy
+              <Fonts.A>Privacy Policy</Fonts.A>
             </Link>
             .
           </Fonts.FinePrint>
