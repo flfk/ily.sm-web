@@ -217,7 +217,17 @@ class Prizes extends React.Component {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
     const items = await actions.fetchDocsItems(influencer.id);
-    const itemsActive = items.filter(item => item.isActive);
+    const itemsActive = items
+      .filter(item => item.isActive)
+      .sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
     this.setState({ items: itemsActive, isLoading: false });
     mixpanel.track('Visited Prizes', { influencer: influencer.username });
   };

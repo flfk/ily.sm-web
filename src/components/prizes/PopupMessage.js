@@ -57,7 +57,7 @@ class PopupMessage extends React.Component {
 
   render() {
     const { message, messageErrMsg, messageIsValid } = this.state;
-    const { handleClose, influencer } = this.props;
+    const { handleClose, item, influencer } = this.props;
 
     return (
       <div>
@@ -67,7 +67,7 @@ class PopupMessage extends React.Component {
           <Popup.BtnClose handleClose={handleClose} />
           <Fonts.H1 centered>Send {influencer.displayName} a message and get one back</Fonts.H1>
           <Content.Centered>
-            <GiftImg src={influencer.storeImgURL} large />
+            <GiftImg src={item.imgURL} large />
           </Content.Centered>
           <Content.Spacing />
           <InputText.Area

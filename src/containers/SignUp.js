@@ -1,6 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
@@ -208,6 +209,19 @@ class SignUp extends React.Component {
         <Btn primary short onClick={this.handleSignUp}>
           Sign Up
         </Btn>
+        <Content>
+          <Fonts.FinePrint>
+            By clicking on Sign Up, you agree with the{' '}
+            <Link to="/termsConditions" target="_blank">
+              Terms and Conditions of Use
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacyPolicy" target="_blank">
+              Privacy Policy
+            </Link>
+            .
+          </Fonts.FinePrint>
+        </Content>
       </Content>
     );
   }

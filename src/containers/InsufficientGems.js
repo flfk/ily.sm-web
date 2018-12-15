@@ -111,12 +111,13 @@ class InsufficientGems extends React.Component {
           <GiftImg src={item.imgURL} large />
         </Content.Centered>
         <Content.Seperator />
-        <Fonts.H3 centered>
-          Comment {getFormattedNumber(commentsRequired)} more times on {influencer.displayName}'s
-          most recent post to earn enough free gems
-        </Fonts.H3>
+        <Fonts.H3 centered>Earn free gems</Fonts.H3>
+        <Fonts.P centered>
+          Comment <strong>{getFormattedNumber(commentsRequired)} more times</strong> on{' '}
+          {influencer.displayName}'s most recent post to earn enough free gems
+        </Fonts.P>
         <Content.Seperator />
-        <Fonts.H3 centered>Or buy more gems</Fonts.H3>
+        <Fonts.H3 centered>Buy more gems</Fonts.H3>
         {gemPack}
         <Content.Spacing />
       </Content>

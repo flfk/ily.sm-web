@@ -169,19 +169,6 @@ class Checkout extends React.Component {
         <Content.Spacing />
         {paypalError}
         {btnPayPal}
-        <Content>
-          <Fonts.FinePrint>
-            By clicking on Checkout, you agree with the{' '}
-            <Link to="/termsConditions" target="_blank">
-              Terms and Conditions of Use
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacyPolicy" target="_blank">
-              Privacy Policy
-            </Link>
-            .
-          </Fonts.FinePrint>
-        </Content>
         <Content.Spacing8px />
       </div>
     );
@@ -190,7 +177,7 @@ class Checkout extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>Get Gem Pack</Fonts.H1>
+        <Fonts.H1 centered>Get gem pack</Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gemPack.imgURL} />
         </Content.Row>

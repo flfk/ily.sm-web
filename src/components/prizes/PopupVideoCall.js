@@ -39,12 +39,13 @@ class PopupVideoCall extends React.Component {
           <Content.Spacing16px />
           <Popup.BtnClose handleClose={handleClose} />
           <Fonts.H1 centered>
-            {item.lengthMins} one-on-one video call with {influencer.displayName}
+            {item.lengthMins} minute one-on-one video call with {influencer.displayName}
           </Fonts.H1>
           <Content.Centered>
-            <GiftImg src={influencer.storeImgURL} large />
+            <GiftImg src={item.imgURL} />
           </Content.Centered>
-          <Fonts.P>
+          <Content.Spacing16px />
+          <Fonts.P centered>
             The call will take place{' '}
             <strong>
               {getDate(item.dateStart)} between {getTimeRange(item.dateStart, item.dateEnd)}
@@ -52,7 +53,13 @@ class PopupVideoCall extends React.Component {
             .
           </Fonts.P>
           <Content.Spacing8px />
-          <Fonts.P>Before confirming please ensure you are available at this time.</Fonts.P>
+          <Fonts.P centered>
+            If you have any questions send us a DM on Instagram{' '}
+            <Fonts.Link href="https://www.instagram.com/ilydotsm/" target="_blank">
+              @ilydotsm
+            </Fonts.Link>
+            .
+          </Fonts.P>
           <Content.Spacing />
           <Btn primary short onClick={this.handleConfirm}>
             Confirm
