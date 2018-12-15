@@ -7,6 +7,7 @@ import validator from 'validator';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
 import InputText from '../components/InputText';
+import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 
@@ -49,7 +50,7 @@ class LogIn extends React.Component {
   componentDidUpdate() {
     const { errorCode, isPending, username } = this.props;
     if (username && !isPending && !errorCode) {
-      this.handleDone();
+      this.handleClose();
     }
     mixpanel.track('Visited Log In Page');
   }
@@ -75,7 +76,7 @@ class LogIn extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleDone = () => this.props.history.goBack();
+  handleClose = () => this.props.history.goBack();
 
   handleLogIn = () => {
     this.setState({ isLoading: true });
@@ -137,6 +138,8 @@ class LogIn extends React.Component {
 
     return (
       <Content>
+        <Content.Spacing16px />
+        <Popup.BtnClose handleClose={this.handleClose} />
         <Fonts.H1 centered>Log into your ily.sm account</Fonts.H1>
         <InputText
           errMsg={emailErrMsg}

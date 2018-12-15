@@ -14,7 +14,7 @@ import { getParams } from '../utils/Helpers';
 class OrderConfirmation extends React.Component {
   state = {
     gemPack: {},
-    gift: {},
+    // gift: {},
     item: {},
     influencer: {
       displayName: '',
@@ -39,12 +39,6 @@ class OrderConfirmation extends React.Component {
       this.setState({ gemPack });
     } else {
       influencer = await actions.fetchDocInfluencerByID(order.influencerID);
-    }
-    if (order.type === ITEM_TYPE.gift) {
-      const gift = await actions.fetchDocGift(order.giftID);
-      this.setState({ gift });
-    }
-    if (order.type === ITEM_TYPE.message) {
       const item = await actions.fetchDocItem(order.itemID);
       this.setState({ item });
     }
@@ -52,18 +46,18 @@ class OrderConfirmation extends React.Component {
   };
 
   render() {
-    const { gemPack, gift, influencer, item, isLoading, order } = this.state;
+    const { gemPack, influencer, item, isLoading, order } = this.state;
 
     if (isLoading) return <Spinner />;
 
     let title = null;
     if (order.type === ITEM_TYPE.gift)
-      title = `You sent ${influencer.displayName} ${gift.prefix} ${gift.name}!`;
+      title = `You sent ${influencer.displayName} ${item.prefix} ${item.name}!`;
     if (order.type === ITEM_TYPE.message) title = `Message sent to ${influencer.displayName}!`;
     if (order.type === ITEM_TYPE.gemPack) title = `You got ${gemPack.gems} gems.`;
 
     let subtitle = null;
-    if (order.type === ITEM_TYPE.gift) subtitle = gift.description;
+    if (order.type === ITEM_TYPE.gift) subtitle = item.description;
     if (order.type === ITEM_TYPE.message)
       subtitle = `We'll DM you on Instagram with a link to your reply from ${
         influencer.displayName
@@ -71,7 +65,7 @@ class OrderConfirmation extends React.Component {
     if (order.type === ITEM_TYPE.gemPack) subtitle = `Spend your gems on any prize.`;
 
     let imgSrc = null;
-    if (order.type === ITEM_TYPE.gift) imgSrc = gift.imgURL;
+    if (order.type === ITEM_TYPE.gift) imgSrc = item.imgURL;
     if (order.type === ITEM_TYPE.message) imgSrc = item.imgURL;
     if (order.type === ITEM_TYPE.gemPack) imgSrc = gemPack.imgURL;
 

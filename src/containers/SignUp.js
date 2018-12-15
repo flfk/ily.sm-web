@@ -7,6 +7,7 @@ import validator from 'validator';
 import Btn from '../components/Btn';
 import Content from '../components/Content';
 import InputText from '../components/InputText';
+import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import { formatUsername } from '../utils/Helpers';
@@ -73,7 +74,7 @@ class SignUp extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleDone = () => this.props.history.goBack();
+  handleClose = () => this.props.history.goBack();
 
   handleSignUp = () => {
     this.setState({ isLoading: true });
@@ -157,7 +158,7 @@ class SignUp extends React.Component {
             You won't be able claim gems earn't from comments until your account is verified.
           </Fonts.P>
           <Content.Spacing />
-          <Btn primary short onClick={this.handleDone}>
+          <Btn primary short onClick={this.handleClose}>
             Done
           </Btn>
         </Content>
@@ -170,6 +171,8 @@ class SignUp extends React.Component {
 
     return (
       <Content>
+        <Content.Spacing16px />
+        <Popup.BtnClose handleClose={this.handleClose} />
         <Fonts.H1 centered>Sign up to claim your gems and get prizes.</Fonts.H1>
         <Content.Spacing />
         <InputText

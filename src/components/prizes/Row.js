@@ -36,7 +36,7 @@ const Row = ({ handleClick, imgURL, price, name, value }) => {
           </Description>
         </Title>
         <Btn primary narrow short onClick={handleClick} value={value}>
-          Send Gift
+          Get This
         </Btn>
       </Content.Row>
       <Content.Spacing />
