@@ -13,14 +13,11 @@ const propTypes = {
   handleClose: PropTypes.func.isRequired,
   handleItemOrder: PropTypes.func.isRequired,
   influencer: PropTypes.object.isRequired,
-  userID: PropTypes.string,
 };
 
-const defaultProps = {
-  userID: '',
-};
+const defaultProps = {};
 
-class GiftOptionsPopup extends React.Component {
+class PopupGiftOptions extends React.Component {
   handleGiftSelect = async event => {
     const { handleClose, handleItemOrder, giftOptions } = this.props;
     const selectedItemID = event.target.value;
@@ -59,7 +56,7 @@ class GiftOptionsPopup extends React.Component {
   }
 }
 
-GiftOptionsPopup.propTypes = propTypes;
-GiftOptionsPopup.defaultProps = defaultProps;
+PopupGiftOptions.propTypes = propTypes;
+PopupGiftOptions.defaultProps = defaultProps;
 
-export default GiftOptionsPopup;
+export default PopupGiftOptions;

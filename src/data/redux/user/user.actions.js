@@ -29,7 +29,7 @@ const getFullUser = async userID => {
   const gemBalanceChangeOrders = orders.reduce((aggr, order) => aggr + order.gemBalanceChange, 0);
   const gemBalance = gemBalanceChangeComments + gemBalanceChangeOrders;
 
-  return { ...userDoc, gemBalance, id: userID, totalComments };
+  return { ...userDoc, gemBalance, id: userID, orders, totalComments };
 };
 
 export const createUser = (email, password, username) => async dispatch => {

@@ -12,7 +12,7 @@ import Header from '../components/Header';
 import { ITEM_TYPE } from '../utils/Constants';
 import { getFormattedNumber, getTimestamp, getParams } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
-import { Footer, GiftOptionsPopup, Row } from '../components/prizes';
+import { Footer, PopupGiftOptions, PopupMessage, PopupVideoCall, Row } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
 import { getLoggedInUser } from '../data/redux/user/user.actions';
@@ -56,7 +56,6 @@ class Prizes extends React.Component {
     toConfirmation: false,
     toInsufficientGems: false,
     toSignUp: false,
-
     toStoreGems: false,
     toStoreGifts: false,
     toStoreMessage: false,
@@ -66,44 +65,31 @@ class Prizes extends React.Component {
     this.setData();
   }
 
-  addOrder = async item => {
+  addOrder = async (item, additionalFields) => {
     this.setState({ isLoading: true });
     const { influencer } = this.state;
     const { userID } = this.props;
-    const additionalFields = this.getTypeSpecificFields(item);
-    console.log('will add order with specific fields,', additionalFields);
     const orderNum = await actions.fetchOrderNum();
     const order = {
       gemBalanceChange: -1 * item.price,
       itemID: item.id,
       influencerID: influencer.id,
-      // message,
       orderNum,
-      // reply: '',
       timestamp: getTimestamp(),
       type: item.type,
       userID,
       wasOpened: false,
     };
-    console.log('ordered', { ...order, ...additionalFields });
     const orderAdded = await actions.addDocOrder({ ...order, ...additionalFields });
+    console.log('order added', orderAdded);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
-    // mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
   };
 
   fetchInfluencer = async () => {
     const { i } = getParams(this.props);
     const influencer = await actions.fetchDocInfluencerByField('username', i);
     return influencer;
-  };
-
-  getTypeSpecificFields = item => {
-    const fields = {};
-    if (item.type === 'message') {
-      fields.message = '';
-      fields.reply = '';
-    }
-    return fields;
   };
 
   goToConfirmation = () => {
@@ -159,13 +145,13 @@ class Prizes extends React.Component {
   };
 
   goToInsufficientGems = () => {
-    const { influencer, selectedGiftID } = this.state;
+    const { influencer, selectedItemID } = this.state;
     return (
       <Redirect
         push
         to={{
           pathname: '/insufficient',
-          search: `?i=${influencer.id}&giftID=${selectedGiftID}`,
+          search: `?i=${influencer.id}&itemID=${selectedItemID}`,
         }}
       />
     );
@@ -180,19 +166,16 @@ class Prizes extends React.Component {
     />
   );
 
-  handleItemOrder = async item => {
-    //
+  handleItemOrder = async (item, additionalFields = {}) => {
     const { actionGetLoggedInUser, gemBalance, userID } = this.props;
-
-    // const item = items.find(option => option.id === selectedItemID);
     if (!userID) {
       this.setState({ toSignUp: true });
     }
     if (gemBalance < item.price) {
       this.setState({ toInsufficientGems: true });
     } else if (userID) {
-      await this.addOrder(item);
-      // actionGetLoggedInUser();
+      await this.addOrder(item, additionalFields);
+      actionGetLoggedInUser();
     }
   };
 
@@ -200,12 +183,18 @@ class Prizes extends React.Component {
     const selectedItemID = event.target.value;
     const { items } = this.state;
     const item = items.find(option => option.id === selectedItemID);
+    this.setState({ selectedItemID: item.id });
+
     if (item.type === ITEM_TYPE.gift) {
       this.setState({ showPopupGifts: true });
       return;
     }
     if (item.type === ITEM_TYPE.message) {
-      console.log('item type message');
+      this.setState({ showPopupMessage: true });
+      return;
+    }
+    if (item.type === ITEM_TYPE.videoCall) {
+      this.setState({ showPopupVideoCall: true });
       return;
     }
     this.handleItemOrder(item);
@@ -216,23 +205,17 @@ class Prizes extends React.Component {
     return () => this.setState({ [key]: false });
   };
 
-  handleSelectStore = type => event => {
-    if (type === ITEM_TYPE.message) {
-      this.setState({ toStoreMessage: true, selectedItemID: event.target.value });
-    }
-    if (type === ITEM_TYPE.gift) {
-      this.setState({ toStoreGifts: true });
-    }
+  handleSelectStore = type => () => {
     if (type === ITEM_TYPE.gemPack) {
       this.setState({ toStoreGems: true });
     }
   };
 
+  isOrderValid = () => {};
+
   setData = async () => {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
-    // const giftOptions = await actions.fetchDocsGiftOptions(influencer.id);
-    // const giftOptionsActive = giftOptions.filter(option => option.isActive);
     const items = await actions.fetchDocsItems(influencer.id);
     const itemsActive = items.filter(item => item.isActive);
     this.setState({ items: itemsActive, isLoading: false });
@@ -241,18 +224,17 @@ class Prizes extends React.Component {
 
   render() {
     const {
-      // giftOptions,
       influencer,
       items,
       isLoading,
       selectedItemID,
       showPopupGifts,
+      showPopupMessage,
+      showPopupVideoCall,
       toConfirmation,
       toInsufficientGems,
       toSignUp,
       toStoreGems,
-      toStoreGifts,
-      toStoreMessage,
       orderID,
     } = this.state;
 
@@ -263,8 +245,6 @@ class Prizes extends React.Component {
     if (toInsufficientGems && selectedItemID) return this.goToInsufficientGems();
 
     if (toStoreGems) return this.goToStoreGems();
-    if (toStoreGifts) return this.goToStoreGifts();
-    if (toStoreMessage) return this.goToStoreMessage();
 
     if (isLoading) return <Spinner />;
 
@@ -272,7 +252,7 @@ class Prizes extends React.Component {
       <Content.Row alignTop>
         <div>
           <Fonts.P isSupporting>YOUR BALANCE</Fonts.P>
-          <Fonts.H3 noMarginTop>
+          <Fonts.H3 noMargin>
             {getFormattedNumber(gemBalance.toFixed(0))} <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
@@ -295,18 +275,17 @@ class Prizes extends React.Component {
         />
       ));
 
-    // const messageRow = items
-    //   .filter(item => item.type === ITEM_TYPE.message)
-    //   .map(item => (
-    //     <Row
-    //       key={item.id}
-    //       imgURL={item.imgURL}
-    //       handleClick={this.handleSelectStore(item.type)}
-    //       name={item.name}
-    //       price={item.price}
-    //       value={item.id}
-    //     />
-    //   ));
+    const giftOptions = items.filter(option => option.type === ITEM_TYPE.gift);
+    const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0] || null;
+    const giftRow = cheapestGift ? (
+      <Row
+        imgURL={cheapestGift.imgURL}
+        handleClick={this.handleItemSelect}
+        name={`Send ${influencer.displayName} a gift`}
+        price={cheapestGift.price}
+        value={cheapestGift.id}
+      />
+    ) : null;
 
     const footer = userID ? null : (
       <div>
@@ -319,26 +298,36 @@ class Prizes extends React.Component {
       </div>
     );
 
-    const giftOptions = items.filter(option => option.type === ITEM_TYPE.gift);
-    const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0];
-    const giftRow = (
-      <Row
-        imgURL={cheapestGift.imgURL}
-        handleClick={this.handleItemSelect}
-        name={`Send ${influencer.displayName} a gift`}
-        price={cheapestGift.price}
-        value={cheapestGift.id}
-      />
-    );
-
     const popupGiftOptions = showPopupGifts ? (
-      <GiftOptionsPopup
+      <PopupGiftOptions
         giftOptions={giftOptions}
         handleClose={this.handlePopupClose('Gifts')}
         handleItemOrder={this.handleItemOrder}
         influencer={influencer}
       />
     ) : null;
+
+    const messageItem = items.find(item => item.id === selectedItemID);
+    const popupMessage =
+      showPopupMessage && messageItem ? (
+        <PopupMessage
+          item={messageItem}
+          handleClose={this.handlePopupClose('Message')}
+          handleItemOrder={this.handleItemOrder}
+          influencer={influencer}
+        />
+      ) : null;
+
+    const videoCallItem = items.find(item => item.id === selectedItemID);
+    const popupVideoCall =
+      showPopupVideoCall && videoCallItem ? (
+        <PopupVideoCall
+          item={videoCallItem}
+          handleClose={this.handlePopupClose('VideoCall')}
+          handleItemOrder={this.handleItemOrder}
+          influencer={influencer}
+        />
+      ) : null;
 
     return (
       <div>
@@ -350,12 +339,15 @@ class Prizes extends React.Component {
             username={influencer.username}
           />
           {wallet}
+          <Fonts.H3 centered>What do you want from @{influencer.username}?</Fonts.H3>
           {itemRows}
           {giftRow}
           <Content.Spacing />
         </Content>
         {footer}
         {popupGiftOptions}
+        {popupMessage}
+        {popupVideoCall}
       </div>
     );
   }

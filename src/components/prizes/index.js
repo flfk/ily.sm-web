@@ -1,3 +1,5 @@
 export { default as Footer } from './Footer';
-export { default as GiftOptionsPopup } from './GiftOptionsPopup';
+export { default as PopupGiftOptions } from './PopupGiftOptions';
+export { default as PopupMessage } from './PopupMessage';
+export { default as PopupVideoCall } from './PopupVideoCall';
 export { default as Row } from './Row';

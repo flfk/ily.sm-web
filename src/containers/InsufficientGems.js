@@ -124,13 +124,6 @@ class InsufficientGems extends React.Component {
   }
 }
 
-// <Fonts.H3 centered noMarginBottom>
-//          You have {getFormattedNumber(gemBalance.toFixed(0))} <Currency.GemsSingle small />
-// </Fonts.H3>
-// <Fonts.H3 centered>
-//   You need {item.price} <Currency.GemsSingle small />
-// </Fonts.H3>
-
 InsufficientGems.propTypes = propTypes;
 InsufficientGems.defaultProps = defaultProps;
 
