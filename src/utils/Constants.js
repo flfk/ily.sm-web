@@ -6,6 +6,7 @@ export const ITEM_TYPE = {
   gemPack: 'gemPack',
   gift: 'gift',
   message: 'message',
+  videoCall: 'videoCall',
 };
 
 export const POINTS_BY_TYPE = {

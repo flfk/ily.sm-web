@@ -4,6 +4,7 @@ const initialState = {
   errorCode: '',
   gemBalance: 0,
   isPending: false,
+  orders: [],
   totalComments: 0,
 };
 

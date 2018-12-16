@@ -14,8 +14,8 @@ const defaultProps = {
 };
 
 const ImgDiv = styled.div`
-  height: ${props => (props.isSmall ? '64px' : '80px')}
-  width: ${props => (props.isSmall ? '64px' : '80px')}
+  height: ${props => (props.isSmall ? '32px' : '80px')}
+  width: ${props => (props.isSmall ? '32px' : '80px')}
   ${props => (props.isLarge ? 'height: 106px' : '')}
   ${props => (props.isLarge ? 'width: 106px' : '')}
   background-image: url(${props => props.src});

@@ -1,11 +1,10 @@
 import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import Currency from '../components/Currency';
 import GiftImg from '../components/GiftImg';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
@@ -39,7 +38,7 @@ const defaultProps = {
 const mapStateToProps = state => ({ userID: state.user.id });
 
 const mapDispatchToProps = dispatch => ({
-  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+  actionGetLoggedInUser: () => dispatch(getLoggedInUser()),
 });
 
 class Checkout extends React.Component {
@@ -47,9 +46,8 @@ class Checkout extends React.Component {
     gemPack: {},
     influencer: {},
     isLoading: true,
-    orderID: '',
     paypalErrorMsg: '',
-    toConfirmation: false,
+    toPrizes: false,
   };
 
   componentDidMount() {
@@ -72,8 +70,8 @@ class Checkout extends React.Component {
       timestamp: getTimestamp(),
       userID,
     };
-    const orderAdded = await actions.addDocOrder(order);
-    this.setState({ orderID: orderAdded.id, toConfirmation: true });
+    await actions.addDocOrder(order);
+    this.setState({ toPrizes: true });
     mixpanel.track('Purchased Gem Pack', {
       gemPack: gemPack.gems,
       influencer: influencer.username,
@@ -84,14 +82,14 @@ class Checkout extends React.Component {
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
 
-  goToConfirmation = () => {
-    const { influencer, orderID } = this.state;
+  goToPrizes = () => {
+    const { influencer } = this.state;
     return (
       <Redirect
         push
         to={{
-          pathname: '/confirmation',
-          search: `?orderID=${orderID}&i=${influencer.id}`,
+          pathname: '/prizes',
+          search: `?i=${influencer.id}`,
         }}
       />
     );
@@ -126,14 +124,12 @@ class Checkout extends React.Component {
     this.setState({ gemPack, influencer, isLoading: false });
   };
 
-  setInfluencer = async () => {};
-
   render() {
-    const { gemPack, isLoading, paypalErrorMsg, toConfirmation } = this.state;
+    const { gemPack, isLoading, paypalErrorMsg, toPrizes } = this.state;
 
     if (isLoading) return <Spinner />;
 
-    if (toConfirmation) return this.goToConfirmation();
+    if (toPrizes) return this.goToPrizes();
 
     const btnPayPal = (
       <PayPalCheckout
@@ -153,15 +149,8 @@ class Checkout extends React.Component {
 
     const paymentForm = (
       <div>
-        <Content.Row>
-          <Fonts.P centered>You'll receive</Fonts.P>
-          <Fonts.H3 centered noMargin>
-            <Currency.GemsSingle small /> {gemPack.gems}
-          </Fonts.H3>
-        </Content.Row>
         <Content.Spacing8px />
-        <Content.Row>
-          <Fonts.P centered>Total price</Fonts.P>
+        <Content.Row justifyCenter>
           <Fonts.H3 centered noMargin>
             $ {gemPack.price}
           </Fonts.H3>
@@ -169,19 +158,6 @@ class Checkout extends React.Component {
         <Content.Spacing />
         {paypalError}
         {btnPayPal}
-        <Content>
-          <Fonts.FinePrint>
-            By clicking on Checkout, you agree with the{' '}
-            <Link to="/termsConditions" target="_blank">
-              Terms and Conditions of Use
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacyPolicy" target="_blank">
-              Privacy Policy
-            </Link>
-            .
-          </Fonts.FinePrint>
-        </Content>
         <Content.Spacing8px />
       </div>
     );
@@ -190,11 +166,10 @@ class Checkout extends React.Component {
       <Content>
         <Content.Spacing16px />
         <Popup.BtnClose handleClose={this.handleClose} />
-        <Fonts.H1 centered>Get Gem Pack</Fonts.H1>
+        <Fonts.H1 centered>Get {gemPack.gems} Gems</Fonts.H1>
         <Content.Row justifyCenter>
           <GiftImg src={gemPack.imgURL} />
         </Content.Row>
-        <Content.Seperator />
         {paymentForm}
       </Content>
     );

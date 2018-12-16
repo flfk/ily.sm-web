@@ -2,35 +2,41 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-import Btn from './Btn';
-import Content from './Content';
-import Fonts from '../utils/Fonts';
-import GiftImg from './GiftImg';
+import Btn from '../Btn';
+import Currency from '../Currency';
+import Content from '../Content';
+import Fonts from '../../utils/Fonts';
+import ItemImg from './ItemImg';
 
 const propTypes = {
   handleClick: PropTypes.func.isRequired,
   imgURL: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  gemPackID: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
 };
 
 const defaultProps = {};
 
-const GemPackRow = ({ handleClick, imgURL, price, gemPackID, name }) => {
+const Row = ({ handleClick, imgURL, price, name, value }) => {
   return (
     <div>
       <Content.Row alignCenter>
         <Title>
-          <GiftImg src={imgURL} small />
+          <ItemImg src={imgURL} isSmall />
           <Description>
             <Fonts.P noMargin>
               <strong>{name}</strong>
             </Fonts.P>
+            <Content.Row justifyStart>
+              <Fonts.P>{price.toFixed(0)}</Fonts.P>
+              <Content.Gap />
+              <Currency.GemsSingle tiny />
+            </Content.Row>
           </Description>
         </Title>
-        <Btn primary narrow short onClick={handleClick} value={gemPackID}>
-          ${price.toFixed(2)}
+        <Btn primary narrow short onClick={handleClick} value={value}>
+          Get This
         </Btn>
       </Content.Row>
       <Content.Spacing />
@@ -50,7 +56,7 @@ const Description = styled.div`
   margin-left: 8px;
 `;
 
-GemPackRow.propTypes = propTypes;
-GemPackRow.defaultProps = defaultProps;
+Row.propTypes = propTypes;
+Row.defaultProps = defaultProps;
 
-export default GemPackRow;
+export default Row;

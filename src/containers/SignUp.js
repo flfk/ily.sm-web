@@ -1,15 +1,18 @@
 import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
 import Btn from '../components/Btn';
 import Content from '../components/Content';
 import InputText from '../components/InputText';
+import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
+import actions from '../data/actions';
 import Fonts from '../utils/Fonts';
-import { formatUsername } from '../utils/Helpers';
+import { formatUsername, getParams } from '../utils/Helpers';
 
 import { createUser } from '../data/redux/user/user.actions';
 
@@ -41,7 +44,9 @@ class SignUp extends React.Component {
     email: '',
     emailErrMsg: '',
     emailIsValid: false,
-    isLoading: false,
+    isLoading: true,
+    influencer: {},
+    item: {},
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
@@ -53,6 +58,7 @@ class SignUp extends React.Component {
 
   componentDidMount() {
     mixpanel.track('Visited Sign Up Page');
+    this.setData();
   }
 
   getErrorText = errorCode => {
@@ -60,6 +66,20 @@ class SignUp extends React.Component {
       return 'You already have an account with this email. Try logging in.';
     }
     return "Oops, something wen't wrong. Please try again or contact us at ilydotsm@gmail.com for help.";
+  };
+
+  goToInsufficientGems = () => {
+    const { i, itemID, message } = getParams(this.props);
+    const messageParam = message ? `&message=${message}` : '';
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/insufficient',
+          search: `?i=${i}&itemID=${itemID}${messageParam}`,
+        }}
+      />
+    );
   };
 
   handleBlur = field => () => {
@@ -73,7 +93,7 @@ class SignUp extends React.Component {
 
   handleChangeInput = field => event => this.setState({ [field]: event.target.value });
 
-  handleDone = () => this.props.history.goBack();
+  handleClose = () => this.props.history.goBack();
 
   handleSignUp = () => {
     this.setState({ isLoading: true });
@@ -127,12 +147,26 @@ class SignUp extends React.Component {
     return true;
   };
 
+  setData = async () => {
+    const { i, itemID } = getParams(this.props);
+    if (i) {
+      const influencer = await actions.fetchDocInfluencerByID(i);
+      this.setState({ influencer });
+    }
+    if (itemID) {
+      const item = await actions.fetchDocItem(itemID);
+      this.setState({ item });
+    }
+    this.setState({ isLoading: false });
+  };
+
   render() {
     const {
       email,
       emailErrMsg,
       emailIsValid,
       isLoading,
+      item,
       password,
       passwordErrMsg,
       passwordIsValid,
@@ -146,7 +180,9 @@ class SignUp extends React.Component {
 
     if (isLoading || isPending) return <Spinner />;
 
-    if (showConfirmation && usernameRedux && !errorCode) {
+    if (showConfirmation && usernameRedux && !errorCode && item) return this.goToInsufficientGems();
+
+    if (showConfirmation && usernameRedux && !errorCode && !item) {
       return (
         <Content>
           <Fonts.H1 centered> Welcome {usernameRedux}!</Fonts.H1>
@@ -157,7 +193,7 @@ class SignUp extends React.Component {
             You won't be able claim gems earn't from comments until your account is verified.
           </Fonts.P>
           <Content.Spacing />
-          <Btn primary short onClick={this.handleDone}>
+          <Btn primary short onClick={this.handleClose}>
             Done
           </Btn>
         </Content>
@@ -168,10 +204,15 @@ class SignUp extends React.Component {
       <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
     ) : null;
 
+    const title = item.name
+      ? `Sign up to get a ${item.name}`
+      : 'Sign up to claim your gems and get prizes.';
+
     return (
       <Content>
-        <Fonts.H1 centered>Sign up to claim your gems and get prizes.</Fonts.H1>
-        <Content.Spacing />
+        <Content.Spacing16px />
+        <Popup.BtnClose handleClose={this.handleClose} />
+        <Fonts.H1 centered>{title}</Fonts.H1>
         <InputText
           errMsg={emailErrMsg}
           label="Tell us your email"
@@ -205,6 +246,19 @@ class SignUp extends React.Component {
         <Btn primary short onClick={this.handleSignUp}>
           Sign Up
         </Btn>
+        <Content>
+          <Fonts.FinePrint>
+            By clicking on Sign Up, you agree with the{' '}
+            <Link to="/termsConditions" target="_blank" style={{ textDecoration: 'none' }}>
+              <Fonts.Link>Terms and Conditions of Use</Fonts.Link>
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacyPolicy" target="_blank" style={{ textDecoration: 'none' }}>
+              <Fonts.Link>Privacy Policy</Fonts.Link>
+            </Link>
+            .
+          </Fonts.FinePrint>
+        </Content>
       </Content>
     );
   }

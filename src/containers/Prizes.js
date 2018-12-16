@@ -10,31 +10,36 @@ import Content from '../components/Content';
 import Currency from '../components/Currency';
 import Header from '../components/Header';
 import { ITEM_TYPE } from '../utils/Constants';
-import { getParams, getFormattedNumber } from '../utils/Helpers';
+import { getFormattedNumber, getTimestamp, getParams } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
-import { Footer, ItemRow } from '../components/prizes';
+import { PopupGiftOptions, PopupMessage, PopupVideoCall, Row } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
+import { getLoggedInUser } from '../data/redux/user/user.actions';
+
 const propTypes = {
+  actionGetLoggedInUser: PropTypes.func.isRequired,
   gemBalance: PropTypes.number,
-  username: PropTypes.string,
+  userID: PropTypes.string,
 };
 
 const defaultProps = {
   gemBalance: 0,
-  username: '',
+  userID: '',
 };
 
 const mapStateToProps = state => ({
   gemBalance: state.user.gemBalance,
-  username: state.user.username,
+  userID: state.user.id,
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+});
 
 class Prizes extends React.Component {
   state = {
-    giftOptions: [],
+    additionalFields: {},
     influencer: {
       dateUpdateLast: 0,
       displayName: '',
@@ -45,15 +50,38 @@ class Prizes extends React.Component {
     },
     items: [],
     isLoading: true,
+    orderID: '',
     selectedItemID: '',
+    showPopupGifts: false,
+    toConfirmation: false,
+    toInsufficientGems: false,
+    toSignUp: false,
     toStoreGems: false,
-    toStoreGifts: false,
-    toStoreMessage: false,
   };
 
   componentDidMount() {
     this.setData();
   }
+
+  addOrder = async (item, additionalFields) => {
+    this.setState({ isLoading: true });
+    const { influencer } = this.state;
+    const { userID } = this.props;
+    const orderNum = await actions.fetchOrderNum();
+    const order = {
+      gemBalanceChange: -1 * item.price,
+      itemID: item.id,
+      influencerID: influencer.id,
+      orderNum,
+      timestamp: getTimestamp(),
+      type: item.type,
+      userID,
+      wasOpened: false,
+    };
+    const orderAdded = await actions.addDocOrder({ ...order, ...additionalFields });
+    this.setState({ orderID: orderAdded.id, toConfirmation: true });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: item.type });
+  };
 
   fetchInfluencer = async () => {
     const { i } = getParams(this.props);
@@ -61,27 +89,14 @@ class Prizes extends React.Component {
     return influencer;
   };
 
-  goToStoreGifts = () => {
-    const { influencer } = this.state;
+  goToConfirmation = () => {
+    const { orderID } = this.state;
     return (
       <Redirect
         push
         to={{
-          pathname: '/gifts',
-          search: `?i=${influencer.id}`,
-        }}
-      />
-    );
-  };
-
-  goToStoreMessage = () => {
-    const { influencer, selectedItemID } = this.state;
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: '/message',
-          search: `?i=${influencer.id}&itemID=${selectedItemID}`,
+          pathname: '/confirmation',
+          search: `?orderID=${orderID}`,
         }}
       />
     );
@@ -100,53 +115,132 @@ class Prizes extends React.Component {
     );
   };
 
-  handleSelectStore = type => event => {
-    if (type === ITEM_TYPE.message) {
-      this.setState({ toStoreMessage: true, selectedItemID: event.target.value });
+  goToInsufficientGems = () => {
+    const { additionalFields, influencer, selectedItemID } = this.state;
+    const messageParam = additionalFields ? `&message=${additionalFields.message}` : '';
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/insufficient',
+          search: `?i=${influencer.id}&itemID=${selectedItemID}${messageParam}`,
+        }}
+      />
+    );
+  };
+
+  goToSignUp = () => {
+    const { additionalFields, influencer, selectedItemID } = this.state;
+    const messageParam = additionalFields ? `&message=${additionalFields.message}` : '';
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/signup',
+          search: `?i=${influencer.id}&itemID=${selectedItemID}${messageParam}`,
+        }}
+      />
+    );
+  };
+
+  handleItemOrder = async (item, additionalFields = {}) => {
+    const { actionGetLoggedInUser, gemBalance, userID } = this.props;
+    if (!userID) {
+      this.setState({ toSignUp: true });
     }
-    if (type === ITEM_TYPE.gift) {
-      this.setState({ toStoreGifts: true });
+    if (gemBalance < item.price) {
+      this.setState({ additionalFields });
+      this.setState({ toInsufficientGems: true });
+    } else if (userID) {
+      await this.addOrder(item, additionalFields);
+      actionGetLoggedInUser();
     }
+  };
+
+  handleItemSelect = event => {
+    const selectedItemID = event.target.value;
+    const { items } = this.state;
+    const item = items.find(option => option.id === selectedItemID);
+    this.setState({ selectedItemID: item.id });
+
+    if (item.type === ITEM_TYPE.gift) {
+      this.setState({ showPopupGifts: true });
+      return;
+    }
+    if (item.type === ITEM_TYPE.message) {
+      this.setState({ showPopupMessage: true });
+      return;
+    }
+    if (item.type === ITEM_TYPE.videoCall) {
+      this.setState({ showPopupVideoCall: true });
+      return;
+    }
+    this.handleItemOrder(item);
+  };
+
+  handlePopupClose = popupName => {
+    const key = `showPopup${popupName}`;
+    return () => this.setState({ [key]: false });
+  };
+
+  handleSelectStore = type => () => {
     if (type === ITEM_TYPE.gemPack) {
       this.setState({ toStoreGems: true });
     }
   };
 
+  isOrderValid = () => {};
+
   setData = async () => {
     const influencer = await this.fetchInfluencer();
     this.setState({ influencer });
-    const giftOptions = await actions.fetchDocsGiftOptions(influencer.id);
-    const giftOptionsActive = giftOptions.filter(option => option.isActive);
     const items = await actions.fetchDocsItems(influencer.id);
-    const itemsActive = items.filter(item => item.isActive);
-    this.setState({ giftOptions: giftOptionsActive, items: itemsActive, isLoading: false });
+    const itemsActive = items
+      .filter(item => item.isActive)
+      .sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
+    this.setState({ items: itemsActive, isLoading: false });
     mixpanel.track('Visited Prizes', { influencer: influencer.username });
   };
 
   render() {
     const {
-      giftOptions,
       influencer,
       items,
       isLoading,
+      selectedItemID,
+      showPopupGifts,
+      showPopupMessage,
+      showPopupVideoCall,
+      toConfirmation,
+      toInsufficientGems,
+      toSignUp,
       toStoreGems,
-      toStoreGifts,
-      toStoreMessage,
+      orderID,
     } = this.state;
 
-    const { gemBalance, username } = this.props;
+    const { gemBalance, userID } = this.props;
+
+    if (toConfirmation && orderID) return this.goToConfirmation();
+    if (toSignUp) return this.goToSignUp();
+    if (toInsufficientGems && selectedItemID) return this.goToInsufficientGems();
 
     if (toStoreGems) return this.goToStoreGems();
-    if (toStoreGifts) return this.goToStoreGifts();
-    if (toStoreMessage) return this.goToStoreMessage();
 
     if (isLoading) return <Spinner />;
 
-    const wallet = username ? (
+    const wallet = userID ? (
       <Content.Row alignTop>
         <div>
           <Fonts.P isSupporting>YOUR BALANCE</Fonts.P>
-          <Fonts.H3 noMarginTop>
+          <Fonts.H3 noMargin>
             {getFormattedNumber(gemBalance.toFixed(0))} <Currency.GemsSingle small />
           </Fonts.H3>
         </div>
@@ -156,40 +250,61 @@ class Prizes extends React.Component {
       </Content.Row>
     ) : null;
 
-    const messageRow = items
-      .filter(item => item.type === ITEM_TYPE.message)
+    const itemRows = items
+      .filter(item => item.type !== ITEM_TYPE.gift)
       .map(item => (
-        <ItemRow
+        <Row
           key={item.id}
           imgURL={item.imgURL}
-          handleClick={this.handleSelectStore(item.type)}
+          handleClick={this.handleItemSelect}
           name={item.name}
           price={item.price}
           value={item.id}
         />
       ));
 
-    const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0];
-    const giftRow = (
-      <ItemRow
+    const giftOptions = items.filter(option => option.type === ITEM_TYPE.gift);
+    const cheapestGift = giftOptions.sort((a, b) => a.price - b.price)[0] || null;
+    const giftRow = cheapestGift ? (
+      <Row
         imgURL={cheapestGift.imgURL}
-        handleClick={this.handleSelectStore(ITEM_TYPE.gift)}
+        handleClick={this.handleItemSelect}
         name={`Send ${influencer.displayName} a gift`}
         price={cheapestGift.price}
         value={cheapestGift.id}
       />
-    );
+    ) : null;
 
-    const footer = username ? null : (
-      <div>
-        <Content.Spacing />
-        <Content.Spacing />
-        <Content.Spacing />
-        <Footer influencerName={influencer.displayName} redirectPathname="signup">
-          Footer
-        </Footer>
-      </div>
-    );
+    const popupGiftOptions = showPopupGifts ? (
+      <PopupGiftOptions
+        giftOptions={giftOptions}
+        handleClose={this.handlePopupClose('Gifts')}
+        handleItemOrder={this.handleItemOrder}
+        influencer={influencer}
+      />
+    ) : null;
+
+    const messageItem = items.find(item => item.id === selectedItemID);
+    const popupMessage =
+      showPopupMessage && messageItem ? (
+        <PopupMessage
+          item={messageItem}
+          handleClose={this.handlePopupClose('Message')}
+          handleItemOrder={this.handleItemOrder}
+          influencer={influencer}
+        />
+      ) : null;
+
+    const videoCallItem = items.find(item => item.id === selectedItemID);
+    const popupVideoCall =
+      showPopupVideoCall && videoCallItem ? (
+        <PopupVideoCall
+          item={videoCallItem}
+          handleClose={this.handlePopupClose('VideoCall')}
+          handleItemOrder={this.handleItemOrder}
+          influencer={influencer}
+        />
+      ) : null;
 
     return (
       <div>
@@ -201,11 +316,15 @@ class Prizes extends React.Component {
             username={influencer.username}
           />
           {wallet}
-          {messageRow}
+          <Fonts.H3 centered>What do you want from @{influencer.username}?</Fonts.H3>
+          <Content.Spacing16px />
+          {itemRows}
           {giftRow}
           <Content.Spacing />
         </Content>
-        {footer}
+        {popupGiftOptions}
+        {popupMessage}
+        {popupVideoCall}
       </div>
     );
   }

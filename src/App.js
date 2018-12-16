@@ -9,14 +9,12 @@ import Checkout from './containers/Checkout';
 import CurrentPost from './containers/CurrentPost';
 import Dashboard from './containers/Dashboard';
 import Gift from './containers/Gift';
-import GiftStore from './containers/GiftStore';
 import GemStore from './containers/GemStore';
 import HallOfFame from './containers/HallOfFame';
 import InsufficientGems from './containers/InsufficientGems';
 import LandingPage from './containers/LandingPage';
 import LogIn from './containers/LogIn';
 import NavBar from './containers/NavBar';
-import MessageStore from './containers/MessageStore';
 import OrderConfirmation from './containers/OrderConfirmation';
 import PolicyTermsConditions from './containers/PolicyTermsConditions';
 import PolicyCookies from './containers/PolicyCookies';
@@ -64,12 +62,10 @@ class App extends Component {
               <Route path="/confirmation" component={OrderConfirmation} />
               <Route path="/gems" component={GemStore} />
               <Route path="/gift" component={Gift} />
-              <Route path="/gifts" component={GiftStore} />
               <Route path="/halloffame" component={HallOfFame} />
               <Route path="/insufficient" component={InsufficientGems} />
               <Route path="/home" component={LandingPage} />
               <Route path="/login" component={LogIn} />
-              <Route path="/message" component={MessageStore} />
               <Route path="/prizes" component={Prizes} />
               <Route path="/privacyPolicy" component={PolicyPrivacy} />
               <Route path="/profile" component={Profile} />

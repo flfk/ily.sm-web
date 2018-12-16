@@ -76,18 +76,6 @@ const P = styled.p`
   }
 `;
 
-const Link = styled.a`
-  color: ${Colors.primary.red};
-  text-decoration: none;
-  // text-decoration-color: ${Colors.primary.red};
-  font-size: ${FONT_SIZES.p};
-  font-weight: bold;
-  cursor: pointer;
-  :hover {
-    text-decoration: underline;
-  }
-`;
-
 const FinePrint = styled.span`
   font-size: ${FONT_SIZES.finePrint};
   font-family: ${FONT_FAMILY.body};
@@ -108,6 +96,17 @@ const ERROR = styled.p`
 `;
 
 const A = styled.a`
+  text-decoration: none;
+  color: ${Colors.primary.red};
+  font-weight: bold;
+  cursor: pointer;
+  :hover {
+    text-decoration: underline;
+  }
+  text-align: ${props => (props.centered ? 'center' : '')};
+`;
+
+const Link = styled.span`
   text-decoration: none;
   color: ${Colors.primary.red};
   font-weight: bold;
