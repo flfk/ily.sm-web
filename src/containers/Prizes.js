@@ -317,6 +317,7 @@ class Prizes extends React.Component {
           />
           {wallet}
           <Fonts.H3 centered>What do you want from @{influencer.username}?</Fonts.H3>
+          <Content.Spacing16px />
           {itemRows}
           {giftRow}
           <Content.Spacing />
