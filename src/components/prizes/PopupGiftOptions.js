@@ -4,7 +4,6 @@ import React from 'react';
 
 import Content from '../Content';
 import Row from './Row';
-import GiftImg from '../GiftImg';
 import Popup from '../Popup';
 import Fonts from '../../utils/Fonts';
 

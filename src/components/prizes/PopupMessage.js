@@ -1,6 +1,7 @@
 import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import Btn from '../Btn';
 import Content from '../Content';
@@ -10,10 +11,10 @@ import Popup from '../Popup';
 import Fonts from '../../utils/Fonts';
 
 const propTypes = {
-  item: PropTypes.object.isRequired,
   handleClose: PropTypes.func.isRequired,
   handleItemOrder: PropTypes.func.isRequired,
   influencer: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
 };
 
 const defaultProps = {};

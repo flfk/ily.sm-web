@@ -12,7 +12,7 @@ import Header from '../components/Header';
 import { ITEM_TYPE } from '../utils/Constants';
 import { getFormattedNumber, getTimestamp, getParams } from '../utils/Helpers';
 import Fonts from '../utils/Fonts';
-import { Footer, PopupGiftOptions, PopupMessage, PopupVideoCall, Row } from '../components/prizes';
+import { PopupGiftOptions, PopupMessage, PopupVideoCall, Row } from '../components/prizes';
 import Spinner from '../components/Spinner';
 
 import { getLoggedInUser } from '../data/redux/user/user.actions';
@@ -39,7 +39,7 @@ const mapDispatchToProps = dispatch => ({
 
 class Prizes extends React.Component {
   state = {
-    giftOptions: [],
+    additionalFields: {},
     influencer: {
       dateUpdateLast: 0,
       displayName: '',
@@ -57,8 +57,6 @@ class Prizes extends React.Component {
     toInsufficientGems: false,
     toSignUp: false,
     toStoreGems: false,
-    toStoreGifts: false,
-    toStoreMessage: false,
   };
 
   componentDidMount() {
@@ -81,9 +79,8 @@ class Prizes extends React.Component {
       wasOpened: false,
     };
     const orderAdded = await actions.addDocOrder({ ...order, ...additionalFields });
-    console.log('order added', orderAdded);
     this.setState({ orderID: orderAdded.id, toConfirmation: true });
-    mixpanel.track('Ordered Item', { influencer: influencer.username, item: ITEM_TYPE.message });
+    mixpanel.track('Ordered Item', { influencer: influencer.username, item: item.type });
   };
 
   fetchInfluencer = async () => {
@@ -105,32 +102,6 @@ class Prizes extends React.Component {
     );
   };
 
-  goToStoreGifts = () => {
-    const { influencer } = this.state;
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: '/gifts',
-          search: `?i=${influencer.id}`,
-        }}
-      />
-    );
-  };
-
-  goToStoreMessage = () => {
-    const { influencer, selectedItemID } = this.state;
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: '/message',
-          search: `?i=${influencer.id}&itemID=${selectedItemID}`,
-        }}
-      />
-    );
-  };
-
   goToStoreGems = () => {
     const { influencer } = this.state;
     return (
@@ -145,26 +116,32 @@ class Prizes extends React.Component {
   };
 
   goToInsufficientGems = () => {
-    const { influencer, selectedItemID } = this.state;
+    const { additionalFields, influencer, selectedItemID } = this.state;
+    const messageParam = additionalFields ? `&message=${additionalFields.message}` : '';
     return (
       <Redirect
         push
         to={{
           pathname: '/insufficient',
-          search: `?i=${influencer.id}&itemID=${selectedItemID}`,
+          search: `?i=${influencer.id}&itemID=${selectedItemID}${messageParam}`,
         }}
       />
     );
   };
 
-  goToSignUp = () => (
-    <Redirect
-      push
-      to={{
-        pathname: '/signup',
-      }}
-    />
-  );
+  goToSignUp = () => {
+    const { additionalFields, influencer, selectedItemID } = this.state;
+    const messageParam = additionalFields ? `&message=${additionalFields.message}` : '';
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: '/signup',
+          search: `?i=${influencer.id}&itemID=${selectedItemID}${messageParam}`,
+        }}
+      />
+    );
+  };
 
   handleItemOrder = async (item, additionalFields = {}) => {
     const { actionGetLoggedInUser, gemBalance, userID } = this.props;
@@ -172,6 +149,7 @@ class Prizes extends React.Component {
       this.setState({ toSignUp: true });
     }
     if (gemBalance < item.price) {
+      this.setState({ additionalFields });
       this.setState({ toInsufficientGems: true });
     } else if (userID) {
       await this.addOrder(item, additionalFields);
@@ -297,17 +275,6 @@ class Prizes extends React.Component {
       />
     ) : null;
 
-    const footer = userID ? null : (
-      <div>
-        <Content.Spacing />
-        <Content.Spacing />
-        <Content.Spacing />
-        <Footer influencerName={influencer.displayName} redirectPathname="signup">
-          Footer
-        </Footer>
-      </div>
-    );
-
     const popupGiftOptions = showPopupGifts ? (
       <PopupGiftOptions
         giftOptions={giftOptions}
@@ -354,7 +321,6 @@ class Prizes extends React.Component {
           {giftRow}
           <Content.Spacing />
         </Content>
-        {footer}
         {popupGiftOptions}
         {popupMessage}
         {popupVideoCall}

@@ -1,11 +1,10 @@
 import mixpanel from 'mixpanel-browser';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Content from '../components/Content';
-import Currency from '../components/Currency';
 import GiftImg from '../components/GiftImg';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
@@ -39,7 +38,7 @@ const defaultProps = {
 const mapStateToProps = state => ({ userID: state.user.id });
 
 const mapDispatchToProps = dispatch => ({
-  actionGetLoggedInUser: user => dispatch(getLoggedInUser(user)),
+  actionGetLoggedInUser: () => dispatch(getLoggedInUser()),
 });
 
 class Checkout extends React.Component {
@@ -47,7 +46,6 @@ class Checkout extends React.Component {
     gemPack: {},
     influencer: {},
     isLoading: true,
-    orderID: '',
     paypalErrorMsg: '',
     toPrizes: false,
   };
@@ -72,8 +70,8 @@ class Checkout extends React.Component {
       timestamp: getTimestamp(),
       userID,
     };
-    const orderAdded = await actions.addDocOrder(order);
-    this.setState({ orderID: orderAdded.id, toPrizes: true });
+    await actions.addDocOrder(order);
+    this.setState({ toPrizes: true });
     mixpanel.track('Purchased Gem Pack', {
       gemPack: gemPack.gems,
       influencer: influencer.username,
@@ -83,19 +81,6 @@ class Checkout extends React.Component {
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
-
-  // goToConfirmation = () => {
-  //   const { influencer, orderID } = this.state;
-  //   return (
-  //     <Redirect
-  //       push
-  //       to={{
-  //         pathname: '/confirmation',
-  //         search: `?orderID=${orderID}&i=${influencer.id}`,
-  //       }}
-  //     />
-  //   );
-  // };
 
   goToPrizes = () => {
     const { influencer } = this.state;
@@ -138,8 +123,6 @@ class Checkout extends React.Component {
     const influencer = await actions.fetchDocInfluencerByID(i);
     this.setState({ gemPack, influencer, isLoading: false });
   };
-
-  setInfluencer = async () => {};
 
   render() {
     const { gemPack, isLoading, paypalErrorMsg, toPrizes } = this.state;

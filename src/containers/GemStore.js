@@ -6,6 +6,7 @@ import Content from '../components/Content';
 import Fonts from '../utils/Fonts';
 import GemPackRow from '../components/GemPackRow';
 import actions from '../data/actions';
+import { GEMS_PER_COMMENT } from '../utils/Constants';
 import { getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 import Spinner from '../components/Spinner';
@@ -93,8 +94,8 @@ class GemStore extends React.Component {
         <Popup.BtnClose handleClose={this.handleClose} />
         <Fonts.H1 centered>Earn Free Gems</Fonts.H1>
         <Fonts.P centered>
-          Earn a free gem for every 100 comments on {influencer.displayName}'s most recent Instagram
-          post
+          Earn a <strong>free gem for every {1 / GEMS_PER_COMMENT} comments</strong> on @
+          {influencer.username}'s most recent Instagram post
         </Fonts.P>
         <Content.Seperator />
         <Fonts.H1 centered>Buy Gems</Fonts.H1>

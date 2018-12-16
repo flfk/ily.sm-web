@@ -1,4 +1,3 @@
-export { default as Footer } from './Footer';
 export { default as PopupGiftOptions } from './PopupGiftOptions';
 export { default as PopupMessage } from './PopupMessage';
 export { default as PopupVideoCall } from './PopupVideoCall';

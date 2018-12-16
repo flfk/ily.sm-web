@@ -24,9 +24,9 @@ const GemPackRow = ({ handleClick, imgURL, price, gemPackID, name }) => {
         <Title>
           <GiftImg src={imgURL} small />
           <Description>
-            <Fonts.H3 noMargin>
+            <Fonts.P noMargin>
               <strong>{name}</strong>
-            </Fonts.H3>
+            </Fonts.P>
           </Description>
         </Title>
         <Btn primary narrow short onClick={handleClick} value={gemPackID}>
