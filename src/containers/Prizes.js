@@ -159,10 +159,10 @@ class Prizes extends React.Component {
 
   handleItemSelect = event => {
     const selectedItemID = event.target.value;
-    const { items } = this.state;
+    const { influencer, items } = this.state;
     const item = items.find(option => option.id === selectedItemID);
     this.setState({ selectedItemID: item.id });
-
+    mixpanel.track('Selected Item', { influencer: influencer.username, item: item.type });
     if (item.type === ITEM_TYPE.gift) {
       this.setState({ showPopupGifts: true });
       return;
