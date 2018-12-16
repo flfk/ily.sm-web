@@ -122,7 +122,8 @@ class InsufficientGems extends React.Component {
   };
 
   setData = async () => {
-    const { i, itemID, gemBalance, message } = getParams(this.props);
+    const { gemBalance } = this.props;
+    const { i, itemID, message } = getParams(this.props);
     const item = await actions.fetchDocItem(itemID);
     const influencer = await actions.fetchDocInfluencerByID(i);
     if (message) {
@@ -133,7 +134,7 @@ class InsufficientGems extends React.Component {
     const gemPacksActive = gemPacks.filter(pack => pack.isActive);
     const gemPackLargest = gemPacksActive.sort((a, b) => b.gems - a.gems)[0];
     const gemPackSuggested =
-      gemPacks.sort((a, b) => a.gems - b.gems).find(pack => pack.gems > gemsRequired) ||
+      gemPacksActive.sort((a, b) => a.gems - b.gems).find(pack => pack.gems > gemsRequired) ||
       gemPackLargest;
 
     this.setState({ gemPackSuggested, influencer, item, isLoading: false });
