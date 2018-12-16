@@ -228,7 +228,7 @@ class InsufficientGems extends React.Component {
         <Fonts.P centered>{gemPackSuggested.gems} gems</Fonts.P>
         <Content.Spacing8px />
         <Fonts.P centered>
-          <strong>{gemPackSuggested.price}</strong>
+          <strong>${gemPackSuggested.price}</strong>
         </Fonts.P>
         <Content.Spacing16px />
         {paypalError}
