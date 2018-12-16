@@ -69,15 +69,14 @@ class SignUp extends React.Component {
   };
 
   goToInsufficientGems = () => {
-    const { influencerID, itemID } = this.state;
-    const { message } = getParams(this.props);
+    const { i, itemID, message } = getParams(this.props);
     const messageParam = message ? `&message=${message}` : '';
     return (
       <Redirect
         push
         to={{
           pathname: '/insufficient',
-          search: `?i=${influencerID}&itemID=${itemID}${messageParam}`,
+          search: `?i=${i}&itemID=${itemID}${messageParam}`,
         }}
       />
     );
@@ -181,9 +180,9 @@ class SignUp extends React.Component {
 
     if (isLoading || isPending) return <Spinner />;
 
-    if (showConfirmation && usernameRedux && !errorCode && item) this.goToInsufficientGems();
+    if (showConfirmation && usernameRedux && !errorCode && item) return this.goToInsufficientGems();
 
-    if (showConfirmation && usernameRedux && !errorCode) {
+    if (showConfirmation && usernameRedux && !errorCode && !item) {
       return (
         <Content>
           <Fonts.H1 centered> Welcome {usernameRedux}!</Fonts.H1>
