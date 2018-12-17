@@ -34,13 +34,13 @@ class Dashboard extends React.Component {
   getDatedRows = (items, orders) => {
     const { users } = this.state;
     const datedRows = _.chain(orders)
-      .sort((a, b) => b.purchaseDate - a.purchaseDate)
-      .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map(order => ({ ...order, date: moment(order.timestamp).format('MMM Do') }))
       .groupBy('date')
       .map((group, date) => {
         const rows = group.map(order => {
           const { username } = users.find(user => user.id === order.userID);
-          const item = items.find(option => option.id === order.itemID);
+          const item = items.find(item => item.id === order.itemID);
           return (
             <DashboardRow
               key={order.id}
@@ -106,13 +106,19 @@ class Dashboard extends React.Component {
     this.setState({ influencer });
     const items = await actions.fetchDocsItems(influencer.id);
     const orders = await actions.fetchDocsOrders(influencer.id);
+    const ordersFiltered = orders.filter(order => !order.isCustom);
     const users = await Promise.all(
       _.uniqBy(orders, order => order.userID).map(async order => {
-        const user = await fetchDocUser(order.userID);
+        let user;
+        if (order.userID) {
+          user = await fetchDocUser(order.userID);
+        } else {
+          user = { username: order.username };
+        }
         return user;
       })
     );
-    this.setState({ items, orders, users });
+    this.setState({ items, orders: ordersFiltered, users });
     this.setState({ isLoading: false });
     mixpanel.track('Visited Dashboard', { influencer: influencer.username });
   };

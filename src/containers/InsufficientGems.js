@@ -97,7 +97,7 @@ class InsufficientGems extends React.Component {
       timestamp: getTimestamp(),
       userID,
     };
-    const orderAdded = await actions.addDocOrder(order);
+    await actions.addDocOrder(order);
     mixpanel.track('Purchased Suggested Gem Pack', {
       gemPack: gemPackSuggested.gems,
       influencer: influencer.username,

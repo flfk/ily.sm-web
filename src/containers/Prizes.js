@@ -21,16 +21,19 @@ const propTypes = {
   actionGetLoggedInUser: PropTypes.func.isRequired,
   gemBalance: PropTypes.number,
   userID: PropTypes.string,
+  purchasedGemBalance: PropTypes.number,
 };
 
 const defaultProps = {
   gemBalance: 0,
   userID: '',
+  purchasedGemBalance: 0,
 };
 
 const mapStateToProps = state => ({
   gemBalance: state.user.gemBalance,
   userID: state.user.id,
+  purchasedGemBalance: state.user.purchasedGemBalance,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -66,13 +69,14 @@ class Prizes extends React.Component {
   addOrder = async (item, additionalFields) => {
     this.setState({ isLoading: true });
     const { influencer } = this.state;
-    const { userID } = this.props;
+    const { userID, purchasedGemBalance } = this.props;
     const orderNum = await actions.fetchOrderNum();
     const order = {
       gemBalanceChange: -1 * item.price,
       itemID: item.id,
       influencerID: influencer.id,
       orderNum,
+      purchasedGemsSpent: item.price > purchasedGemBalance ? purchasedGemBalance : item.price,
       timestamp: getTimestamp(),
       type: item.type,
       userID,

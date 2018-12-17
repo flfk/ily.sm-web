@@ -18,6 +18,7 @@ export const fetchDocUser = async userID => {
   const userRef = db.collection(COLL_USERS).doc(userID);
   const snapshot = await userRef.get();
   const user = snapshot.data();
+  // console.log(user);
   user.id = snapshot.id;
   return user;
 };

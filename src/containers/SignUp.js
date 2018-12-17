@@ -103,6 +103,9 @@ class SignUp extends React.Component {
       const { actionSignUp } = this.props;
       actionSignUp(email, password, usernameFormatted);
       mixpanel.alias(email);
+      mixpanel.people.set({
+        $name: username,
+      });
       mixpanel.people.set({ username: usernameFormatted });
       mixpanel.track('Signed Up');
       this.setState({ showConfirmation: true });

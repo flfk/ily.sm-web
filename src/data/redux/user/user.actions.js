@@ -26,11 +26,21 @@ const getFullUser = async userID => {
   const orders = await fetchDocsOrders(userID);
   const totalComments = userDoc.isVerified ? await fetchTotalComments(userDoc.username) : 0;
 
-  const gemBalanceChangeComments = totalComments * GEMS_PER_COMMENT;
-  const gemBalanceChangeOrders = orders.reduce((aggr, order) => aggr + order.gemBalanceChange, 0);
-  const gemBalance = gemBalanceChangeComments + gemBalanceChangeOrders;
+  const totalGemsEarned = totalComments * GEMS_PER_COMMENT;
+  const gemBalanceOrders = orders.reduce((aggr, order) => aggr + order.gemBalanceChange, 0);
+  const gemBalance = totalGemsEarned + gemBalanceOrders;
 
-  return { ...userDoc, gemBalance, id: userID, orders, totalComments };
+  const gemsPurchased = orders.reduce(
+    (aggr, order) => (order.gemBalanceChange > 0 ? aggr + order.gemBalanceChange : aggr),
+    0
+  );
+  const purchasedGemsSpent = orders.reduce(
+    (aggr, order) => (order.purchasedGemsSpent ? aggr + order.purchasedGemsSpent : aggr),
+    0
+  );
+  const purchasedGemBalance = gemsPurchased - purchasedGemsSpent;
+
+  return { ...userDoc, gemBalance, id: userID, orders, purchasedGemBalance, totalComments };
 };
 
 export const createUser = (email, password, username) => async dispatch => {
