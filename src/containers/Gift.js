@@ -2,13 +2,13 @@ import React from 'react';
 
 import actions from '../data/actions';
 import Btn from '../components/Btn';
-import { COMMISSION } from '../utils/Constants';
+import { COMMISSION, GEMS_PER_DOLLAR, GEMS_PER_COMMENT } from '../utils/Constants';
 import Content from '../components/Content';
 import Footer from '../components/Footer';
 import GiftAnimation from '../components/GiftAnimation';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
-import { getParams } from '../utils/Helpers';
+import { getFormattedNumber, getParams } from '../utils/Helpers';
 import Popup from '../components/Popup';
 
 const ANIMATION_LENGTH_MILLIS = 4000;
@@ -17,7 +17,7 @@ const TIMER_INTERVAL_MILLIS = 500;
 class Gift extends React.Component {
   state = {
     animationMillisRemaining: ANIMATION_LENGTH_MILLIS,
-    gift: {
+    item: {
       name: '',
     },
     isBeingOpened: false,
@@ -25,6 +25,7 @@ class Gift extends React.Component {
     order: {
       wasOpened: false,
     },
+    username: '',
   };
 
   componentDidMount() {
@@ -34,11 +35,6 @@ class Gift extends React.Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
-
-  getOrderID = () => {
-    const { id } = getParams(this.props);
-    return id;
-  };
 
   handleURL = customURL => () => window.open(customURL, '_blank');
 
@@ -54,10 +50,10 @@ class Gift extends React.Component {
 
   setData = async () => {
     this.setState({ isLoading: true });
-    const orderID = this.getOrderID();
+    const { orderID, username } = getParams(this.props);
     const order = await actions.fetchDocOrder(orderID);
-    const gift = await actions.fetchDocGift(order.giftID);
-    this.setState({ gift, isLoading: false, order });
+    const item = await actions.fetchDocItem(order.itemID);
+    this.setState({ item, isLoading: false, order, username });
   };
 
   timer = () => {
@@ -79,7 +75,7 @@ class Gift extends React.Component {
   };
 
   render() {
-    const { gift, isBeingOpened, isLoading, order } = this.state;
+    const { item, isBeingOpened, isLoading, order, username } = this.state;
 
     const customFields =
       order.wasOpened && !isBeingOpened && order.isCustom ? (
@@ -94,26 +90,47 @@ class Gift extends React.Component {
         </div>
       ) : null;
 
-    const giftName = order.wasOpened && !isBeingOpened ? `${gift.prefix} ${gift.name}` : 'a gift';
+    const itemName = order.wasOpened && !isBeingOpened ? `${item.prefix} ${item.name}` : 'a gift';
 
-    const giftValue =
+    const dollarsEarned = order.purchasedGemsSpent
+      ? (order.purchasedGemsSpent / GEMS_PER_DOLLAR) * (1 - COMMISSION)
+      : (order.total - order.paypalFee) * (1 - COMMISSION);
+
+    const commentsEarned = order.purchasedGemsSpent
+      ? (-1 * order.gemBalanceChange - order.purchasedGemsSpent) / GEMS_PER_COMMENT
+      : 0;
+
+    const paymentMethod = commentsEarned ? (
+      <Fonts.H3 centered noMarginTop>
+        $ {dollarsEarned.toFixed(2)} + {getFormattedNumber(commentsEarned)} comments
+      </Fonts.H3>
+    ) : (
+      <Fonts.H3 centered noMarginTop>
+        $ {dollarsEarned.toFixed(2)}
+      </Fonts.H3>
+    );
+
+    const itemValue =
       !order.wasOpened || isBeingOpened ? null : (
         <div>
-          <Fonts.H3>Gift Value</Fonts.H3>
-          <Fonts.P>$ {((order.total - order.paypalFee) * (1 - COMMISSION)).toFixed(2)}</Fonts.P>
+          <Fonts.P centered>Paid using</Fonts.P>
+          <Content.Spacing8px />
+          {paymentMethod}
           <Content.Spacing />
         </div>
       );
 
-    const note = isBeingOpened ? null : (
-      <div>
-        <Fonts.H3>Attached Message</Fonts.H3>
-        <Fonts.P>{order.note}</Fonts.P>
-      </div>
-    );
+    const note =
+      !order.note || isBeingOpened ? null : (
+        <div>
+          <Fonts.H3>Attached Message</Fonts.H3>
+          <Fonts.P>{order.note}</Fonts.P>
+          <Content.Spacing />
+        </div>
+      );
 
     let btnPrimary = order.wasOpened ? (
-      <Btn primary onClick={this.handleURL(gift.snapLensURL)}>
+      <Btn primary onClick={this.handleURL(item.snapLensURL)}>
         Record Thank You
       </Btn>
     ) : (
@@ -141,16 +158,16 @@ class Gift extends React.Component {
           <Content.Spacing16px />
           <Popup.BtnClose handleClose={this.handleClose} />
           <Fonts.H1 centered>
-            {order.username} sent you {giftName}!
+            {username} sent you {itemName}!
           </Fonts.H1>
           <GiftAnimation
             wasOpened={order.wasOpened}
             isBeingOpened={isBeingOpened}
-            imgURL={gift.imgURL}
+            imgURL={item.imgURL}
           />
           {customFields}
           {note}
-          {giftValue}
+          {itemValue}
           <Content.Spacing />
           <Content.Spacing />
         </Content>

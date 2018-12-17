@@ -153,7 +153,7 @@ class Prizes extends React.Component {
       this.setState({ toSignUp: true });
     }
     if (gemBalance < item.price) {
-      this.setState({ additionalFields });
+      this.setState({ additionalFields, selectedItemID: item.id });
       this.setState({ toInsufficientGems: true });
     } else if (userID) {
       await this.addOrder(item, additionalFields);

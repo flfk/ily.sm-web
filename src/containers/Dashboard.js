@@ -5,12 +5,12 @@ import mixpanel from 'mixpanel-browser';
 import moment from 'moment-timezone';
 
 import actions from '../data/actions';
-import { COMMISSION } from '../utils/Constants';
+import { COMMISSION, GEMS_PER_DOLLAR, GEMS_PER_COMMENT } from '../utils/Constants';
 import Content from '../components/Content';
 import DashboardRow from '../components/DashboardRow';
 import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
-import { getParams } from '../utils/Helpers';
+import { getFormattedNumber, getParams } from '../utils/Helpers';
 
 import { fetchDocUser } from '../data/redux/user/user.api';
 
@@ -39,13 +39,15 @@ class Dashboard extends React.Component {
       .groupBy('date')
       .map((group, date) => {
         const rows = group.map(order => {
-          const { username } = users.find(user => user.id === order.userID);
-          const item = items.find(item => item.id === order.itemID);
+          const username = order.userID
+            ? users.find(user => user.id === order.userID).username
+            : order.username;
+          const item = items.find(option => option.id === order.itemID);
           return (
             <DashboardRow
               key={order.id}
               name={item.name}
-              username={username || order.username}
+              username={username}
               handleSelect={this.handleSelectGift}
               handleUndo={this.handleUndo(order.id)}
               wasOpened={order.wasOpened}
@@ -72,13 +74,15 @@ class Dashboard extends React.Component {
   };
 
   goToGift = () => {
-    const { orderIDSelected } = this.state;
+    const { orders, orderIDSelected, users } = this.state;
+    const { userID } = orders.find(order => order.id === orderIDSelected);
+    const user = users.find(option => option.id === userID);
     return (
       <Redirect
         push
         to={{
           pathname: '/gift',
-          search: `?id=${orderIDSelected}`,
+          search: `?orderID=${orderIDSelected}&username=${user.username}`,
         }}
       />
     );
@@ -108,7 +112,7 @@ class Dashboard extends React.Component {
     const orders = await actions.fetchDocsOrders(influencer.id);
     const ordersFiltered = orders.filter(order => !order.isCustom);
     const users = await Promise.all(
-      _.uniqBy(orders, order => order.userID).map(async order => {
+      orders.map(async order => {
         let user;
         if (order.userID) {
           user = await fetchDocUser(order.userID);
@@ -140,7 +144,22 @@ class Dashboard extends React.Component {
 
     const totalRevenue = orders
       .filter(order => order.wasOpened)
-      .reduce((aggr, order) => aggr + (order.total - order.paypalFee) * (1 - COMMISSION), 0);
+      .reduce((aggr, order) => {
+        if (order.purchasedGemsSpent) {
+          console.log(order.purchasedGemsSpent);
+          return aggr + (order.purchasedGemsSpent / GEMS_PER_DOLLAR) * (1 - COMMISSION);
+        }
+        return aggr + (order.total - order.paypalFee) * (1 - COMMISSION);
+      }, 0);
+
+    // const totalComments = orders
+    //   .filter(order => order.wasOpened)
+    //   .reduce((aggr, order) => {
+    //     if (order.purchasedGemsSpent) {
+    //       return aggr + (-1 * order.gemBalanceChange - order.purchasedGemsSpent) / GEMS_PER_COMMENT;
+    //     }
+    //     return aggr;
+    //   }, 0);
 
     let unopenedGifts = null;
     let openedGifts = null;
@@ -165,17 +184,17 @@ class Dashboard extends React.Component {
         </Fonts.H1>
         <Content.Row justifyCenter>
           <Fonts.H2 noMarginBottom centered>
-            ${totalRevenue.toFixed(2)}
+            ${getFormattedNumber(totalRevenue.toFixed(2))}
           </Fonts.H2>
           <Content.Gap />
-          <Fonts.P>from opened gifts</Fonts.P>
+          <Fonts.P>from opened orders</Fonts.P>
         </Content.Row>
         <Content.Row justifyCenter>
           <Fonts.H2 noMarginBottom centered>
             {orders.length}
           </Fonts.H2>
           <Content.Gap />
-          <Fonts.P>gifts received</Fonts.P>
+          <Fonts.P>orders received</Fonts.P>
         </Content.Row>
         <Content.Spacing16px />
         <Content.Seperator />
