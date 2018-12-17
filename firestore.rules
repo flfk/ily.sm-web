@@ -16,27 +16,25 @@ service cloud.firestore {
     }
 
     match /items/{item} {
-    allow read: if true;
-    allow update,create, delete: if false;
+    allow read, create: if true;
+    allow update, delete: if false;
     }
 
     match /influencers/{influencer} {
       allow read, update: if true;
       allow create, delete: if false;
     }
+
     match /orders/{order} {
-      allow read, create: if true;
-      allow update, delete: if false;
+      allow read, create, update: if true;
+      allow delete: if false;
     }
+
     match /posts/{posts} {
       allow create, read, update: if true;
       allow delete: if false;
-
-      match /commenters/{commenter} {
-      allow read, create, update: if true;
-      allow delete: if false;
-      }
     }
+
     match /txns/{txn} {
       allow read, create: if true;
       allow update, delete: if false;
