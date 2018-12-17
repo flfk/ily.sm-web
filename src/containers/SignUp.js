@@ -104,7 +104,7 @@ class SignUp extends React.Component {
       actionSignUp(email, password, usernameFormatted);
       mixpanel.alias(email);
       mixpanel.people.set({
-        $name: username,
+        $name: usernameFormatted,
       });
       mixpanel.people.set({ username: usernameFormatted });
       mixpanel.track('Signed Up');

@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -48,7 +49,9 @@ class Profile extends React.Component {
     isLoading: false,
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    mixpanel.track('Visited Profile Page');
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.orders.length === 0 && this.props.orders.length > 0) {

@@ -78,8 +78,8 @@ class InsufficientGems extends React.Component {
       wasOpened: false,
     };
     const orderAdded = await actions.addDocOrder({ ...order, ...additionalFields });
-    this.setState({ orderID: orderAdded.id, toConfirmation: true });
     mixpanel.track('Ordered Item', { influencer: influencer.username, item: item.type });
+    this.setState({ orderID: orderAdded.id, toConfirmation: true });
   };
 
   addOrderGemPack = async paypalPaymentID => {
@@ -97,13 +97,13 @@ class InsufficientGems extends React.Component {
       timestamp: getTimestamp(),
       userID,
     };
-    await actions.addDocOrder(order);
     mixpanel.track('Purchased Suggested Gem Pack', {
       gemPack: gemPackSuggested.gems,
       influencer: influencer.username,
       price: gemPackSuggested.price,
     });
     mixpanel.people.track_charge(gemPackSuggested.price);
+    await actions.addDocOrder(order);
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;

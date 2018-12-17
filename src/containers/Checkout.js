@@ -71,13 +71,13 @@ class Checkout extends React.Component {
       userID,
     };
     await actions.addDocOrder(order);
-    this.setState({ toPrizes: true });
     mixpanel.track('Purchased Gem Pack', {
       gemPack: gemPack.gems,
       influencer: influencer.username,
       price: gemPack.price,
     });
     mixpanel.people.track_charge(gemPack.price);
+    this.setState({ toPrizes: true });
   };
 
   getPaypalFee = price => price * PAYPAL_VARIABLE_FEE + PAYPAL_FIXED_FEE;
