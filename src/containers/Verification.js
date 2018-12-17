@@ -58,32 +58,42 @@ class Verification extends React.Component {
 
     const rowData = username === ADMIN_ACCOUNT ? users : [];
 
-    const verificationRows = rowData.map(user => {
-      const { email, id, isVerified, username } = user;
-      const btn = isVerified ? (
-        <Btn.Tertiary value={id} onClick={this.handleVerify}>
-          Verified
-        </Btn.Tertiary>
-      ) : (
-        <Btn primary narrow short value={id} onClick={this.handleVerify}>
-          Verify
-        </Btn>
-      );
-      return (
-        <div key={id}>
-          <Content.Row alignCenter>
-            <div>
-              <Fonts.P>
-                <strong>{username}</strong>
-              </Fonts.P>
-              <Fonts.P>{email}</Fonts.P>
-            </div>
-            {btn}
-          </Content.Row>
-          <Content.Spacing16px />
-        </div>
-      );
-    });
+    const verificationRows = rowData
+      .sort((a, b) => {
+        if (a.username < b.username) {
+          return -1;
+        }
+        if (a.username > b.username) {
+          return 1;
+        }
+        return 0;
+      })
+      .map(user => {
+        const { email, id, isVerified, username } = user;
+        const btn = isVerified ? (
+          <Btn.Tertiary value={id} onClick={this.handleVerify}>
+            Verified
+          </Btn.Tertiary>
+        ) : (
+          <Btn primary narrow short value={id} onClick={this.handleVerify}>
+            Verify
+          </Btn>
+        );
+        return (
+          <div key={id}>
+            <Content.Row alignCenter>
+              <div>
+                <Fonts.P>
+                  <strong>{username}</strong>
+                </Fonts.P>
+                <Fonts.P>{email}</Fonts.P>
+              </div>
+              {btn}
+            </Content.Row>
+            <Content.Spacing16px />
+          </div>
+        );
+      });
 
     return (
       <Content>

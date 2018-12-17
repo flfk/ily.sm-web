@@ -46,7 +46,7 @@ class SignUp extends React.Component {
     emailIsValid: false,
     isLoading: true,
     influencer: {},
-    item: {},
+    item: null,
     password: '',
     passwordErrMsg: '',
     passwordIsValid: false,
@@ -204,7 +204,7 @@ class SignUp extends React.Component {
       <Fonts.ERROR>{this.getErrorText(errorCode)}</Fonts.ERROR>
     ) : null;
 
-    const title = item.name
+    const title = item
       ? `Sign up to get a ${item.name}`
       : 'Sign up to claim your gems and get prizes.';
 

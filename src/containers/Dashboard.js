@@ -12,9 +12,11 @@ import Spinner from '../components/Spinner';
 import Fonts from '../utils/Fonts';
 import { getParams } from '../utils/Helpers';
 
+import { fetchDocUser } from '../data/redux/user/user.api';
+
 class Dashboard extends React.Component {
   state = {
-    giftOptions: [],
+    items: [],
     isLoading: false,
     influencer: {
       pathname: '',
@@ -22,25 +24,28 @@ class Dashboard extends React.Component {
     },
     orders: [],
     orderIDSelected: '',
+    users: [],
   };
 
   componentDidMount() {
     this.setData();
   }
 
-  getDatedRows = (giftOptions, orders) => {
+  getDatedRows = (items, orders) => {
+    const { users } = this.state;
     const datedRows = _.chain(orders)
       .sort((a, b) => b.purchaseDate - a.purchaseDate)
       .map(order => ({ ...order, date: moment(order.purchaseDate).format('MMM Do') }))
       .groupBy('date')
       .map((group, date) => {
         const rows = group.map(order => {
-          const giftOption = giftOptions.find(option => option.id === order.giftID);
+          const { username } = users.find(user => user.id === order.userID);
+          const item = items.find(option => option.id === order.itemID);
           return (
             <DashboardRow
               key={order.id}
-              name={giftOption.name}
-              username={order.username}
+              name={item.name}
+              username={username || order.username}
               handleSelect={this.handleSelectGift}
               handleUndo={this.handleUndo(order.id)}
               wasOpened={order.wasOpened}
@@ -99,9 +104,15 @@ class Dashboard extends React.Component {
     const influencerID = this.getInfluencerID();
     const influencer = await actions.fetchDocInfluencerByID(influencerID);
     this.setState({ influencer });
-    const giftOptions = await actions.fetchDocsGiftOptions(influencer.id);
+    const items = await actions.fetchDocsItems(influencer.id);
     const orders = await actions.fetchDocsOrders(influencer.id);
-    this.setState({ giftOptions, orders });
+    const users = await Promise.all(
+      _.uniqBy(orders, order => order.userID).map(async order => {
+        const user = await fetchDocUser(order.userID);
+        return user;
+      })
+    );
+    this.setState({ items, orders, users });
     this.setState({ isLoading: false });
     mixpanel.track('Visited Dashboard', { influencer: influencer.username });
   };
@@ -117,7 +128,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { giftOptions, influencer, isLoading, orders, orderIDSelected } = this.state;
+    const { items, influencer, isLoading, orders, orderIDSelected } = this.state;
 
     if (orderIDSelected) return this.goToGift();
 
@@ -133,8 +144,8 @@ class Dashboard extends React.Component {
     if (orders) {
       const unopenedOrders = orders.filter(order => !order.wasOpened);
       const openedOrders = orders.filter(order => order.wasOpened);
-      unopenedGifts = this.getDatedRows(giftOptions, unopenedOrders);
-      openedGifts = this.getDatedRows(giftOptions, openedOrders);
+      unopenedGifts = this.getDatedRows(items, unopenedOrders);
+      openedGifts = this.getDatedRows(items, openedOrders);
       if (unopenedOrders.length > 0) unopenedGiftsTitle = <Fonts.H3>Unopened Gifts</Fonts.H3>;
       if (openedOrders.length > 0) openedGiftsTitle = <Fonts.H3>Opened Gifts</Fonts.H3>;
     }

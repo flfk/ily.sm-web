@@ -1,3 +1,4 @@
+import { getTimestamp } from '../../../utils/Helpers';
 import {
   createUserWithEmailAndPassword,
   fetchDocUser,
@@ -41,6 +42,7 @@ export const createUser = (email, password, username) => async dispatch => {
     if (user) {
       const userDoc = {
         email,
+        dateCreated: getTimestamp(),
         isVerified: false,
         profilePicURL: '',
         username,
