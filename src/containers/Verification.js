@@ -56,9 +56,9 @@ class Verification extends React.Component {
 
     if (isLoading) return <Spinner />;
 
-    const rowData = username === ADMIN_ACCOUNT ? users : [];
+    if (username !== ADMIN_ACCOUNT) return <div />;
 
-    const verificationRows = rowData
+    const verificationRows = users
       .sort((a, b) => {
         if (a.username < b.username) {
           return -1;
@@ -68,6 +68,8 @@ class Verification extends React.Component {
         }
         return 0;
       })
+      .map(user => (user.dateCreated ? user : { ...user, dateCreated: 0 }))
+      .sort((a, b) => b.dateCreated - a.dateCreated)
       .map(user => {
         const { email, id, isVerified, username } = user;
         const btn = isVerified ? (
@@ -97,7 +99,8 @@ class Verification extends React.Component {
 
     return (
       <Content>
-        <Fonts.H1>Verification for users</Fonts.H1>
+        <Fonts.H1 noMarginBottom>Verification for users</Fonts.H1>
+        <Fonts.H3>Most to least recent</Fonts.H3>
         {verificationRows}
       </Content>
     );
