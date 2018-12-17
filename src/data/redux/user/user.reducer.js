@@ -5,6 +5,7 @@ const initialState = {
   gemBalance: 0,
   isPending: false,
   orders: [],
+  purchasedGemBalance: 0,
   totalComments: 0,
 };
 

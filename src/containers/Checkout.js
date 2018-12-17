@@ -89,7 +89,7 @@ class Checkout extends React.Component {
         push
         to={{
           pathname: '/prizes',
-          search: `?i=${influencer.id}`,
+          search: `?i=${influencer.username}`,
         }}
       />
     );
